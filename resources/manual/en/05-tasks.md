@@ -10,6 +10,7 @@ Press **+** in the Tasks view, type a title, and the task opens as a tab. There 
 - **Role** and **Assignee**
 - **Status**: To do, Doing, Review, Done
 - **Scope (file globs)**: for example `src/ui/**`. Type a glob and press Enter. The agent is warned (not blocked) when it edits a file outside the scope. Empty means anywhere.
+- **Delete task**: removes the task and its notes for the whole team after you confirm. Branches and commits stay as they are.
 
 Changes save by themselves a moment after you stop typing.
 

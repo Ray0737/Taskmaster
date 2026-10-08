@@ -68,6 +68,13 @@ export async function writeTask(dir: string, task: Task): Promise<void> {
   await put(dir, ['tasks', `${t.id}.json`], json(t))
 }
 
+// Removes the task file and its notes. Missing files are fine (a teammate may have deleted it first).
+export async function deleteTask(dir: string, id: string): Promise<void> {
+  if (!isTaskId(id)) throw new Error('Invalid task')
+  await fsp.rm(join(dir, TM_DIR, 'tasks', `${id}.json`), { force: true })
+  await fsp.rm(join(dir, TM_DIR, 'notes', id), { recursive: true, force: true })
+}
+
 export async function writePresence(dir: string, p: Presence): Promise<void> {
   const x = parsePresence(p)
   if (!x) throw new Error('Invalid presence')

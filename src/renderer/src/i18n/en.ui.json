@@ -45,5 +45,13 @@
   "agent.history.sub": "Earlier conversations in this project. Pick one to continue it.",
   "agent.history.search": "Search sessions",
   "agent.history.count": "{n} sessions",
-  "agent.history.noMatch": "No session matches"
+  "agent.history.noMatch": "No session matches",
+  "task.delete": "Delete task",
+  "task.delete.title": "Delete this task?",
+  "task.delete.text": "This removes \"{title}\" and its notes for the whole team. Branches and commits are not touched.",
+  "task.deleted": "Task deleted",
+  "task.group.details": "Details",
+  "task.group.details.desc": "Who does it and where it stands.",
+  "task.group.brief.desc": "What needs to be done. Markdown is supported.",
+  "task.group.notes.desc": "Updates and decisions. Your teammates see them too."
 }

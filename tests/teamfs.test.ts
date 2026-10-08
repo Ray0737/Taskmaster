@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync } from 
 import { join } from 'path'
 import { tmpdir } from 'os'
 import { DEFAULT_ROLES, type Task } from '../src/shared/team'
-import { readAll, writeTeam, writeTask, writePresence, addNote, TM_DIR } from '../src/main/services/teamfs'
+import { readAll, writeTeam, writeTask, writePresence, addNote, deleteTask, TM_DIR } from '../src/main/services/teamfs'
 
 const tmp = () => mkdtempSync(join(tmpdir(), 'tm-teamfs-'))
 const T0 = '2026-10-08T12:00:00.000Z'
@@ -83,4 +83,18 @@ it('notes are newest first and a long note is capped at 5000 characters', async 
   const notes = (await readAll(d))!.notes
   expect(notes.map((n) => n.login)).toEqual(['bee', 'ray'])
   expect(notes[0].text).toHaveLength(5000)
+})
+
+it('deleteTask removes the task and its notes, ignores missing ones, rejects bad ids', async () => {
+  const d = tmp()
+  await writeTeam(d, { lead: 'ray', members: [], roles: DEFAULT_ROLES })
+  await writeTask(d, task('t-aaaaaaaa'))
+  await writeTask(d, task('t-bbbbbbbb'))
+  await addNote(d, 't-aaaaaaaa', 'ray', 'gone with the task')
+  await deleteTask(d, 't-aaaaaaaa')
+  await deleteTask(d, 't-aaaaaaaa') // already gone: fine
+  const all = (await readAll(d))!
+  expect(all.tasks.map((x) => x.id)).toEqual(['t-bbbbbbbb'])
+  expect(all.notes).toEqual([])
+  await expect(deleteTask(d, '../team')).rejects.toThrow('Invalid task')
 })

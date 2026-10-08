@@ -69,6 +69,7 @@ export interface Api {
   'team.read': () => Promise<TeamData | null>
   'team.saveTeam': (team: Team) => Promise<void>
   'team.saveTask': (task: Task) => Promise<void>
+  'team.deleteTask': (id: string) => Promise<void>
   'team.addNote': (taskId: string, text: string) => Promise<void>
   'team.setPresence': (p: { taskId: string | null; branch: string | null; status: 'idle' | 'working' }) => Promise<void>
   'team.syncNow': () => Promise<void>

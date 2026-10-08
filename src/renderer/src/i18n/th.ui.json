@@ -45,5 +45,13 @@
   "agent.history.sub": "บทสนทนาก่อนหน้าในโปรเจกต์นี้ เลือกอันที่ต้องการเพื่อคุยต่อ",
   "agent.history.search": "ค้นหาเซสชัน",
   "agent.history.count": "{n} เซสชัน",
-  "agent.history.noMatch": "ไม่พบเซสชันที่ตรงกัน"
+  "agent.history.noMatch": "ไม่พบเซสชันที่ตรงกัน",
+  "task.delete": "ลบงาน",
+  "task.delete.title": "ลบงานนี้หรือไม่",
+  "task.delete.text": "การกระทำนี้จะลบ \"{title}\" และโน้ตทั้งหมดของงานนี้ออกจากทั้งทีม ส่วน branch และ commit จะไม่ถูกแตะต้อง",
+  "task.deleted": "ลบงานแล้ว",
+  "task.group.details": "รายละเอียด",
+  "task.group.details.desc": "ใครรับผิดชอบและงานอยู่ในสถานะใด",
+  "task.group.brief.desc": "สิ่งที่ต้องทำ รองรับ Markdown",
+  "task.group.notes.desc": "ความคืบหน้าและการตัดสินใจ เพื่อนร่วมทีมเห็นด้วย"
 }

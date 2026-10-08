@@ -30,6 +30,7 @@ interface TeamState {
   refresh(): Promise<void>
   reset(): void
   saveTask(t: Task): Promise<void>
+  deleteTask(id: string): Promise<void>
   createTask(title: string): Promise<Task>
   saveTeam(t: Team): Promise<void>
   addNote(taskId: string, text: string): Promise<void>
@@ -106,6 +107,11 @@ export const useTeam = create<TeamState>((set, get) => ({
   },
 
   saveTask: async (t) => { await call('team.saveTask', t); await get().refresh() },
+  deleteTask: async (id) => {
+    await call('team.deleteTask', id)
+    if (get().activeTaskId === id) get().setActiveTask(null)
+    await get().refresh()
+  },
 
   createTask: async (title) => {
     const me = get().me!

@@ -4,7 +4,7 @@ import { handle, emit } from '../ipc'
 import { state } from '../state'
 import { log } from '../log'
 import { getSettings } from './settings'
-import { readAll, writeTeam, writeTask, writePresence, addNote } from './teamfs'
+import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote } from './teamfs'
 import { attach, enable, flush, pull, reset, worktreeDir, SyncConflict, type Ctx } from './teamsync'
 
 const BACKOFF = [15, 30, 60, 120, 300] // seconds, after failures
@@ -133,6 +133,7 @@ export function registerTeam(): void {
     await writeTask(need().wt, { ...t, updatedAt: new Date().toISOString() })
     markDirty(`task ${t.title.slice(0, 40)}`)
   }))
+  handle('team.deleteTask', (id: string) => serial(async () => { await deleteTask(need().wt, id); markDirty('delete task') }))
   handle('team.addNote', (taskId, text) => serial(async () => { const c = need(); await addNote(c.wt, taskId, c.login, text); markDirty('note') }))
   handle('team.setPresence', async (p) => { me = p; await beat() })
   handle('team.syncNow', async () => { await runFlush(); await runPoll() })
