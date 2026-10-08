@@ -38,7 +38,7 @@ The window runs with `contextIsolation`, `sandbox`, no Node integration and a st
 | Git | `git.version/identity/setIdentity/isRepo/init/status/stage/unstage/discard/commit/branches/switch/sync/show/remoteUrl/clone/cloneCancel/startBranch/stashAll/commitAll` |
 | GitHub | `auth.status/connect/repos/collaborators/invite` |
 | Agents | `agent.detect/run/stop/sessionGet/sessionSet` |
-| Team | `team.attach/enable/read/saveTeam/saveTask/addNote/setPresence/syncNow/resetToRemote/detach` |
+| Team | `team.attach/enable/read/saveTeam/saveTask/deleteTask/skills/saveSkill/deleteSkill/addNote/setPresence/syncNow/resetToRemote/detach` |
 | Events | `fs.changed`, `pty.data`, `pty.exit`, `git.progress`, `agent.event`, `agent.exit`, `team.changed`, `team.sync` |
 
 ## Registries (how views plug in)
@@ -68,6 +68,8 @@ Branch `taskmaster/context`, checked out as a worktree at `<userData>/worktrees/
   tasks/<id>.json                    Task  (id = t-xxxxxxxx)
   notes/<task id>/<time>-<login>.md  one file per note
   presence/<login>.json              { login, taskId, branch, status, at }
+  plugin/.claude-plugin/plugin.json  Claude Code plugin "team" (team skills)
+  plugin/skills/<name>/SKILL.md      one team skill each; loaded with --plugin-dir only if settings.teamSkills is on
 ```
 
 Ids and logins from files are validated before use (they become file and branch names). `teamsync.ts` commits after local changes, pushes (one pull-rebase retry on rejection), fetches on a timer and rebases with `-X theirs` so the local version wins per file. A rebase that cannot finish is aborted and reported as `conflict`; `reset` takes the remote version. All git work and writes in the worktree run through one queue in `services/team.ts`.

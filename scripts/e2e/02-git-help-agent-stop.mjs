@@ -100,7 +100,7 @@ await click('.agent-input button', 'Stop')
 step('Stop shows a Stopped notice and re-enables Send', !!(await waitFor(`/Stopped/.test((${agentPane}).innerText) && [...document.querySelectorAll('.agent-input button')].some(b=>/Send/.test(b.getAttribute('aria-label')||''))`, 15000)))
 await sleep(2500)
 const after = execFileSync('powershell', ['-NoProfile', '-Command', "@(Get-Process claude -ErrorAction SilentlyContinue).Count"], { encoding: 'utf8' }).trim()
-step('no claude process left running after Stop', after === '0', `before stop: ${before}, after: ${after}`)
+step('the stopped claude process is gone (count dropped; other claude processes on the machine are ignored)', Number(after) < Number(before), `before stop: ${before}, after: ${after}`)
 
 console.log('ERRORS:', errors.length ? '\n' + [...new Set(errors)].join('\n') : 'none')
 ws.close()

@@ -1,7 +1,9 @@
 appId: com.lieutenant.taskmaster
 productName: Taskmaster
+copyright: Copyright (c) 2026 Ray0737
 directories:
   output: dist
+  buildResources: build
 files:
   - out/**
   - package.json
@@ -12,6 +14,15 @@ extraResources:
     to: manual
 win:
   target: nsis
+  icon: build/icon.ico
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Taskmaster
+  artifactName: Taskmaster-Setup-${version}.${ext}
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  deleteAppDataOnUninstall: false

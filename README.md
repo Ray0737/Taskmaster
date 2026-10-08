@@ -11,6 +11,7 @@ It looks and behaves like VS Code: activity bar, explorer, Monaco editor, integr
 - Press **Start task**: Taskmaster creates the task branch, and your agent is told your role, the task, the files it should stay in, what your teammates are doing and their latest notes.
 - Chat with Claude Code in the side panel (streaming answers, tool calls, diffs, cost). Other CLIs (Codex, Gemini, Aider, opencode) work in a basic one-shot mode.
 - Commit, branch, sync and open pull requests from the Source Control view.
+- Share Claude Code skills with your team (Team view, Skills). Delete tasks you no longer need.
 
 ## Requirements
 
@@ -20,7 +21,8 @@ It looks and behaves like VS Code: activity bar, explorer, Monaco editor, integr
 
 ## Install
 
-Run the installer from `dist/` after `npm run build:win`, or use the portable folder `dist/win-unpacked/`.
+Run `Taskmaster-Setup-<version>.exe` from `dist/` after `npm run build:win`, or use the portable folder `dist/win-unpacked/`. It installs for the current user, with desktop and Start menu shortcuts.
+If the project folder is inside Documents or another synced or protected folder, `build:win` can fail with EPERM or EBUSY. Use `npm run build:win:local`, which builds into `%LOCALAPPDATA%\Taskmaster\dist`.
 The installer is not code-signed, so Windows SmartScreen may ask you to confirm.
 
 ## Develop
@@ -46,4 +48,4 @@ Node 22 or later and Git 2.30 or later are needed for development.
 
 ## Status
 
-Version 0.1.0. Not in this version: real-time co-editing, an in-app merge-conflict editor, in-app pull request review, macOS and Linux builds.
+Version 0.2.0. Not in this version: real-time co-editing, an in-app merge-conflict editor, in-app pull request review, macOS and Linux builds.

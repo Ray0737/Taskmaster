@@ -12,7 +12,7 @@ Start-Sleep 6
 node scripts/e2e/01-setup-project-team-agent.mjs 9333 "$work\fixture"   # creates the fixture
 node scripts/e2e/02-git-help-agent-stop.mjs      9333 "$work\fixture"
 node scripts/e2e/03-teammate-sync.mjs            9333 "$work\fixture"
-Get-Process Taskmaster | Stop-Process
+# close the Taskmaster window you started (or stop that one process by its Id)
 ```
 
-Each line prints PASS or FAIL. Two known false FAILs in script 01 (`task shows Doing` is case-sensitive against a CSS-uppercased label, and the help-icon check picks the sidebar icon first); script 02 checks both correctly. The "no claude process left" line in 02 counts every `claude` process on the machine, so compare the before and after numbers, not the zero.
+Each line prints PASS or FAIL. Use a short work folder (like `$env:TEMP	mf`): git fails with "Filename too long" on very deep paths. Script 05 (tab switching) needs the fixture from script 01, and so does 03. Last full run (v0.2.0, installed from the NSIS installer): 01, 02, 03 and 05 all PASS.

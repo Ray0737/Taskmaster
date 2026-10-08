@@ -97,7 +97,7 @@ step('new task opens as a tab', !!(await waitFor(`[...document.querySelectorAll(
 await click('button', 'Start task'); await sleep(500)
 step('start task creates tm/<login>/<id> branch', !!(await waitFor(`/tm\\/[^ ]+\\/t-[a-z0-9]{8}/.test(document.querySelector('.statusbar')?.innerText||'')`, 25000)),
   await ev(`document.querySelector('.statusbar')?.innerText.replace(/\\s+/g,' ')`))
-step('task shows Doing in the tasks list', !!(await waitFor(`document.querySelector('.pane-body')?.innerText.includes('Doing')`, 10000)))
+step('task shows Doing in the tasks list', !!(await waitFor(`document.querySelector('.pane-body')?.innerText.match(/doing/i)`, 10000)))
 const ctxText = await ev(`(()=>{document.querySelector('.composer-tools button[aria-label="Context"]')?.click();return new Promise(r=>setTimeout(()=>r(document.querySelector('.modal .ctx-body')?.innerText||''),500))})()`)
 step('agent context contains task and team prompt', /Your task: Login page/.test(ctxText) && /tm-note/.test(ctxText), JSON.stringify(ctxText.slice(0, 90)))
 await key('Escape'); await click('.modal button', 'Close'); await sleep(300)
@@ -120,7 +120,7 @@ await key('Backquote', { ctrl: true, key: '`' })
 step('Ctrl+` opens the terminal with xterm', !!(await waitFor(`!!document.querySelector('.xterm')`, 20000)))
 
 // S9 help icon opens the matching manual chapter
-await click('.pane-title .pane-actions button', 'Manual')
+await ev(`[...document.querySelectorAll('.pane')].find(p=>p.querySelector('.composer'))?.querySelector('.pane-actions button[aria-label*="Manual"], .pane-actions button[title*="Manual"]')?.click()`)
 step('agent help icon opens the manual at Agents', !!(await waitFor(`document.querySelector('.split-view .doc h1')?.innerText==='Agents'`, 10000)),
   await ev(`document.querySelector('.split-view .doc h1')?.innerText`))
 

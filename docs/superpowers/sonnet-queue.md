@@ -2,7 +2,7 @@
 
 Written for: whoever continues Taskmaster next (a person, or a model).
 
-All five plans are implemented. Latest full run: 132/132 tests, `tsc --noEmit` clean, `npm run build` clean, Windows installer builds.
+All five plans are implemented, plus the 0.2.0 UI redesign, Delete task and team skills. Latest full run: 141/141 tests, `tsc --noEmit` clean, `npm run build` clean, Windows installer builds and installs.
 
 ## Verified in the packaged app (Sonnet, by driving the UI over the DevTools protocol)
 
@@ -30,12 +30,12 @@ Packaged build, isolated profile, scratch git project with a local bare remote, 
 
 ## Still open
 
+- Version 0.2.0 is verified end to end: silent install from `Taskmaster-Setup-0.2.0.exe` (desktop and Start menu shortcuts), e2e scripts 01, 02, 03 and 05 all PASS against the installed app, silent uninstall removes files and shortcuts. 141 tests, `tsc --noEmit` clean.
 - GitHub write actions were not exercised, to avoid public side effects: creating a repository, inviting a collaborator, the real pull request page, Connect/Reconnect login window.
-- Not run: the NSIS installer itself (install, upgrade, uninstall). The unpacked build was run directly.
 - Not run: sync conflict banner and Reset to remote through the UI, offline back-off through the UI (both covered by `tests/teamsync.test.ts`).
-- Not run: Thai layout at the minimum window size (960 × 600), very long file names, Thai keyboard layout shortcuts, all four themes visually, keyboard-focus visibility.
-- Not run: manual-vs-app walkthrough (Plan 05 Task 4 Step 5).
-- The installer uses the default Electron icon and is not code-signed.
+- Not run: Thai layout at the minimum window size (960 x 600), very long file names, Thai keyboard layout shortcuts, all four themes visually (mostly Mono Dark and Catppuccin were looked at), keyboard-focus visibility.
+- The installer is not code-signed (Windows SmartScreen asks to confirm).
+- Not built (ideas only): richer adapters for opencode and agy (both have JSON stream output and session flags), an OmniRoute gateway setting, importing skills from `~/.claude/skills`, a "cancelled" task status.
 - The repo docs say "Node 22 or later"; this machine runs Node 24.
 
 ## Plan defects found and fixed (for anyone rerunning the plans)

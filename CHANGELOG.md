@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- Redesigned UI: custom dropdowns, VS Code style agent composer, underline fields, solid and plain buttons, small curves, dividers between regions, centered empty states, a blank-canvas Home page.
+- Settings rebuilt as cards with descriptions: language, theme tabs with a live preview, editor text size, tab size, line numbers, minimap, auto save, terminal font size. Ctrl+= / Ctrl+- / Ctrl+0 change the editor font size.
+- Agent panel: Past sessions (search and resume earlier Claude Code conversations), context dialog, no composer without a folder.
+- Tasks: a new task opens straight into its page (no title prompt), the task page is redone, and **Delete task** removes a task and its notes for the whole team.
+- Team skills: share Claude Code skills through the team branch; each person opts in under Settings, Agents.
+- Fixes: switching files now shows the right code; the editor re-measures itself; sidebar and manual share one nav style; no em dashes in the manual.
+- Installer: app icon, desktop and Start menu shortcuts, versioned file name.
+
 ## 0.1.0 — first release
 
 - VS Code-style shell: activity bar, sidebar, tabs, breadcrumbs, Monaco editor, integrated terminal, status bar, quick open and command palette.
