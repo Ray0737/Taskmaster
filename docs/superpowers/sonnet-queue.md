@@ -17,10 +17,23 @@ Rule: Haiku hits the same failure twice → stop, add entry here, move on or wai
 - NOT verified (needs a real GitHub account and a human): sign-in through Git Credential Manager, `gh` token path, creating a GitHub repo, pushing to a real remote, sync conflict toast, Thai UI on the Welcome screen.
 - Concern for Sonnet: `auth.ts` keeps the token in a module variable. The plan says it never logs, and a grep confirmed no `log(` calls. Re-check any future change that adds logging in that file.
 
+## Plan 03-agents: done by Haiku, with notes for review
+
+- Built: all 5 tasks. Commits `1028c2c` to `e4fdee9`. Typecheck and build green.
+- Real CLI check: one real `claude -p --output-format stream-json` call (prompt via stdin) exited 0 and returned `PONG`, cost about $0.10. Its result line is kept as `tests/agent-real.test.ts`.
+- NOT verified (needs a person at the app): Stop kills the real child tree, session resume after restart, Full/Edit/Read-only modes, the Retry path, Thai layout of the panel.
+- Plan count mismatch, harmless: the plan says 9 parser tests, the file has 10.
+- Concern for Sonnet: `streamProcess` uses `taskkill /T /F` on Windows and `process.kill(-pid)` elsewhere. The Windows stop path is only covered by the fake-process test, not a real `claude.exe`.
+
+## Plan 04-team: in progress (Haiku)
+
+- Tasks 1–4 done. Commits `2dde232` to `9b99785`. 125/125 tests.
+- Plan defect, fixed: `isRejected` in `teamsync.ts` matched only `[rejected]`, `non-fast-forward`, `fetch first`. Git 2.53 prints push rejections as hint lines (`integrate the remote changes`, `fast-forwards`), and `lastLines()` keeps only the last three lines. Without this fix the sync engine never pulled and retried. Added the hint text to the pattern.
+- Concern: `teamsync.ts` `pull()` uses `rebase -X theirs`. The modify/delete conflict test passed on git 2.53, so the plan's "may not raise SyncConflict" fallback was not needed.
+- NOT yet done: Tasks 5–7 (store, Tasks/Team views, agent integration, PR button).
+
 ## Known risky tasks (from the plan handoff, not yet attempted)
 
-- Plan 3 task 2: spawning the agent.
-- Plan 4 tasks 3–4: the sync engine.
 - Manual smoke checklists at the end of each task — user runs the app.
 
 ## Stuck entries

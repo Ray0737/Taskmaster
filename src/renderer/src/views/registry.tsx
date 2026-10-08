@@ -27,3 +27,6 @@ export const agentHeaderExtras: ComponentType[] = []
 export interface AgentResultInfo { taskId: string | null; ok: boolean; text: string }
 // Called once per finished agent turn (Plan 4 saves the <tm-note> and moves the task to review).
 export const agentHooks: { onResult: ((r: AgentResultInfo) => void)[] } = { onResult: [] }
+
+// Extra rows above the agent input (the "save a note" box).
+export const agentFooterExtras: ComponentType[] = []

@@ -12,6 +12,9 @@ import './views/SourceControl'
 import './views/GitStatusItems'
 import './views/AccountSettings'
 import './views/AgentSettings'
+import './views/Tasks'
+import './views/TaskTab'
+import './views/TaskSelect'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(<App />)

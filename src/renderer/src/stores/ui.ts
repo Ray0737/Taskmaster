@@ -6,6 +6,7 @@ export type MenuEntry = MenuItem | 'sep'
 type Dialog =
   | { kind: 'confirm'; title: string; text: string; danger?: boolean; confirmLabel?: string; resolve: (v: boolean) => void }
   | { kind: 'prompt'; title: string; value: string; resolve: (v: string | null) => void }
+  | { kind: 'choice'; title: string; text: string; options: { label: string; value: string }[]; resolve: (v: string | null) => void }
 
 interface UiState {
   toasts: Toast[]
@@ -29,6 +30,9 @@ export const confirmDialog = (o: { title: string; text: string; danger?: boolean
 
 export const promptDialog = (title: string, value = ''): Promise<string | null> =>
   new Promise((resolve) => useUi.setState({ dialog: { kind: 'prompt', title, value, resolve } }))
+
+export const choiceDialog = (o: { title: string; text: string; options: { label: string; value: string }[] }): Promise<string | null> =>
+  new Promise((resolve) => useUi.setState({ dialog: { kind: 'choice', ...o, resolve } }))
 
 export const openMenu = (x: number, y: number, items: MenuEntry[]): void => useUi.setState({ menu: { x, y, items } })
 export const openPalette = (text = ''): void => useUi.setState({ palette: text })

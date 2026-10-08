@@ -8,7 +8,7 @@ import { showPanel } from '../layout'
 import { useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
-import { agentHeaderExtras } from './registry'
+import { agentHeaderExtras, agentFooterExtras } from './registry'
 import { Message } from './AgentMessages'
 
 let focusInput: (() => void) | null = null
@@ -115,6 +115,7 @@ export function AgentPanel() {
             )}
           </div>
           <div className="agent-foot">
+            {agentFooterExtras.map((X, i) => <X key={i} />)}
             <div className="agent-status">
               <span>{running ? <RunStatus /> : usage
                 ? t('agent.usage', { inTokens: fmt(usage.inTokens), outTokens: fmt(usage.outTokens) }) + (usage.costUsd != null ? t('agent.cost', { cost: usage.costUsd.toFixed(2) }) : '')

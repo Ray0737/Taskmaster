@@ -28,29 +28,37 @@ export function DialogHost() {
   const [val, setVal] = useState('')
   useEffect(() => { if (d?.kind === 'prompt') setVal(d.value) }, [d])
   if (!d) return null
-  const done = (ok: boolean) => {
+  // true/false for confirm and prompt, the chosen value for choice, null/false = cancelled
+  const finish = (result: boolean | string | null) => {
     useUi.setState({ dialog: null })
-    if (d.kind === 'confirm') d.resolve(ok)
-    else d.resolve(ok && val.trim() ? val.trim() : null)
+    if (d.kind === 'confirm') d.resolve(result === true)
+    else if (d.kind === 'choice') d.resolve(typeof result === 'string' ? result : null)
+    else d.resolve(result === true && val.trim() ? val.trim() : null)
   }
   return (
-    <div className="modal-back" onMouseDown={() => done(false)}>
+    <div className="modal-back" onMouseDown={() => finish(null)}>
       <div className="modal" role="dialog" aria-modal="true" aria-label={d.title}
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
-          if (e.key === 'Escape') done(false)
-          if (e.key === 'Enter') { e.preventDefault(); done(true) }
+          if (e.key === 'Escape') finish(null)
+          if (e.key === 'Enter' && d.kind !== 'choice') { e.preventDefault(); finish(true) }
         }}>
         <div className="modal-title">{d.title}</div>
-        {d.kind === 'confirm'
-          ? <div className="modal-text">{d.text}</div>
-          : <input autoFocus className="input" value={val} onChange={(e) => setVal(e.target.value)} />}
+        {d.kind === 'prompt'
+          ? <input autoFocus className="input" value={val} onChange={(e) => setVal(e.target.value)} />
+          : <div className="modal-text">{d.text}</div>}
         <div className="modal-actions">
-          <button className="btn" onClick={() => done(false)}>{t('common.cancel')}</button>
-          <button autoFocus={d.kind === 'confirm'} className={`btn ${d.kind === 'confirm' && d.danger ? 'btn-danger' : 'btn-primary'}`}
-            onClick={() => done(true)}>
-            {d.kind === 'confirm' ? (d.confirmLabel ?? t('common.confirm')) : t('common.ok')}
-          </button>
+          <button className="btn" onClick={() => finish(null)}>{t('common.cancel')}</button>
+          {d.kind === 'choice'
+            ? d.options.map((o, i) => (
+              <button key={o.value} autoFocus={i === d.options.length - 1} className={`btn${i === d.options.length - 1 ? ' btn-primary' : ''}`}
+                onClick={() => finish(o.value)}>{o.label}</button>
+            ))
+            : (
+              <button autoFocus={d.kind === 'confirm'} className={`btn ${d.kind === 'confirm' && d.danger ? 'btn-danger' : 'btn-primary'}`} onClick={() => finish(true)}>
+                {d.kind === 'confirm' ? (d.confirmLabel ?? t('common.confirm')) : t('common.ok')}
+              </button>
+            )}
         </div>
       </div>
     </div>
