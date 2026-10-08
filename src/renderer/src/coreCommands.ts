@@ -2,9 +2,10 @@ import { registerCommand } from './commands'
 import { call } from './ipc'
 import { useApp } from './stores/app'
 import { openPalette } from './stores/ui'
-import { togglePanel, showPanel } from './layout'
+import { togglePanel, showPanel, panels } from './layout'
 import { THEME_IDS } from './theme/themes'
 import { useEditor, saveActive } from './stores/editor'
+import { useTerm, newTerminal } from './stores/terminal'
 import type { EditRole } from '@shared/api'
 
 const role = (r: EditRole) => () => call('win.role', r)
@@ -26,9 +27,14 @@ registerCommand(
   ...THEME_IDS.map((id) => ({ id: `theme.${id}`, title: `theme.${id}`, run: () => useApp.getState().set({ theme: id }) })),
   { id: 'view.toggleSidebar', title: 'cmd.toggleSidebar', keys: 'Ctrl+B', run: () => togglePanel('side') },
   { id: 'view.toggleAgent', title: 'cmd.toggleAgent', keys: 'Ctrl+Alt+B', run: () => togglePanel('agent') },
-  { id: 'view.toggleTerminal', title: 'cmd.toggleTerminal', keys: 'Ctrl+`', run: () => togglePanel('panel') },
+  { id: 'view.toggleTerminal', title: 'cmd.toggleTerminal', keys: 'Ctrl+`', run: () => {
+    togglePanel('panel')
+    if (!useTerm.getState().list.length && panels.panel && !panels.panel.isCollapsed()) void newTerminal()
+  } },
   { id: 'view.explorer', title: 'cmd.explorer', keys: 'Ctrl+Shift+E', run: () => { useApp.getState().setView('explorer'); showPanel('side') } }
 )
+
+registerCommand({ id: 'terminal.new', title: 'cmd.newTerminal', keys: 'Ctrl+Shift+`', run: () => newTerminal() })
 
 // Plan 2 replaces this with the full project flow (git check, recent list).
 registerCommand({

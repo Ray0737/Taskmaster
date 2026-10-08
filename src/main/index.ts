@@ -5,6 +5,7 @@ import { handle } from './ipc'
 import { log, logDir } from './log'
 import { registerSettings } from './services/settings'
 import { registerFs } from './services/fs'
+import { registerPty, killAllPty } from './services/pty'
 
 let win: BrowserWindow | null = null
 
@@ -59,6 +60,8 @@ app.whenReady().then(() => {
   registerSettings()
   registerWindow()
   registerFs()
+  registerPty()
   createWindow()
 })
 app.on('window-all-closed', () => app.quit())
+app.on('before-quit', () => killAllPty())
