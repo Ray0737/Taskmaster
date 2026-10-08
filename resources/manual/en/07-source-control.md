@@ -18,7 +18,7 @@ The branch button (here and in the status bar) lists local branches with the cur
 
 ## Sync
 
-**Sync** shows how many commits you are ahead (↑) and behind (↓). It pulls with rebase (keeping your uncommitted changes aside), then pushes. A branch that has never been pushed is pushed and starts tracking. If the pull hits conflicts you get the message "Conflicts — resolve in terminal" with **Open terminal**; resolve them with normal git commands (`git status`, edit files, `git add`, `git rebase --continue`).
+**Sync** shows how many commits you are ahead (↑) and behind (↓). It pulls with rebase (keeping your uncommitted changes aside), then pushes. A branch that has never been pushed is pushed and starts tracking. If the pull hits conflicts you get the message "Conflicts: resolve in terminal" with **Open terminal**; resolve them with normal git commands (`git status`, edit files, `git add`, `git rebase --continue`).
 
 ## Pull requests
 

@@ -12,7 +12,7 @@
   "agent.newChat": "New chat",
   "agent.context": "Context",
   "agent.contextTitle": "What the agent is told about the team and task",
-  "agent.contextNone": "Nothing — this is a plain chat. Pick a task to add team context.",
+  "agent.contextNone": "Nothing. This is a plain chat. Pick a task to add team context.",
   "agent.send": "Send",
   "agent.stop": "Stop",
   "agent.placeholder": "Ask the agent… (Enter to send, Shift+Enter for a new line)",

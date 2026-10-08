@@ -20,7 +20,7 @@
   "team.enable": "Enable Taskmaster",
   "team.enable.pushFailed": "Enabled on this computer. Could not push yet: {error}",
   "team.attachFailed": "Could not load team data: {error}",
-  "team.joined": "You are @{login} — {role}. {count} open tasks are assigned to you.",
+  "team.joined": "You are , {role}. {count} open tasks are assigned to you.",
   "team.joined.open": "Open Tasks",
   "tasks.mine": "Mine",
   "tasks.all": "All",

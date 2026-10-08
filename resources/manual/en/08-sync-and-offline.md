@@ -6,10 +6,10 @@ Two different things are synced: your code (Source Control → Sync) and your te
 
 On the branch `taskmaster/context`, in a folder `.taskmaster/`:
 
-- `team.json` — lead, members, roles
-- `tasks/<id>.json` — one file per task
-- `notes/<task id>/…md` — one file per note, never edited afterwards
-- `presence/<login>.json` — who is online, written only by that person
+- `team.json`: lead, members, roles
+- `tasks/<id>.json`: one file per task
+- `notes/<task id>/…md`: one file per note, never edited afterwards
+- `presence/<login>.json`: who is online, written only by that person
 
 Taskmaster checks this branch out in a separate folder inside the app's data folder (`%APPDATA%\taskmaster\worktrees`), so your project folder and your current branch are never changed by it.
 
@@ -27,9 +27,9 @@ The item at the left shows how many people are online. Its icon and tooltip show
 
 - up to date
 - syncing
-- **offline** — no network or no access. Your changes are kept and pushed as soon as it works again; Taskmaster retries after 15 s, then 30 s, 1 min, 2 min and every 5 min. Click the item to try now.
-- **Sync conflict** (red) — the team data could not be merged automatically. Click it and choose **Reset to remote** to throw away your unsynced team changes and take the remote version.
-- paused — switched off in Settings → Sync. Tick it off again to resume.
+- **offline**: no network or no access. Your changes are kept and pushed as soon as it works again; Taskmaster retries after 15 s, then 30 s, 1 min, 2 min and every 5 min. Click the item to try now.
+- **Sync conflict** (red): the team data could not be merged automatically. Click it and choose **Reset to remote** to throw away your unsynced team changes and take the remote version.
+- paused: switched off in Settings → Sync. Tick it off again to resume.
 
 ## Repairing by hand
 

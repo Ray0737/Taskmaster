@@ -17,7 +17,7 @@ Find the symptom, then the fix.
 |---|---|
 | "Not a git repository" when opening a folder | Choose **Initialize**, or open the repository's root folder instead of a subfolder. |
 | Sync says the remote has new commits | Press **Sync** again; it pulls first. |
-| "Conflicts — resolve in terminal" | Press **Open terminal**, run `git status`, fix the listed files, `git add` them and `git rebase --continue`. |
+| "Conflicts: resolve in terminal" | Press **Open terminal**, run `git status`, fix the listed files, `git add` them and `git rebase --continue`. |
 | Switching branch is refused | Git protects your uncommitted edits. Commit or stash them, then switch. |
 | A file on disk changed while I had it open | A bar offers **Reload**, **Keep Mine** or **Compare**. |
 | A file I had open was deleted | Its tab is struck through and read-only; close it. |

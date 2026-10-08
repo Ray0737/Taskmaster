@@ -18,7 +18,7 @@
 
 ## ซิงก์
 
-**ซิงก์** แสดงจำนวน commit ที่คุณนำหน้า (↑) และตามหลัง (↓) โดย pull แบบ rebase (เก็บการแก้ไขที่ยังไม่ commit ไว้ข้าง ๆ) แล้ว push branch ที่ไม่เคย push จะถูก push และเริ่มติดตาม ถ้า pull เจอ conflict จะได้ข้อความ "มี conflict — แก้ไขในเทอร์มินัล" พร้อม **เปิดเทอร์มินัล** แก้ด้วยคำสั่ง git ปกติ (`git status` แก้ไฟล์ `git add` `git rebase --continue`)
+**ซิงก์** แสดงจำนวน commit ที่คุณนำหน้า (↑) และตามหลัง (↓) โดย pull แบบ rebase (เก็บการแก้ไขที่ยังไม่ commit ไว้ข้าง ๆ) แล้ว push branch ที่ไม่เคย push จะถูก push และเริ่มติดตาม ถ้า pull เจอ conflict จะได้ข้อความ "มี conflict: แก้ไขในเทอร์มินัล" พร้อม **เปิดเทอร์มินัล** แก้ด้วยคำสั่ง git ปกติ (`git status` แก้ไฟล์ `git add` `git rebase --continue`)
 
 ## Pull request
 

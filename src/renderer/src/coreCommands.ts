@@ -9,6 +9,8 @@ import { useTerm, newTerminal } from './stores/terminal'
 import type { EditRole } from '@shared/api'
 
 const role = (r: EditRole) => () => call('win.role', r)
+// Ctrl+= / Ctrl+- / Ctrl+0 change the editor font size (10 to 24, default 14), not the whole window.
+const zoom = (d: number | null) => { const st = useApp.getState(); void st.set({ fontSize: d === null ? 14 : Math.min(24, Math.max(10, st.settings!.fontSize + d)) }) }
 
 registerCommand(
   { id: 'edit.undo', title: 'cmd.undo', run: role('undo'), hidden: true },
@@ -25,6 +27,9 @@ registerCommand(
   },
   { id: 'theme.pick', title: 'cmd.themePick', run: () => openPalette('>' + 'Theme') },
   ...THEME_IDS.map((id) => ({ id: `theme.${id}`, title: `theme.${id}`, run: () => useApp.getState().set({ theme: id }) })),
+  { id: 'editor.zoomIn', title: 'cmd.zoomIn', keys: 'Ctrl+=', run: () => zoom(1) },
+  { id: 'editor.zoomOut', title: 'cmd.zoomOut', keys: 'Ctrl+-', run: () => zoom(-1) },
+  { id: 'editor.zoomReset', title: 'cmd.zoomReset', keys: 'Ctrl+0', run: () => zoom(null) },
   { id: 'view.toggleSidebar', title: 'cmd.toggleSidebar', keys: 'Ctrl+B', run: () => togglePanel('side') },
   { id: 'view.toggleAgent', title: 'cmd.toggleAgent', keys: 'Ctrl+Alt+B', run: () => togglePanel('agent') },
   { id: 'view.toggleTerminal', title: 'cmd.toggleTerminal', keys: 'Ctrl+`', run: () => {

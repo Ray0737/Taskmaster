@@ -1,7 +1,8 @@
 export interface KeyLike { code: string; ctrlKey: boolean; shiftKey: boolean; altKey: boolean; metaKey: boolean }
 
 const NAMES: Record<string, string> = {
-  Backquote: '`', Comma: ',', Period: '.', Slash: '/', Tab: 'Tab', Escape: 'Escape', Enter: 'Enter'
+  Backquote: '`', Comma: ',', Period: '.', Slash: '/', Tab: 'Tab', Escape: 'Escape', Enter: 'Enter',
+  Minus: '-', Equal: '=', NumpadSubtract: '-', NumpadAdd: '=', NumpadEqual: '='
 }
 
 // Uses KeyboardEvent.code (physical key) so shortcuts work on any keyboard layout, e.g. Thai Kedmanee.

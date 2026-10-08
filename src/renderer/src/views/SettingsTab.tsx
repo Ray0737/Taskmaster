@@ -20,20 +20,30 @@ function General() {
   return (
     <>
       <Group icon="globe" title={t('settings.language')}>
-        <div className="group-body">
-          <Dropdown ariaLabel={t('settings.language')} value={s.lang} options={[{ value: 'en', label: 'English' }, { value: 'th', label: 'ไทย' }]}
-            onChange={(v) => void set({ lang: v as 'en' | 'th' })} />
+        <div className="tabs-inline" role="radiogroup" aria-label={t('settings.language')}>
+          {([['en', 'English'], ['th', 'ไทย']] as const).map(([v, label]) => (
+            <button key={v} role="radio" aria-checked={s.lang === v} className={`btn${s.lang === v ? ' on' : ''}`} onClick={() => void set({ lang: v })}>{label}</button>
+          ))}
         </div>
       </Group>
       <Group icon="color-mode" title={t('settings.theme')}>
         <div className="swatches" role="radiogroup" aria-label={t('settings.theme')}>
           {THEME_IDS.map((id) => {
             const u = THEMES[id].ui
+            const sel = s.theme === id
             return (
-              <button key={id} role="radio" aria-checked={s.theme === id} className={`swatch${s.theme === id ? ' sel' : ''}`} onClick={() => void set({ theme: id })}>
-                <span className="ellipsis">{THEMES[id].label}</span>
-                <span className="swatch-colors">
-                  {[u['bg-0'], u['bg-1'], u.fg, u.accent, u.danger].map((c, i) => <span key={i} style={{ background: c }} />)}
+              <button key={id} role="radio" aria-checked={sel} className={`swatch${sel ? ' sel' : ''}`} onClick={() => void set({ theme: id })}>
+                <span className="swatch-thumb" style={{ background: u['bg-0'] }} aria-hidden="true">
+                  <span className="sw-side" style={{ background: u['bg-1'] }} />
+                  <span className="sw-main">
+                    <span className="sw-bar" style={{ background: u.accent }} />
+                    <span className="sw-line" style={{ background: u.fg }} />
+                    <span className="sw-line" style={{ background: u.fg, width: '50%' }} />
+                  </span>
+                </span>
+                <span className="swatch-label">
+                  {sel && <Icon name="check" />}
+                  <span className="ellipsis">{THEMES[id].label}</span>
                 </span>
               </button>
             )

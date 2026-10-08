@@ -6,8 +6,8 @@ The right-hand panel talks to a coding agent that runs on your computer, inside 
 
 Taskmaster looks for these programs on your PATH when it starts and when you press **Rescan** (Settings → Agents):
 
-- **Claude Code** — full support: live text, tool rows, diffs, cost, remembered conversations.
-- **Codex CLI, Gemini CLI, Aider, opencode** — basic support: one answer per message as plain text, no conversation memory, no tool rows.
+- **Claude Code**: full support: live text, tool rows, diffs, cost, remembered conversations.
+- **Codex CLI, Gemini CLI, Aider, opencode**: basic support: one answer per message as plain text, no conversation memory, no tool rows.
 
 If none is found the panel explains how to install Claude Code.
 
@@ -36,10 +36,10 @@ Conversations continue where they stopped, per project and per task, even after 
 
 ## Messages from Taskmaster
 
-- **Blocked by the current mode** — the agent wanted to do something the mode does not allow (usually run a command). Switch to Edit or Full and ask again.
-- **Outside task scope** — the agent edited a file that is not in the task's scope. Look at the change; nothing is blocked.
-- **The agent is not signed in** — press **Open terminal to sign in** and finish the login there.
-- **The agent stopped with an error** — the last lines of its error are shown with **Retry**.
+- **Blocked by the current mode**: the agent wanted to do something the mode does not allow (usually run a command). Switch to Edit or Full and ask again.
+- **Outside task scope**: the agent edited a file that is not in the task's scope. Look at the change; nothing is blocked.
+- **The agent is not signed in**: press **Open terminal to sign in** and finish the login there.
+- **The agent stopped with an error**: the last lines of its error are shown with **Retry**.
 
 ## Your own Claude settings
 
