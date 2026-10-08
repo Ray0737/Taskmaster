@@ -4,9 +4,13 @@ Written for: Sonnet picking up a task Haiku got stuck on.
 
 Rule: Haiku hits the same failure twice → stop, add entry here, move on or wait.
 
+## Status
+
+- Plan 01-shell: all 11 tasks done by Haiku, 27/27 tests, build green. `npm run dev` launches with no startup errors (45 s run). Manual smoke checklist (Task 11 Step 10) not ticked: needs a person at the window.
+- Plan 02–05: not started.
+
 ## Known risky tasks (from the plan handoff, not yet attempted)
 
-- Plan 1 Task 1 `npm run dev` smoke check — needs a GUI, check by hand.
 - Plan 2 tasks 2–3: git and sign-in.
 - Plan 3 task 2: spawning the agent.
 - Plan 4 tasks 3–4: the sync engine.
