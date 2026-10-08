@@ -53,5 +53,6 @@
   "task.group.details": "Details",
   "task.group.details.desc": "Who does it and where it stands.",
   "task.group.brief.desc": "What needs to be done. Markdown is supported.",
-  "task.group.notes.desc": "Updates and decisions. Your teammates see them too."
+  "task.group.notes.desc": "Updates and decisions. Your teammates see them too.",
+  "tasks.untitled": "New task"
 }

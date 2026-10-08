@@ -90,8 +90,9 @@ step('status bar shows team presence', !!(await waitFor(`/online/.test(document.
 // S6 create and start a task
 await click('.pane-actions button', 'New task')
 await sleep(500)
-await typeInto('.modal input.input', 'Login page')
-await key('Enter'); await sleep(1500)
+await waitFor(`!!document.querySelector('.task-title')`, 10000)
+await typeInto('.task-title', 'Login page')
+await sleep(2000) // the title is saved 600 ms after the last keystroke
 step('new task opens as a tab', !!(await waitFor(`[...document.querySelectorAll('.tab')].some(t=>t.innerText.includes('Login page'))`, 15000)))
 await click('button', 'Start task'); await sleep(500)
 step('start task creates tm/<login>/<id> branch', !!(await waitFor(`/tm\\/[^ ]+\\/t-[a-z0-9]{8}/.test(document.querySelector('.statusbar')?.innerText||'')`, 25000)),

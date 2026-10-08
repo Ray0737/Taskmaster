@@ -4,7 +4,7 @@ import { errMsg } from '../ipc'
 import { useApp } from '../stores/app'
 import { useEditor } from '../stores/editor'
 import { useTeam, roleName } from '../stores/team'
-import { promptDialog, openMenu, toast } from '../stores/ui'
+import { openMenu, toast } from '../stores/ui'
 import { registerCommand } from '../commands'
 import { showPanel } from '../layout'
 import { startTask } from '../tasks'
@@ -24,9 +24,11 @@ export const openTask = (t: Task): void => useEditor.getState().open({ kind: 'ta
 export async function newTaskFlow(): Promise<void> {
   const st = useTeam.getState()
   if (st.status !== 'enabled') return
-  const title = await promptDialog(tr('tasks.newPrompt'))
-  if (!title) return
-  try { openTask(await st.createTask(title)) } catch (e) { toast(errMsg(e), 'error') }
+  // No title prompt: the task opens straight away and its title field is focused and selected.
+  try {
+    const task = await st.createTask(tr('tasks.untitled'))
+    useEditor.getState().open({ kind: 'task', taskId: task.id, title: task.title }, false)
+  } catch (e) { toast(errMsg(e), 'error') }
 }
 
 function Row({ task }: { task: Task }) {

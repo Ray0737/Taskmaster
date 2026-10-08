@@ -53,5 +53,6 @@
   "task.group.details": "รายละเอียด",
   "task.group.details.desc": "ใครรับผิดชอบและงานอยู่ในสถานะใด",
   "task.group.brief.desc": "สิ่งที่ต้องทำ รองรับ Markdown",
-  "task.group.notes.desc": "ความคืบหน้าและการตัดสินใจ เพื่อนร่วมทีมเห็นด้วย"
+  "task.group.notes.desc": "ความคืบหน้าและการตัดสินใจ เพื่อนร่วมทีมเห็นด้วย",
+  "tasks.untitled": "งานใหม่"
 }

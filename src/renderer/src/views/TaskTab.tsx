@@ -33,6 +33,10 @@ export function TaskTab({ tab }: { tab: Tab }) {
     if (cur) void useTeam.getState().saveTask({ ...cur, ...p })
   }, 600)).current
   useEffect(() => { if (task && !pending.current) setDraft(task) }, [task?.id, task?.updatedAt])
+  // keep the tab label in step with the saved title (a new task starts as "New task")
+  useEffect(() => {
+    if (task) useEditor.setState((s) => ({ tabs: s.tabs.map((x) => (x.id === tab.id && x.title !== task.title ? { ...x, title: task.title } : x)) }))
+  }, [task?.title])
 
   if (!task || !draft || !data) return <Empty text={t('task.missing')} />
   const patch = (p: Partial<Task>) => { pending.current = true; setDraft({ ...draft, ...p }); save(p) }
@@ -57,7 +61,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
     <div className="split-body scroll" style={{ height: '100%', background: 'var(--bg-0)' }}>
       <div className="settings-page task-page selectable">
         <header className="task-head">
-          <input className="input task-title" aria-label={t('task.title')} value={draft.title} onChange={(e) => patch({ title: e.target.value })} />
+          <input className="input task-title" autoFocus={task.title === t('tasks.untitled')} onFocus={(e) => { if (task.title === t('tasks.untitled')) e.currentTarget.select() }} aria-label={t('task.title')} value={draft.title} onChange={(e) => patch({ title: e.target.value })} />
           <div className="task-meta">
             <span className={`status-pill s-${task.status}`}>{t(`status.${task.status}`)}</span>
             {task.branch && <span className="dim small mono ellipsis" title={task.branch}><Icon name="git-branch" /> {task.branch}</span>}
