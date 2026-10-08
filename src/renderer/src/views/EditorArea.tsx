@@ -10,6 +10,9 @@ import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { FileEditor } from './FileEditor'
 import { DiffTab } from './DiffTab'
+import { editorBanners } from './registry'
+
+const Banners = () => <>{editorBanners.map((B, i) => <B key={i} />)}</>
 
 // Later tasks assign renderers for other tab kinds, e.g. tabRenderers.settings = SettingsTab.
 export const tabRenderers: Partial<Record<TabKind, ComponentType<{ tab: Tab }>>> = { diff: DiffTab }
@@ -91,10 +94,11 @@ export function EditorArea() {
   const tabs = useEditor((s) => s.tabs)
   const active = useEditor((s) => s.active)
   const tab = tabs.find((x) => x.id === active)
-  if (!tab) return <div className="editor-area">{tabs.length > 0 && <Tabs />}<EmptyEditor /></div>
+  if (!tab) return <div className="editor-area"><Banners />{tabs.length > 0 && <Tabs />}<EmptyEditor /></div>
   const R = tabRenderers[tab.kind]
   return (
     <div className="editor-area">
+      <Banners />
       <Tabs />
       {tab.kind === 'file' && tab.path && <Breadcrumbs path={tab.path} />}
       <div className="editor-body">

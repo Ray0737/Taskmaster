@@ -30,3 +30,6 @@ export const agentHooks: { onResult: ((r: AgentResultInfo) => void)[] } = { onRe
 
 // Extra rows above the agent input (the "save a note" box).
 export const agentFooterExtras: ComponentType[] = []
+
+// Strips shown at the top of the editor area (the "enable Taskmaster" banner).
+export const editorBanners: ComponentType[] = []

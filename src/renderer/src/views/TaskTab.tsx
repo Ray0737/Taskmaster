@@ -10,6 +10,7 @@ import { useT } from '../i18n'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
+import { openPullRequest } from '../pr'
 import { tabRenderers } from './EditorArea'
 
 export function TaskTab({ tab }: { tab: Tab }) {
@@ -50,6 +51,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
           {task.status === 'doing' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'review')}>{t('task.markReview')}</button>}
           {task.status !== 'done' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'done')}>{t('task.markDone')}</button>}
           {task.status === 'done' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'todo')}>{t('task.reopen')}</button>}
+          {task.branch && <button className="btn" onClick={() => void openPullRequest(task.branch!)}><Icon name="git-pull-request" />{t('scm.openPr')}</button>}
           {!mineOrFree && <span className="dim">{t('task.assignedTo', { login: task.assignee! })}</span>}
         </div>
 

@@ -14,6 +14,7 @@ import { tr, useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { sidebarViews } from './registry'
+import { openPullRequest } from '../pr'
 
 export const useSync = create<{ busy: boolean }>(() => ({ busy: false }))
 
@@ -149,6 +150,11 @@ export function SourceControl() {
           <Icon name="sync" />{busy ? '…' : `↑${st.ahead} ↓${st.behind}`}
         </button>
       </div>
+      {st.branch?.startsWith('tm/') && (
+        <div style={{ padding: '0 8px 8px' }}>
+          <button className="btn" style={{ width: '100%' }} onClick={() => void openPullRequest(st.branch!)}><Icon name="git-pull-request" />{t('scm.openPr')}</button>
+        </div>
+      )}
       <CommitBox stagedCount={staged.length} />
       {staged.length > 0 && (
         <Section title={t('scm.staged')} count={staged.length}

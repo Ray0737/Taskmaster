@@ -15,6 +15,9 @@ import './views/AgentSettings'
 import './views/Tasks'
 import './views/TaskTab'
 import './views/TaskSelect'
+import './views/Team'
+import './views/SyncItem'
+import './views/SyncSettings'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(<App />)
