@@ -11,6 +11,7 @@ import { registerGit } from './services/git'
 import { registerAuth } from './services/auth'
 import { registerRecent } from './services/recent'
 import { registerProject } from './services/project'
+import { registerAgents } from './services/agents'
 
 let win: BrowserWindow | null = null
 
@@ -69,6 +70,7 @@ app.whenReady().then(() => {
   registerAuth()
   registerRecent()
   registerProject()
+  registerAgents()
   registerPty()
   registerManual()
   createWindow()

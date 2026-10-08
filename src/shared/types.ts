@@ -49,3 +49,5 @@ export interface BranchList { current: string | null; all: string[] }
 export interface Account { login: string; name: string | null; avatarUrl: string }
 export interface RepoInfo { fullName: string; owner: string; name: string; private: boolean; updatedAt: string; cloneUrl: string }
 export interface RecentProject { path: string; name: string; lastOpened: string }
+
+export interface AgentInfo { id: string; label: string; bin: string; version: string; kind: 'claude' | 'basic' }

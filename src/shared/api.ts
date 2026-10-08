@@ -1,4 +1,5 @@
-import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList, Account, RepoInfo, RecentProject } from './types'
+import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList, Account, RepoInfo, RecentProject, AgentInfo, AgentMode } from './types'
+import type { AgentEvent } from './agent'
 
 export type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll'
 
@@ -53,6 +54,12 @@ export interface Api {
   'recent.remove': (path: string) => Promise<RecentProject[]>
   'project.create': (parent: string, name: string, github: false | 'public' | 'private') => Promise<{ path: string; warning?: string }>
   'project.close': () => Promise<void>
+  'agent.detect': () => Promise<AgentInfo[]>
+  // runId is chosen by the renderer so it can match events that arrive before this call resolves.
+  'agent.run': (o: { runId: number; agentId: string; prompt: string; system: string; mode: AgentMode; sessionId: string | null }) => Promise<void>
+  'agent.stop': (runId: number) => Promise<void>
+  'agent.sessionGet': (key: string) => Promise<string | null>
+  'agent.sessionSet': (key: string, id: string | null) => Promise<void>
 }
 
 // Every main -> renderer event.
@@ -61,4 +68,6 @@ export interface Events {
   'pty.data': { id: number; data: string }
   'pty.exit': { id: number; code: number }
   'git.progress': { percent: number; text: string }
+  'agent.event': { runId: number; ev: AgentEvent }
+  'agent.exit': { runId: number; code: number | null }
 }
