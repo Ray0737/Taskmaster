@@ -1,4 +1,4 @@
-import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang } from './types'
+import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList } from './types'
 
 export type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll'
 
@@ -28,6 +28,23 @@ export interface Api {
   'pty.kill': (id: number) => Promise<void>
   'manual.list': (lang: Lang) => Promise<ManualChapter[]>
   'manual.read': (lang: Lang, file: string) => Promise<string>
+  'git.version': () => Promise<string | null>
+  'git.identity': () => Promise<GitIdentity>
+  'git.setIdentity': (i: GitIdentity) => Promise<void>
+  'git.isRepo': (dir: string) => Promise<boolean>
+  'git.init': (dir: string) => Promise<void>
+  'git.status': () => Promise<GitStatus>
+  'git.stage': (paths: string[]) => Promise<void>
+  'git.unstage': (paths: string[]) => Promise<void>
+  'git.discard': (tracked: string[], untracked: string[]) => Promise<void>
+  'git.commit': (message: string) => Promise<void>
+  'git.branches': () => Promise<BranchList>
+  'git.switch': (name: string, create: boolean) => Promise<void>
+  'git.sync': () => Promise<void>
+  'git.show': (relPath: string) => Promise<string | null>
+  'git.remoteUrl': () => Promise<string | null>
+  'git.clone': (url: string, parent: string, name: string) => Promise<string>
+  'git.cloneCancel': () => Promise<void>
 }
 
 // Every main -> renderer event.
@@ -35,4 +52,5 @@ export interface Events {
   'fs.changed': { path: string }
   'pty.data': { id: number; data: string }
   'pty.exit': { id: number; code: number }
+  'git.progress': { percent: number; text: string }
 }

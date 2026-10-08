@@ -7,6 +7,7 @@ import { registerSettings } from './services/settings'
 import { registerFs } from './services/fs'
 import { registerPty, killAllPty } from './services/pty'
 import { registerManual } from './services/manual'
+import { registerGit } from './services/git'
 
 let win: BrowserWindow | null = null
 
@@ -61,6 +62,7 @@ app.whenReady().then(() => {
   registerSettings()
   registerWindow()
   registerFs()
+  registerGit()
   registerPty()
   registerManual()
   createWindow()

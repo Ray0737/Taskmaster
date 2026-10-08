@@ -32,3 +32,20 @@ export type FileContent =
   | { kind: 'missing' }
 
 export interface ManualChapter { file: string; title: string; headings: string[] }
+
+export interface GitIdentity { name: string; email: string }
+
+// Letters come straight from `git status --porcelain=v1`: ' ' none, M modified, A added, D deleted, R renamed, ? untracked.
+export interface GitStatusEntry { path: string; index: string; work: string }
+export interface GitStatus {
+  branch: string | null // null = detached HEAD
+  upstream: string | null
+  ahead: number
+  behind: number
+  files: GitStatusEntry[]
+}
+export interface BranchList { current: string | null; all: string[] }
+
+export interface Account { login: string; name: string | null; avatarUrl: string }
+export interface RepoInfo { fullName: string; owner: string; name: string; private: boolean; updatedAt: string; cloneUrl: string }
+export interface RecentProject { path: string; name: string; lastOpened: string }
