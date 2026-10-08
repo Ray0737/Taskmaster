@@ -31,5 +31,14 @@
   "settings.account.github.desc": "Needed to invite teammates and open pull requests.",
   "settings.group.sync": "Team sync",
   "settings.group.sync.desc": "How often Taskmaster fetches your teammates' changes.",
-  "task.notePlaceholder": "Write a note for your team"
+  "task.notePlaceholder": "Write a note for your team",
+  "settings.group.display": "Display",
+  "settings.group.display.desc": "How the editor looks while you work.",
+  "settings.tabSize": "Tab size",
+  "settings.tabSize.n": "{n} spaces",
+  "settings.lineNumbers": "Show line numbers",
+  "settings.minimap": "Show minimap",
+  "settings.group.terminal": "Terminal",
+  "settings.group.terminal.desc": "Text size in the built-in terminal.",
+  "settings.terminalFontSize": "Terminal font size"
 }

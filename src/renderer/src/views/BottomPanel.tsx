@@ -22,7 +22,7 @@ function TermView({ id, active }: { id: number; active: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const fitRef = useRef<() => void>(() => {})
   useEffect(() => {
-    const term = new Terminal({ fontFamily: EDITOR_FONT, fontSize: 13, cursorBlink: true, theme: xtermTheme(), scrollback: 5000 })
+    const term = new Terminal({ fontFamily: EDITOR_FONT, fontSize: useApp.getState().settings!.terminalFontSize, cursorBlink: true, theme: xtermTheme(), scrollback: 5000 })
     const fit = new FitAddon()
     term.loadAddon(fit)
     term.open(ref.current!)
@@ -36,7 +36,10 @@ function TermView({ id, active }: { id: number; active: boolean }) {
     const input = term.onData((d) => void call('pty.write', id, d))
     const ro = new ResizeObserver(doFit)
     ro.observe(ref.current!)
-    const unsub = useApp.subscribe((s, p) => { if (s.settings?.theme !== p.settings?.theme) term.options.theme = xtermTheme() })
+    const unsub = useApp.subscribe((s, p) => {
+      if (s.settings?.theme !== p.settings?.theme) term.options.theme = xtermTheme()
+      if (s.settings && s.settings.terminalFontSize !== p.settings?.terminalFontSize) { term.options.fontSize = s.settings.terminalFontSize; doFit() }
+    })
     return () => { detach(); input.dispose(); ro.disconnect(); unsub(); term.dispose() }
   }, [id])
   useEffect(() => { if (active) fitRef.current() }, [active])

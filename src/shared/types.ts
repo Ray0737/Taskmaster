@@ -13,6 +13,10 @@ export interface Settings {
   fontSize: number
   autoSave: 'off' | 'delay'
   wordWrap: boolean
+  tabSize: 2 | 4 | 8
+  minimap: boolean
+  lineNumbers: boolean
+  terminalFontSize: number
   defaultAgent: string | null
   defaultMode: AgentMode
   fetchInterval: 15 | 30 | 60
