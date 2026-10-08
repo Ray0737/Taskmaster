@@ -1,9 +1,14 @@
 import type { Lang } from '@shared/types'
-import en from './en.json'
-import th from './th.json'
 import { useApp } from '../stores/app'
 
-const dicts: Record<Lang, Record<string, string>> = { en, th }
+type Dict = Record<string, string>
+const merge = (mods: Record<string, { default: Dict }>): Dict => Object.assign({}, ...Object.values(mods).map((m) => m.default))
+
+// en.json + en.*.json, th.json + th.*.json. Add a feature's strings as a new file pair.
+const dicts: Record<Lang, Dict> = {
+  en: merge(import.meta.glob('./en*.json', { eager: true })),
+  th: merge(import.meta.glob('./th*.json', { eager: true }))
+}
 type Vars = Record<string, string | number>
 
 export function translate(lang: Lang, key: string, vars?: Vars): string {

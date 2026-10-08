@@ -17,3 +17,6 @@ export const activityBottom: ComponentType[] = []
 export const statusLeft: ComponentType[] = []
 export const statusRight: ComponentType[] = []
 export const settingsSections: SettingsSectionDef[] = []
+
+// Rows shown on the Welcome screen below the GitHub row (Plan 3 adds Agents).
+export const setupRows: ComponentType[] = []
