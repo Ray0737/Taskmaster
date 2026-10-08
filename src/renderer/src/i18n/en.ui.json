@@ -40,5 +40,10 @@
   "settings.minimap": "Show minimap",
   "settings.group.terminal": "Terminal",
   "settings.group.terminal.desc": "Text size in the built-in terminal.",
-  "settings.terminalFontSize": "Terminal font size"
+  "settings.terminalFontSize": "Terminal font size",
+  "home.sub": "Plan, build and ship with your team and your agents.",
+  "agent.history.sub": "Earlier conversations in this project. Pick one to continue it.",
+  "agent.history.search": "Search sessions",
+  "agent.history.count": "{n} sessions",
+  "agent.history.noMatch": "No session matches"
 }

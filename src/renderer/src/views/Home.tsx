@@ -13,6 +13,7 @@ function HomeBtn({ icon, title, desc, cmd }: { icon: string; title: string; desc
     <button className="home-btn" onClick={() => runCommand(cmd)}>
       <Icon name={icon} />
       <span className="home-btn-text"><span>{title}</span><span className="dim small ellipsis">{desc}</span></span>
+      <Icon name="arrow-right" className="home-arrow" />
     </button>
   )
 }
@@ -23,6 +24,11 @@ export function Home() {
   useEffect(() => { call('recent.list').then(setRecent).catch(() => setRecent([])) }, [])
   return (
     <div className="home">
+      <div className="home-hero">
+        <Icon name="layers" className="home-logo" />
+        <h1 className="home-title">Taskmaster</h1>
+        <div className="dim">{t('home.sub')}</div>
+      </div>
       <div className="home-col">
         <h2 className="home-h">{t('home.start')}</h2>
         <HomeBtn icon="new-folder" title={t('home.new')} desc={t('home.new.desc')} cmd="project.new" />

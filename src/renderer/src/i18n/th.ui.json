@@ -40,5 +40,10 @@
   "settings.minimap": "แสดงแผนที่ย่อ",
   "settings.group.terminal": "เทอร์มินัล",
   "settings.group.terminal.desc": "ขนาดตัวอักษรในเทอร์มินัลในตัว",
-  "settings.terminalFontSize": "ขนาดตัวอักษรเทอร์มินัล"
+  "settings.terminalFontSize": "ขนาดตัวอักษรเทอร์มินัล",
+  "home.sub": "วางแผน สร้าง และส่งมอบงานร่วมกับทีมและ agent ของคุณ",
+  "agent.history.sub": "บทสนทนาก่อนหน้าในโปรเจกต์นี้ เลือกอันที่ต้องการเพื่อคุยต่อ",
+  "agent.history.search": "ค้นหาเซสชัน",
+  "agent.history.count": "{n} เซสชัน",
+  "agent.history.noMatch": "ไม่พบเซสชันที่ตรงกัน"
 }

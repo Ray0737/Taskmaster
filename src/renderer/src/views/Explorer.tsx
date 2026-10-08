@@ -114,7 +114,15 @@ export function Explorer() {
     useExplorer.getState().reset()
     if (root) void useExplorer.getState().load(root)
   }, [root])
-  if (!root) return <Empty text={t('editor.noFolder')}><button className="btn btn-primary" onClick={() => runOpen()}>{t('cmd.openFolder')}</button></Empty>
+  if (!root) {
+    return (
+      <div className="explorer-empty">
+        <Icon name="folder-opened" className="empty-icon" />
+        <div className="dim">{t('editor.noFolder')}</div>
+        <button className="btn btn-primary" onClick={() => runOpen()}><Icon name="folder-opened" />{t('cmd.openFolder')}</button>
+      </div>
+    )
+  }
   return (
     <div role="tree" aria-label={basename(root)} style={{ minHeight: '100%' }}
       onContextMenu={(ev) => {

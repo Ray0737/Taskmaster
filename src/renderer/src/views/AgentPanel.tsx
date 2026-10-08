@@ -96,21 +96,29 @@ async function resumeSession(s: PastSession, t: (k: string, v?: Record<string, s
 function HistoryDialog({ onClose }: { onClose: () => void }) {
   const t = useT()
   const history = useAgent((s) => s.history)
+  const [q, setQ] = useState('')
   useEffect(() => { void useAgent.getState().loadHistory() }, [])
+  const shown = (history ?? []).filter((s) => s.title.toLowerCase().includes(q.trim().toLowerCase()))
   return (
     <div className="modal-back" onMouseDown={onClose}>
       <div className="modal modal-lg" role="dialog" aria-modal="true" aria-label={t('agent.history')}
         onMouseDown={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === 'Escape') onClose() }}>
         <div className="dialog-head">
           <Icon name="history" className="dialog-icon" />
-          <div className="modal-title">{t('agent.history')}</div>
+          <div>
+            <div className="modal-title">{t('agent.history')}</div>
+            <div className="dim small">{t('agent.history.sub')}</div>
+          </div>
         </div>
+        <input autoFocus className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('agent.history.search')} aria-label={t('agent.history.search')} />
+        {history && history.length > 0 && <div className="dim small">{t('agent.history.count', { n: shown.length })}</div>}
         <div className="repo-list scroll" role="list">
           {history === null && <div className="empty-row dim">{t('welcome.checking')}</div>}
           {history && history.length === 0 && <div className="empty-row dim">{t('agent.history.empty')}</div>}
-          {history?.map((s) => <SessionRow key={s.id} s={s} onPick={async (x) => { if (await resumeSession(x, t)) onClose() }} />)}
+          {history && history.length > 0 && shown.length === 0 && <div className="empty-row dim">{t('agent.history.noMatch')}</div>}
+          {shown.map((s) => <SessionRow key={s.id} s={s} onPick={async (x) => { if (await resumeSession(x, t)) onClose() }} />)}
         </div>
-        <div className="modal-actions"><button autoFocus className="btn" onClick={onClose}>{t('common.close')}</button></div>
+        <div className="modal-actions"><button className="btn btn-primary" onClick={onClose}>{t('common.close')}</button></div>
       </div>
     </div>
   )
@@ -207,11 +215,11 @@ export function AgentPanel() {
               <button className="btn new-msgs" onClick={() => { setStick(true) }}><Icon name="arrow-down" />{t('agent.newMessages')}</button>
             )}
           </div>
-          <div className="agent-foot">
+          {root && <div className="agent-foot">
             {agentFooterExtras.map((X, i) => <X key={i} />)}
             {agent?.kind === 'claude' && mode === 'bypassPermissions' && <div className="danger small">{t('agent.mode.fullWarning')}</div>}
             <div className="composer agent-input">
-              <textarea ref={ta} className="composer-input" rows={1} value={text} disabled={!root || !agent} aria-label={t('agent.placeholder')}
+              <textarea ref={ta} className="composer-input" rows={2} value={text} disabled={!root || !agent} aria-label={t('agent.placeholder')}
                 placeholder={root ? t('agent.placeholder') : t('agent.needProject')}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); submit() } }} />
@@ -236,7 +244,7 @@ export function AgentPanel() {
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
         </>
       )}
       {ctx && <ContextDialog onClose={() => setCtx(false)} />}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '../stores/app'
 import { useEditor } from '../stores/editor'
 import { useT } from '../i18n'
@@ -12,6 +12,24 @@ import { settingsSections } from './registry'
 import { tabRenderers } from './EditorArea'
 
 const SECTION_ICON: Record<string, string> = { general: 'settings-gear', editor: 'edit', account: 'account', agents: 'hubot', sync: 'sync' }
+
+// Lets the user type any number; applies as soon as it is in range, and clamps on blur or Enter.
+function NumInput({ value, min, max, label, onCommit }: { value: number; min: number; max: number; label: string; onCommit: (n: number) => void }) {
+  const [draft, setDraft] = useState(String(value))
+  useEffect(() => setDraft(String(value)), [value])
+  const commit = () => {
+    const n = Math.round(Number(draft))
+    if (draft.trim() === '' || !Number.isFinite(n)) { setDraft(String(value)); return }
+    const c = Math.min(max, Math.max(min, n))
+    setDraft(String(c))
+    if (c !== value) onCommit(c)
+  }
+  return (
+    <input className="input" type="number" min={min} max={max} value={draft} aria-label={label}
+      onChange={(e) => { setDraft(e.target.value); const n = Number(e.target.value); if (Number.isInteger(n) && n >= min && n <= max) onCommit(n) }}
+      onBlur={commit} onKeyDown={(e) => { if (e.key === 'Enter') commit() }} />
+  )
+}
 
 function General() {
   const t = useT()
@@ -71,8 +89,7 @@ function EditorSection() {
     <>
       <Group icon="symbol-text" title={t('settings.group.text')} desc={t('settings.group.text.desc')}>
         <Field label={t('settings.fontSize')} hint="10–24">
-          <input className="input" type="number" min={10} max={24} value={s.fontSize}
-            onChange={(e) => { const n = Number(e.target.value); if (n >= 10 && n <= 24) void set({ fontSize: n }) }} />
+          <NumInput label={t('settings.fontSize')} min={10} max={24} value={s.fontSize} onCommit={(n) => void set({ fontSize: n })} />
         </Field>
         <label className="field-inline">
           <input type="checkbox" className="check" checked={s.wordWrap} onChange={(e) => void set({ wordWrap: e.target.checked })} />
@@ -103,8 +120,7 @@ function EditorSection() {
       </Group>
       <Group icon="terminal" title={t('settings.group.terminal')} desc={t('settings.group.terminal.desc')}>
         <Field label={t('settings.terminalFontSize')} hint="10–24">
-          <input className="input" type="number" min={10} max={24} value={s.terminalFontSize}
-            onChange={(e) => { const n = Number(e.target.value); if (n >= 10 && n <= 24) void set({ terminalFontSize: n }) }} />
+          <NumInput label={t('settings.terminalFontSize')} min={10} max={24} value={s.terminalFontSize} onCommit={(n) => void set({ terminalFontSize: n })} />
         </Field>
       </Group>
     </>
