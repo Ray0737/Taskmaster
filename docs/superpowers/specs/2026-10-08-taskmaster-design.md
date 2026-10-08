@@ -18,7 +18,9 @@ Core flow:
 
 In v1:
 - VS Code-style shell: activity bar, sidebar, editor tabs (Monaco), agent chat panel, bottom terminal, status bar, command palette, quick open.
-- Themes: Dark (black monochrome, default) and Light (white monochrome). Token-based, more themes later by adding one CSS file.
+- Look and behavior match VS Code closely (§11.1) — someone who knows VS Code should feel at home in 5 seconds.
+- Themes: **Dark Mono** (black monochrome, default), **Light Mono**, **Catppuccin Mocha**, **GitHub Dark** (VS Code "GitHub Dark Default"). Token-based; a new theme = one CSS block + one Monaco theme object.
+- Documentation: repo docs (README, architecture, contributing) and an in-app bilingual **User Manual** (§12.13, §17).
 - Language: English (default) and Thai, switchable live in Settings.
 - Sign-in through local git + Git Credential Manager (GCM) / `gh`.
 - Git: clone, init, create GitHub repo, branch per task, stage, commit, pull, push, "Open PR" link.
@@ -72,7 +74,7 @@ src/
   preload/     index.ts
   renderer/src/
     App.tsx, main.tsx
-    theme/     base.css, dark.css, light.css, monaco-themes.ts
+    theme/     base.css (rules §10.1), themes.css (4 token blocks), monaco-themes.ts
     i18n/      en.json, th.json, index.ts (t(), useT())
     stores/    app.ts, editor.ts, agent.ts, team.ts, git.ts
     components/  ActivityBar, Sidebar, TitleBar, StatusBar, Tabs, Toast, Palette, Button, Input, Select, Empty, Splitter wrappers
@@ -211,27 +213,51 @@ Note capture: on `result`, regex `<tm-note>([\s\S]*?)</tm-note>` on final assist
 - Transitions: `background-color 80ms linear` only. No motion otherwise.
 
 ### 10.2 Tokens
-| Token | Dark | Light | Use |
-|---|---|---|---|
-| `--bg-0` | #000000 | #ffffff | editor, title bar, activity bar |
-| `--bg-1` | #0b0b0b | #f5f5f5 | sidebar, agent panel, bottom panel |
-| `--bg-2` | #141414 | #ebebeb | inputs, user chat message, tab strip |
-| `--hover` | #1c1c1c | #e0e0e0 | hover background |
-| `--selected` | #262626 | #d4d4d4 | active tab, selected row, active activity icon |
-| `--focus` | #333333 | #c4c4c4 | `:focus-visible` background |
-| `--fg` | #e8e8e8 | #111111 | main text |
-| `--fg-dim` | #9a9a9a | #555555 | secondary text (≥4.5:1 on bg-1) |
-| `--fg-faint` | #6a6a6a | #8a8a8a | placeholders, disabled only |
-| `--inv-bg` | #e8e8e8 | #111111 | primary button background |
-| `--inv-fg` | #000000 | #ffffff | primary button text |
-| `--inv-hover` | #ffffff | #333333 | primary button hover |
-| `--danger` | #ff6b6b | #c62828 | errors, destructive, "Full" mode warning — only non-gray color |
-| `--diff-add` | #1a2e1a | #e3f3e3 | Monaco diff only |
-| `--diff-del` | #331a1a | #f8e1e1 | Monaco diff only |
-| `--scroll` | #2a2a2a | #cfcfcf | scrollbar thumb |
-| `--scroll-hover` | #3d3d3d | #b0b0b0 | |
+Four themes. Ids: `mono-dark` (default), `mono-light`, `mocha`, `github-dark`.
 
-Theme switch = `document.documentElement.dataset.theme = 'dark' | 'light'` + matching Monaco theme (`tm-dark` / `tm-light`, defined from the same values). Adding a theme = one CSS file + one Monaco theme object.
+| Token | Mono Dark | Mono Light | Catppuccin Mocha | GitHub Dark | Use |
+|---|---|---|---|---|---|
+| `--bg-0` | #000000 | #ffffff | #1e1e2e base | #0d1117 | editor, tab strip active tab, breadcrumbs |
+| `--bg-1` | #0b0b0b | #f5f5f5 | #181825 mantle | #010409 | sidebar, agent panel, bottom panel |
+| `--bg-bar` | #000000 | #ececec | #11111b crust | #010409 | title bar, activity bar, status bar, inactive tab strip |
+| `--bg-2` | #141414 | #ebebeb | #313244 surface0 | #161b22 | inputs, dropdowns, user chat message, palette |
+| `--hover` | #1c1c1c | #e0e0e0 | #2a2b3c | #1c2128 | hover background |
+| `--selected` | #262626 | #d4d4d4 | #45475a surface1 | #262c36 | active tab, selected row, active activity icon |
+| `--focus` | #333333 | #c4c4c4 | #585b70 surface2 | #30363d | `:focus-visible` background |
+| `--fg` | #e8e8e8 | #111111 | #cdd6f4 text | #e6edf3 | main text |
+| `--fg-dim` | #9a9a9a | #555555 | #a6adc8 subtext0 | #9198a1 | secondary text (≥4.5:1 on bg-1) |
+| `--fg-faint` | #6a6a6a | #8a8a8a | #6c7086 overlay0 | #6e7681 | placeholders, disabled only |
+| `--accent` | #ffffff | #000000 | #cba6f7 mauve | #2f81f7 | active-item indicator bar, links, badges, progress |
+| `--inv-bg` | #e8e8e8 | #111111 | #cba6f7 mauve | #238636 | primary button background |
+| `--inv-fg` | #000000 | #ffffff | #11111b crust | #ffffff | primary button text |
+| `--inv-hover` | #ffffff | #333333 | #b4befe lavender | #2ea043 | primary button hover |
+| `--danger` | #ff6b6b | #c62828 | #f38ba8 red | #f85149 | errors, destructive, "Full" mode warning |
+| `--ok` | #e8e8e8 | #111111 | #a6e3a1 green | #3fb950 | checks passed, git "A" |
+| `--warn` | #e8e8e8 | #111111 | #f9e2af yellow | #d29922 | scope warning, git "M" |
+| `--diff-add` | #1a2e1a | #e3f3e3 | #323c3f | #12261e | Monaco diff only |
+| `--diff-del` | #331a1a | #f8e1e1 | #3e2e40 | #25171c | Monaco diff only |
+| `--scroll` | #2a2a2a | #cfcfcf | #45475a | #30363d | scrollbar thumb |
+| `--scroll-hover` | #3d3d3d | #b0b0b0 | #585b70 | #484f58 | |
+
+Mono themes stay strictly gray: `--ok`/`--warn`/`--accent` equal `--fg`, meaning comes from icon + text; `--danger` is the only color. Mocha and GitHub Dark use their real palettes.
+
+Theme switch = `document.documentElement.dataset.theme = <id>` + `monaco.editor.setTheme('tm-<id>')` + update `titleBarOverlay` colors via IPC. All theme CSS in `theme/themes.css` (one `[data-theme=…]` block each).
+
+### 10.2.1 Syntax colors (Monaco token rules)
+| Token | Mono Dark | Mono Light | Mocha | GitHub Dark |
+|---|---|---|---|---|
+| comment | #6a6a6a italic | #8a8a8a italic | #9399b2 overlay2 italic | #8b949e |
+| keyword | #ffffff bold | #000000 bold | #cba6f7 mauve | #ff7b72 |
+| string | #b5b5b5 | #444444 | #a6e3a1 green | #a5d6ff |
+| number / constant | #d0d0d0 | #333333 | #fab387 peach | #79c0ff |
+| function | #f0f0f0 | #111111 | #89b4fa blue | #d2a8ff |
+| type / class | #dcdcdc italic | #222222 italic | #f9e2af yellow | #ffa657 |
+| variable | #e8e8e8 | #111111 | #cdd6f4 text | #e6edf3 |
+| operator / delimiter | #8a8a8a | #666666 | #89dceb sky | #e6edf3 |
+| tag (html/jsx) | #ffffff | #000000 | #cba6f7 mauve | #7ee787 |
+| attribute | #b5b5b5 | #444444 | #f9e2af yellow | #79c0ff |
+
+Settings → General → Theme shows 4 box swatches (name + 5 color squares). Hover = background change, selected = `--selected`.
 
 ### 10.3 Type and spacing
 - UI font: `"Segoe UI", "Leelawadee UI", "Noto Sans Thai", system-ui, sans-serif` (Leelawadee UI is the Windows Thai font, nothing to bundle). 13 px base, 11 px for status bar and section headers (uppercase in EN, normal in TH).
@@ -259,7 +285,28 @@ Theme switch = `document.documentElement.dataset.theme = 'dark' | 'light'` + mat
 - Activity bar 48 px. Icons top: Explorer, Source Control, Tasks, Team. Bottom: Account (avatar/initial), Settings. Badge counts as small inverted squares (changes count, my open tasks).
 - Clicking the active activity icon toggles the sidebar (VS Code behavior).
 - Sidebar default 260 px (min 180, max 480). Agent panel default 380 px (min 300, max 50% window). Bottom panel default 30% height (min 100 px). Sizes and visibility persisted in settings.
-- Title bar: `titleBarStyle: 'hidden'` + `titleBarOverlay` (native Windows buttons, colors from theme). Center box opens Quick Open. `≡` menu: File / View / Help items as a box dropdown.
+- Title bar: `titleBarStyle: 'hidden'` + `titleBarOverlay` (native Windows buttons, colors from theme). App icon, then text menu bar (File, Edit, View, Go, Terminal, Help — box dropdowns), center Command Center box opens Quick Open.
+
+### 11.1 VS Code fidelity checklist
+The executor must match these. Reference: VS Code 1.9x default layout.
+| Element | Spec |
+|---|---|
+| Title bar | 35 px, `--bg-bar`. Menu items 13 px, padding 0 8 px, hover `--hover`. Command Center: 24 px tall, 38% width (min 200, max 600), `--bg-2`, codicon `search` + "project-name", centered |
+| Activity bar | 48 px wide, `--bg-bar`. Icons codicons 24 px, cell 48×48, `--fg-faint` idle, `--fg` hover/active. Active cell: 2 px `--accent` bar on left edge (drawn with `::before` background, not a border) |
+| Sidebar | Title row 35 px: view name uppercase 11 px `--fg-dim` + action icons right (shown on sidebar hover). Collapsible section headers 22 px, 11 px bold uppercase, chevron |
+| Tree rows | 22 px, indent 8 px per level + 16 px chevron column, 1 px indent guides `--selected` shown on sidebar hover. Selected row `--selected`; focused+selected row `--focus` |
+| Tabs | 35 px, `--bg-bar` strip, inactive tab `--bg-bar` text `--fg-dim`, active tab `--bg-0` text `--fg` + 1 px `--accent` bar at top (pseudo-element). Width fits content (min 80, max 240), file icon + name + close/dirty slot 20 px |
+| Breadcrumbs | 22 px under tabs, `--bg-0`, path segments `›` separated, 12 px `--fg-dim`, hover `--fg`; click segment → dropdown of siblings |
+| Editor | Monaco: font 14 px, minimap on, sticky scroll on, bracket-pair colorization on, smooth scrolling off, `renderLineHighlight: 'all'`, scrollbar 10 px |
+| Panel | Tab row 35 px: `TERMINAL` (11 px uppercase), active tab 1 px `--accent` underline, actions right (new terminal, kill, maximize, close) |
+| Secondary sidebar (agent) | Same chrome as sidebar: title row `AGENT` + icons |
+| Status bar | 22 px, `--bg-bar`, 12 px, items padding 0 6 px, hover `--hover`. Left: branch, sync, presence. Right: agent, language, theme, bell |
+| Scrollbars | 10 px, square thumb, track transparent, visible on hover of container only (like VS Code) |
+| Context menus / dropdowns | `--bg-2`, rows 24 px, padding 0 24 px, hover `--selected`, separators as 1 px `--hover` gap rows, keybinding hint right-aligned `--fg-dim` |
+| Quick input (palette) | 600 px, top offset 8 px below title bar, `--bg-2`, input row 26 px, list rows 22 px, match highlight in `--accent` bold |
+| Notifications | 450 px wide, bottom-right above status bar, `--bg-2` |
+
+Indicator bars (activity, tab, panel tab) are the only lines in the UI — they mark *state*, never hover, so they keep the "hover = color only" rule.
 
 ## 12. Screens and flows
 
@@ -285,7 +332,7 @@ Clone dialog: tabs `GitHub` | `URL`. GitHub tab: search input + repo list (name,
 - Member joining → toast "You are @ray — Front end. 2 tasks assigned to you. [Open Tasks]".
 
 ### 12.4 Explorer
-Tree of project files, loaded lazily per folder on expand. Hides `.git` and `node_modules`; everything else shown (`ponytail:` no `.gitignore` greying in v1; upgrade path: one `git check-ignore --stdin` call per expanded folder). Row: chevron, codicon by type, name, git status letter on right (M/A/U/D in `--fg-dim`). Context menu: New file, New folder, Rename, Delete (confirm), Reveal in Explorer, Copy path. Toolbar on section header (visible on hover): new file, new folder, refresh, collapse all. Live refresh from `fs.watch`.
+Tree of project files, loaded lazily per folder on expand. Hides `.git` and `node_modules`; everything else shown (`ponytail:` no `.gitignore` greying in v1; upgrade path: one `git check-ignore --stdin` call per expanded folder). Row: chevron, codicon by type, name, git status letter on right (M in `--warn`, A/U in `--ok`, D in `--danger`). Context menu: New file, New folder, Rename, Delete (confirm), Reveal in Explorer, Copy path. Toolbar on section header (visible on hover): new file, new folder, refresh, collapse all. Live refresh from `fs.watch`.
 
 ### 12.5 Editor
 - Tabs: name + dirty dot ●, hover shows × , middle-click closes, overflow scrolls horizontally with wheel. Preview tab (italic) on single click, pinned on edit or double click — VS Code behavior.
@@ -341,7 +388,25 @@ Sections with left nav list: General (language, theme), Editor (font size, auto-
 - Confirm dialogs: centered box, title, text, [Cancel] [Confirm] (destructive confirm in `--danger` background). Esc cancels, Enter confirms.
 - Every list has an empty state (one line of dim text + optional action). Every async action shows inline progress where it happens, not a global spinner.
 
-### 12.13 Shortcuts
+### 12.13 User Manual (in-app)
+- Opens as an editor tab: Help → User Manual, `F1`, Welcome link, and `?` icons next to Tasks/Team/Agent headers (open the matching chapter).
+- Layout inside tab: left chapter list (200 px, filter box on top), right rendered markdown (max text width 760 px, scrolls). Language follows app setting; switch EN/TH at top right of the tab.
+- Source: `resources/manual/en/NN-slug.md` and `resources/manual/th/NN-slug.md`, bundled with the app (offline). Filter = substring match over chapter titles + headings.
+- Chapters:
+  1. Getting started — what Taskmaster is, first-run checklist
+  2. Sign in — git identity, GitHub via GCM / `gh`, git-only mode
+  3. Projects — new, open, clone, enable Taskmaster
+  4. Team & roles — add members, invites, role prompts, lead
+  5. Tasks — create, scope globs, start, review, done, branches and PRs
+  6. Agents — supported agents, modes, context preview, notes, scope warnings, stop
+  7. Source control — stage, commit, sync, open PR, conflicts via terminal
+  8. Sync & offline — how `taskmaster/context` works, last-push-wins, conflict resolve
+  9. Themes & language
+  10. Keyboard shortcuts
+  11. Troubleshooting — every row of §14 as "Symptom → Fix"
+- A vitest test fails if a chapter exists in `en/` but not in `th/`.
+
+### 12.14 Shortcuts
 | Keys | Action |
 |---|---|
 | Ctrl+P | Quick open |
@@ -354,6 +419,7 @@ Sections with left nav list: General (language, theme), Editor (font size, auto-
 | Ctrl+Tab | Next tab |
 | Ctrl+Shift+E / G | Explorer / Source Control |
 | Ctrl+, | Settings |
+| F1 | User Manual |
 
 ## 13. i18n
 - `en.json`, `th.json`: flat keys (`"tasks.new": "New task"`). `t(key, vars?)` with `{name}` interpolation. Missing TH key falls back to EN. A vitest test fails if `th.json` lacks a key that `en.json` has.
@@ -392,9 +458,19 @@ Logs: `userData/logs/main.log`, rotated at 5 MB. Help → "Open logs folder".
 Renderer: manual smoke checklist in the plan (open app, each view, theme + language switch, resize to min window, long file name, long chat code line → no overflow).
 
 ## 16. Build order
-1. **Shell** — scaffold, theme, i18n, layout, explorer, editor, terminal, palette, settings.
+1. **Shell** — scaffold, 4 themes, i18n, layout per §11.1, explorer, editor, terminal, palette, settings, manual viewer.
 2. **Git + auth** — welcome checks, identity, token, home, new/open/clone, source control.
 3. **Agent host** — detection, claude adapter + parser, chat panel, sessions, generic adapter.
 4. **Team layer** — worktree, sync loop, tasks, team, presence, prompt assembly, note capture, start-task flow.
+5. **Docs** — manual chapters EN + TH, repo docs (§17), screenshots.
+
+## 17. Documentation
+Repo docs (English):
+- `README.md` — what it is, screenshot, requirements (Windows 10+, git, optional `gh`, Claude Code), install, dev (`npm i`, `npm run dev`), build (`npm run build:win`), test (`npm test`).
+- `docs/ARCHITECTURE.md` — §4 diagram, services and their IPC channels, `.taskmaster/` file formats, sync loop, how to add a theme / agent adapter / language.
+- `docs/CONTRIBUTING.md` — code style, UI rules (§10.1, §11.1) as a checklist, test command, commit format.
+- `CHANGELOG.md` — started at 0.1.0.
+
+In-app manual: §12.13. Manual chapters are written last (step 5) so they describe the real UI; each UI step in the plan lists which chapter it affects.
 
 Each step ends runnable. The implementation plan will split each into small tasks with exact file paths and a done-check, sized for execution by a smaller model.
