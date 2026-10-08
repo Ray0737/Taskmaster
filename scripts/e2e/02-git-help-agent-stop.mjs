@@ -35,8 +35,9 @@ const click = (sel, text) => ev(`(()=>{const rx=new RegExp(${JSON.stringify(text
 const typeInto = (sel, text) => ev(`(()=>{const el=document.querySelector(${JSON.stringify(sel)});if(!el)return false;const proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(el,${JSON.stringify(text)});el.dispatchEvent(new Event('input',{bubbles:true}));return true})()`)
 const key = (code, opts = {}) => ev(`(()=>{const e=new KeyboardEvent('keydown',{code:${JSON.stringify(code)},key:${JSON.stringify(opts.key ?? code)},ctrlKey:${!!opts.ctrl},shiftKey:${!!opts.shift},bubbles:true,cancelable:true});(opts=>{})();(document.querySelector(${JSON.stringify(opts.target ?? 'body')})||document.body).dispatchEvent(e);return true})()`)
 const setSelect = (labelRx, value) => ev(`(()=>{const s=[...document.querySelectorAll('select')].find(x=>new RegExp(${JSON.stringify(labelRx)},'i').test(x.getAttribute('aria-label')||''));if(!s)return false;Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s,${JSON.stringify(value)});s.dispatchEvent(new Event('change',{bubbles:true}));return true})()`)
+const pick = async (label, option) => { await ev(`document.querySelector('button[role=combobox][aria-label="${label}"]')?.click()`); await sleep(250); return click('.dd-item', option) }
 const step = (name, ok, extra = '') => console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? '  — ' + extra : ''}`)
-const agentPane = `[...document.querySelectorAll('.pane')].find(p=>p.querySelector('.agent-head'))`
+const agentPane = `[...document.querySelectorAll('.pane')].find(p=>p.querySelector('.composer'))`
 const sidePane = `[...document.querySelectorAll('.pane')].find(p=>p.querySelector('.pane-title') && !p.querySelector('.agent-head') && !p.querySelector('.panel-tabs'))`
 
 await send('Runtime.enable'); await send('Page.enable'); await sleep(1000)
@@ -77,9 +78,9 @@ step('Ctrl+Enter commits with the exact multi-line message', subj === 'e2e commi
 step('working tree is clean after commit', git(proj, 'status', '--porcelain').trim() === '')
 
 // agent: Full warning, memory, Stop
-await setSelect('Mode', 'bypassPermissions'); await sleep(300)
+await pick('Mode', 'Full'); await sleep(300)
 step('Full mode shows the red warning', !!(await ev(`/any command/.test((${agentPane}).innerText)`)))
-await setSelect('Mode', 'plan'); await sleep(200)
+await pick('Mode', 'Read-only'); await sleep(200)
 await typeInto('.agent-input textarea', 'Remember the code word BANANA. Reply only OK.')
 await click('.agent-input button', 'Send')
 await waitFor(`[...document.querySelectorAll('.msg-md')].some(m=>/OK/.test(m.innerText))`, 120000, 500)
@@ -96,7 +97,7 @@ await waitFor(`/Working/.test(document.querySelector('.agent-status')?.innerText
 await sleep(2500)
 const before = (await ev(`(()=>{return 1})()`), execFileSync('powershell', ['-NoProfile', '-Command', "@(Get-Process claude -ErrorAction SilentlyContinue).Count"], { encoding: 'utf8' }).trim())
 await click('.agent-input button', 'Stop')
-step('Stop shows a Stopped notice and re-enables Send', !!(await waitFor(`/Stopped/.test((${agentPane}).innerText) && [...document.querySelectorAll('.agent-input button')].some(b=>/Send/.test(b.innerText))`, 15000)))
+step('Stop shows a Stopped notice and re-enables Send', !!(await waitFor(`/Stopped/.test((${agentPane}).innerText) && [...document.querySelectorAll('.agent-input button')].some(b=>/Send/.test(b.getAttribute('aria-label')||''))`, 15000)))
 await sleep(2500)
 const after = execFileSync('powershell', ['-NoProfile', '-Command', "@(Get-Process claude -ErrorAction SilentlyContinue).Count"], { encoding: 'utf8' }).trim()
 step('no claude process left running after Stop', after === '0', `before stop: ${before}, after: ${after}`)

@@ -5,6 +5,9 @@ import { useApp } from '../stores/app'
 import { useAgent } from '../stores/agent'
 import { useT } from '../i18n'
 import { Field } from '../components/Field'
+import { Dropdown } from '../components/Dropdown'
+import { Group } from '../components/Group'
+import { Icon } from '../components/Icon'
 import { settingsSections, setupRows } from './registry'
 import { SetupRow } from './Welcome'
 
@@ -16,7 +19,7 @@ function AgentsSection() {
   useEffect(() => { if (!useAgent.getState().detected) void useAgent.getState().detect() }, [])
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16, maxWidth: 560 }}>
+      <Group icon="hubot" title={t('settings.agents')}>
         {detected && agents.length === 0 && <div className="dim">{t('settings.agents.none')}</div>}
         {agents.map((a) => (
           <div key={a.id} className="setup-row" style={{ alignItems: 'center' }}>
@@ -26,19 +29,20 @@ function AgentsSection() {
             </div>
           </div>
         ))}
-        <div><button className="btn" onClick={() => void useAgent.getState().detect()}>{t('settings.agents.rescan')}</button></div>
-      </div>
+        <div><button className="btn" onClick={() => void useAgent.getState().detect()}><Icon name="refresh" />{t('settings.agents.rescan')}</button></div>
+      </Group>
+      <Group icon="settings-gear" title={t('settings.group.defaults')}>
       <Field label={t('settings.agents.default')}>
-        <select className="select" value={s.defaultAgent ?? ''} onChange={(e) => void set({ defaultAgent: e.target.value || null })}>
-          <option value="">—</option>
-          {agents.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
-        </select>
+        <Dropdown ariaLabel={t('settings.agents.default')} value={s.defaultAgent ?? ''}
+          options={[{ value: '', label: '—' }, ...agents.map((a) => ({ value: a.id, label: a.label }))]}
+          onChange={(v) => void set({ defaultAgent: v || null })} />
       </Field>
       <Field label={t('settings.agents.mode')} hint={s.defaultMode === 'bypassPermissions' ? t('agent.mode.fullWarning') : undefined}>
-        <select className="select" value={s.defaultMode} onChange={(e) => void set({ defaultMode: e.target.value as AgentMode })}>
-          {(['plan', 'acceptEdits', 'bypassPermissions'] as const).map((m) => <option key={m} value={m}>{t(`agent.mode.${m}`)}</option>)}
-        </select>
+        <Dropdown ariaLabel={t('settings.agents.mode')} value={s.defaultMode}
+          options={(['plan', 'acceptEdits', 'bypassPermissions'] as const).map((m) => ({ value: m, label: t(`agent.mode.${m}`) }))}
+          onChange={(v) => void set({ defaultMode: v as AgentMode })} />
       </Field>
+      </Group>
     </>
   )
 }

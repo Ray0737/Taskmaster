@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAgent } from '../stores/agent'
 import { useTeam } from '../stores/team'
 import { useT } from '../i18n'
+import { Dropdown } from '../components/Dropdown'
 import { agentHeaderExtras, agentFooterExtras } from './registry'
 
 // Header: which task the agent works on ("No task" = plain chat with team context only).
@@ -12,11 +13,9 @@ export function TaskSelect() {
   if (status !== 'enabled' || !data) return null
   const list = data.tasks.filter((x) => (x.assignee === me && x.status !== 'done') || x.id === activeTaskId)
   return (
-    <select className="select select-inline" aria-label={t('task.select')} disabled={running} value={activeTaskId ?? ''}
-      onChange={(e) => useTeam.getState().setActiveTask(e.target.value || null)}>
-      <option value="">{t('task.none')}</option>
-      {list.map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
-    </select>
+    <Dropdown variant="pill" icon="checklist" ariaLabel={t('task.select')} disabled={running} value={activeTaskId ?? ''}
+      options={[{ value: '', label: t('task.none') }, ...list.map((x) => ({ value: x.id, label: x.title }))]}
+      onChange={(v) => useTeam.getState().setActiveTask(v || null)} />
   )
 }
 

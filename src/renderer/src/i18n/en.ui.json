@@ -1,0 +1,22 @@
+{
+  "editor.empty.sub": "Open a file from the Explorer, or use a shortcut below.",
+  "agent.empty.title": "Ask your agent anything",
+  "agent.empty.hint": "It works inside this project and knows your role, task and team notes.",
+  "agent.history": "Past sessions",
+  "agent.history.recent": "Recent",
+  "agent.history.empty": "No past sessions for this project yet",
+  "agent.history.messages": "{n} messages",
+  "agent.history.failed": "Could not load that session",
+  "agent.history.resumed": "Resumed “{title}”",
+  "agent.context.sub": "Exactly what the agent is told before your message.",
+  "agent.context.size": "{n} of {max} characters",
+  "agent.context.emptyTitle": "Plain chat",
+  "agent.context.emptyHint": "The agent only sees what you type. Start a task to also share your role, the task brief and file scope, what teammates are doing and their latest notes.",
+  "agent.context.openTasks": "Open Tasks",
+  "team.add.sub": "Give someone access to this project and add them to the team.",
+  "team.add.placeholder": "GitHub username, for example octocat",
+  "team.add.willInvite": "A GitHub invitation with write access is sent, unless the person already has access.",
+  "team.add.noCollabs": "No other collaborators to pick from yet",
+  "team.add.pick": "Or pick a collaborator",
+  "settings.group.defaults": "Defaults"
+}

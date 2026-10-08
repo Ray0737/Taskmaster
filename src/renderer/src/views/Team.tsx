@@ -11,6 +11,7 @@ import { showPanel } from '../layout'
 import { useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Field } from '../components/Field'
+import { Dropdown } from '../components/Dropdown'
 import { sidebarViews } from './registry'
 import { EnableBox } from './TeamBanner'
 import { HelpIcon } from './HelpIcon'
@@ -30,6 +31,7 @@ function AddMember() {
   const close = () => useTeamUi.setState({ addOpen: false })
   useEffect(() => { if (account) call('auth.collaborators').then(setCollabs).catch(() => setCollabs([])) }, [account])
   if (!data) return null
+  const pickable = (collabs ?? []).filter((c) => !data.team.members.some((m) => m.login === c.login))
 
   const add = async () => {
     const l = login.trim().replace(/^@/, '')
@@ -53,21 +55,30 @@ function AddMember() {
     <div className="modal-back" onMouseDown={() => !busy && close()}>
       <div className="modal" style={{ width: 460 }} role="dialog" aria-modal="true" aria-label={t('team.add')}
         onMouseDown={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === 'Escape' && !busy) close() }}>
-        <div className="modal-title">{t('team.add')}</div>
+        <div className="dialog-head">
+          <Icon name="person-add" className="dialog-icon" />
+          <div>
+            <div className="modal-title">{t('team.add')}</div>
+            <div className="dim small">{t('team.add.sub')}</div>
+          </div>
+        </div>
         <Field label={t('team.add.login')}>
-          <input autoFocus className="input" value={login} onChange={(e) => setLogin(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !busy) void add() }} />
+          <input autoFocus className="input" value={login} placeholder={t('team.add.placeholder')} spellCheck={false}
+            onChange={(e) => setLogin(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !busy) void add() }} />
         </Field>
-        {account && collabs && collabs.length > 0 && (
+        {account && <div className="field-hint dim"><Icon name="mail" /> {t('team.add.willInvite')}</div>}
+        {account && collabs && (pickable.length > 0 ? (
           <>
-            <div className="field-label">{t('team.add.search')}</div>
+            <div className="field-label">{t('team.add.pick')}</div>
             <div className="repo-list scroll">
-              {collabs.filter((c) => !data.team.members.some((m) => m.login === c.login)).map((c) => (
-                <button key={c.login} className="row" onClick={() => setLogin(c.login)}><Icon name="account" /><span className="ellipsis">@{c.login}</span></button>
+              {pickable.map((c) => (
+                <button key={c.login} className={`row${login === c.login ? ' sel' : ''}`} onClick={() => setLogin(c.login)}>
+                  <img className="avatar" src={c.avatarUrl} alt="" /><span className="ellipsis">@{c.login}</span>
+                </button>
               ))}
             </div>
           </>
-        )}
+        ) : <div className="field-hint dim">{t('team.add.noCollabs')}</div>)}
         {!account && <div className="field-hint dim">{t('team.add.manual')}</div>}
         {err && <div className="danger" role="alert">{err}</div>}
         <div className="modal-actions">
@@ -102,10 +113,9 @@ function MemberRow({ m }: { m: Member }) {
       </span>
       {canEdit
         ? (
-          <select className="select select-inline team-role-select" style={{ maxWidth: 110 }} aria-label={`${m.login} — ${t('task.role')}`} value={m.role}
-            onChange={(e) => void useTeam.getState().saveTeam({ ...data.team, members: data.team.members.map((x) => (x.login === m.login ? { ...x, role: e.target.value } : x)) })}>
-            {data.team.roles.map((r) => <option key={r.id} value={r.id}>{roleName(t, r)}</option>)}
-          </select>
+          <Dropdown variant="pill" className="team-role-select" style={{ maxWidth: 130 }} ariaLabel={`${m.login} — ${t('task.role')}`} value={m.role}
+            options={data.team.roles.map((r) => ({ value: r.id, label: roleName(t, r) }))}
+            onChange={(v) => void useTeam.getState().saveTeam({ ...data.team, members: data.team.members.map((x) => (x.login === m.login ? { ...x, role: v } : x)) })} />
         )
         : <span className="tag ellipsis" style={{ maxWidth: 110 }}>{roleName(t, role)}</span>}
     </div>

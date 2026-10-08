@@ -1,5 +1,6 @@
 import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList, Account, RepoInfo, RecentProject, AgentInfo, AgentMode } from './types'
 import type { AgentEvent } from './agent'
+import type { PastSession, TranscriptEntry } from './transcript'
 import type { Task, Team, TeamData, SyncInfo } from './team'
 
 export type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll'
@@ -61,6 +62,8 @@ export interface Api {
   'agent.stop': (runId: number) => Promise<void>
   'agent.sessionGet': (key: string) => Promise<string | null>
   'agent.sessionSet': (key: string, id: string | null) => Promise<void>
+  'agent.sessions': () => Promise<PastSession[]>
+  'agent.transcript': (id: string) => Promise<TranscriptEntry[]>
   'team.attach': (login: string) => Promise<{ state: 'enabled' | 'disabled'; offline: boolean }>
   'team.enable': () => Promise<{ pushed: boolean; error: string | null }>
   'team.read': () => Promise<TeamData | null>

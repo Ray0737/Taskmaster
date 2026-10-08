@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { AgentInfo, AgentMode } from '@shared/types'
+import type { PastSession } from '@shared/transcript'
 import { call, on, errMsg } from '../ipc'
 import { useApp } from './app'
 import { reduceEvent, type Item, type NewItem } from './agentReduce'
@@ -27,6 +28,9 @@ interface AgentState {
   stop(): Promise<void>
   newChat(): Promise<void>
   retry(): Promise<void>
+  history: PastSession[] | null // earlier Claude Code conversations of this project; null = not loaded yet
+  loadHistory(): Promise<void>
+  resume(id: string): Promise<void>
 }
 
 let seqItem = 0
@@ -88,6 +92,26 @@ export const useAgent = create<AgentState>((set, get) => {
     retry: async () => {
       const p = get().lastPrompt
       if (p) await get().send(p)
+    },
+
+    history: null,
+
+    loadHistory: async () => {
+      if (!useApp.getState().root) { set({ history: [] }); return }
+      try { set({ history: await call('agent.sessions') }) } catch { set({ history: [] }) }
+    },
+
+    // Shows an earlier conversation and continues it (the next message resumes that Claude Code session).
+    resume: async (id) => {
+      if (get().runId) return
+      const root = useApp.getState().root ?? ''
+      const entries = await call('agent.transcript', id)
+      let items: Item[] = []
+      for (const e of entries) {
+        items = e.kind === 'user' ? [...items, { id: nextId(), kind: 'user', text: e.text }] : reduceEvent(items, e.ev, { root, scope: [] }, nextId)
+      }
+      set({ items, sessionId: id, usage: null })
+      await call('agent.sessionSet', keyOf(get()), id)
     }
   }
 })
@@ -109,5 +133,8 @@ on('agent.event', ({ runId, ev }) => {
 })
 
 on('agent.exit', ({ runId }) => {
-  if (runId === useAgent.getState().runId) useAgent.setState({ runId: null, startedAt: null })
+  if (runId === useAgent.getState().runId) {
+    useAgent.setState({ runId: null, startedAt: null })
+    void useAgent.getState().loadHistory() // the finished turn belongs in the list
+  }
 })

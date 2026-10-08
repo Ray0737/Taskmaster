@@ -11,12 +11,18 @@ Taskmaster looks for these programs on your PATH when it starts and when you pre
 
 If none is found the panel explains how to install Claude Code.
 
-## The header
+## Past sessions
+
+The clock icon in the pane title (and the empty chat) lists earlier Claude Code conversations of this project under **Past sessions**. Pick one to see it and carry on where it stopped.
+
+## The input area
+
+The controls sit in a bar under the input box, like in the VS Code Claude extension. On the right are the status text and the send button, which turns into **Stop** while the agent works.
 
 - **Agent**: which program to use.
 - **Mode** (Claude Code): **Read-only** (the agent may look but not change anything), **Edit** (it may edit files; most shell commands are blocked because nobody can approve them in the app), **Full** (it may run any command; shown with a red warning). The default is **Edit**; change the default in Settings → Agents.
 - **Task**: which task the agent works on, or "No task" for a plain chat that still knows your role and your teammates' work.
-- **Context**: shows exactly what the agent is told about your role, task, file scope, teammates and recent notes.
+- **Context** (the info icon): shows exactly what the agent is told about your role, task, file scope, teammates and recent notes.
 
 ## Chatting
 

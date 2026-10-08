@@ -1,5 +1,6 @@
 import { useApp } from '../stores/app'
 import { useT } from '../i18n'
+import { Icon } from '../components/Icon'
 import { sidebarViews } from './registry'
 
 export function Sidebar() {
@@ -10,7 +11,7 @@ export function Sidebar() {
   return (
     <div className="pane">
       <div className="pane-title">
-        <span className="ellipsis">{t(v.title)}</span>
+        <span className="ellipsis"><Icon name={v.icon} /> {t(v.title)}</span>
         {v.Actions && <div className="pane-actions"><v.Actions /></div>}
       </div>
       <div className="pane-body scroll"><v.Comp /></div>

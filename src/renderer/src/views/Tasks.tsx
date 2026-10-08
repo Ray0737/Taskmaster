@@ -11,6 +11,7 @@ import { startTask } from '../tasks'
 import { tr, useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
+import { Dropdown } from '../components/Dropdown'
 import { sidebarViews } from './registry'
 import { EnableBox } from './TeamBanner'
 import { HelpIcon } from './HelpIcon'
@@ -55,13 +56,12 @@ export function Tasks() {
     <div style={{ paddingBottom: 16 }}>
       <div style={{ display: 'flex', gap: 6, padding: 8, alignItems: 'center' }}>
         <div className="tabs-inline">
-          <button className={`btn${mine ? ' on' : ''}`} onClick={() => setMine(true)}>{t('tasks.mine')}</button>
-          <button className={`btn${!mine ? ' on' : ''}`} onClick={() => setMine(false)}>{t('tasks.all')}</button>
+          <button className={`btn${mine ? ' on' : ''}`} onClick={() => setMine(true)}><Icon name="account" />{t('tasks.mine')}</button>
+          <button className={`btn${!mine ? ' on' : ''}`} onClick={() => setMine(false)}><Icon name="list-flat" />{t('tasks.all')}</button>
         </div>
-        <select className="select select-inline flex1" aria-label={t('task.role')} value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="">{t('tasks.allRoles')}</option>
-          {data.team.roles.map((r) => <option key={r.id} value={r.id}>{roleName(t, r)}</option>)}
-        </select>
+        <Dropdown variant="pill" className="flex1" ariaLabel={t('task.role')} value={role}
+          options={[{ value: '', label: t('tasks.allRoles') }, ...data.team.roles.map((r) => ({ value: r.id, label: roleName(t, r) }))]}
+          onChange={setRole} />
       </div>
       {list.length === 0 && <Empty text={t(mine ? 'tasks.emptyMine' : 'tasks.empty')} />}
       {ORDER.map((s) => {

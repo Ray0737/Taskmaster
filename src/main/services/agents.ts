@@ -1,5 +1,7 @@
 import { execFile, spawn } from 'child_process'
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync, promises as fsp } from 'fs'
+import { homedir } from 'os'
+import { parseTranscript, sessionTitle, countPrompts, type PastSession, type TranscriptEntry } from '@shared/transcript'
 import { join, dirname, delimiter } from 'path'
 import { createHash } from 'crypto'
 import { app } from 'electron'
@@ -159,7 +161,37 @@ const readSessionMap = (): Record<string, string> => {
   try { return JSON.parse(readFileSync(sessionFile(), 'utf8')) as Record<string, string> } catch { return {} }
 }
 
+// Claude Code stores a project's conversations under <config>/projects/<project path with every non-alphanumeric as "-">.
+const claudeProjectDir = (root: string): string =>
+  join(process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude'), 'projects', root.replace(/[^A-Za-z0-9]/g, '-'))
+
+const READ_CAP = 2_000_000 // characters per session file used for the list (title and count)
+
+export async function listSessions(root: string): Promise<PastSession[]> {
+  const dir = claudeProjectDir(root)
+  let names: string[]
+  try { names = (await fsp.readdir(dir)).filter((f) => /^[\w-]{8,64}\.jsonl$/.test(f)) } catch { return [] }
+  const stamped = await Promise.all(names.map(async (f) => ({ f, m: (await fsp.stat(join(dir, f))).mtimeMs })))
+  const out: PastSession[] = []
+  for (const { f, m } of stamped.sort((a, b) => b.m - a.m).slice(0, 30)) {
+    const text = (await fsp.readFile(join(dir, f), 'utf8')).slice(0, READ_CAP)
+    const title = sessionTitle(text)
+    if (title) out.push({ id: f.slice(0, -6), title, at: new Date(m).toISOString(), messages: countPrompts(text) }) // no prompt = hook-only noise
+  }
+  return out
+}
+
+export async function loadTranscript(root: string, id: string): Promise<TranscriptEntry[]> {
+  if (!/^[\w-]{8,64}$/.test(id)) throw new Error('Bad session id') // becomes a file name
+  return parseTranscript(await fsp.readFile(join(claudeProjectDir(root), id + '.jsonl'), 'utf8'))
+}
+
 export function registerAgents(): void {
+  handle('agent.sessions', async () => (state.root ? listSessions(state.root) : []))
+  handle('agent.transcript', async (id) => {
+    if (!state.root) throw new Error('No project open')
+    return loadTranscript(state.root, id)
+  })
   handle('agent.detect', async () => (detected = await detectAgents()))
   handle('agent.run', async (o) => {
     if (!state.root) throw new Error('No project open')

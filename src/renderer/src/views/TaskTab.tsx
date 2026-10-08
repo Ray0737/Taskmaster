@@ -8,6 +8,7 @@ import { mergeDebounce } from '../util'
 import { startTask, setTaskStatus } from '../tasks'
 import { useT } from '../i18n'
 import { Field } from '../components/Field'
+import { Dropdown } from '../components/Dropdown'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { openPullRequest } from '../pr'
@@ -48,29 +49,26 @@ export function TaskTab({ tab }: { tab: Tab }) {
           {mineOrFree && task.status !== 'doing' && task.status !== 'done' && (
             <button className="btn btn-primary" onClick={() => void startTask(task.id)}><Icon name="play" />{t('task.start')}</button>
           )}
-          {task.status === 'doing' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'review')}>{t('task.markReview')}</button>}
-          {task.status !== 'done' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'done')}>{t('task.markDone')}</button>}
-          {task.status === 'done' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'todo')}>{t('task.reopen')}</button>}
+          {task.status === 'doing' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'review')}><Icon name="eye" />{t('task.markReview')}</button>}
+          {task.status !== 'done' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'done')}><Icon name="pass" />{t('task.markDone')}</button>}
+          {task.status === 'done' && <button className="btn" onClick={() => void setTaskStatus(task.id, 'todo')}><Icon name="debug-restart" />{t('task.reopen')}</button>}
           {task.branch && <button className="btn" onClick={() => void openPullRequest(task.branch!)}><Icon name="git-pull-request" />{t('scm.openPr')}</button>}
           {!mineOrFree && <span className="dim">{t('task.assignedTo', { login: task.assignee! })}</span>}
         </div>
 
         <div className="setup-form" style={{ maxWidth: 560 }}>
           <Field label={t('task.role')}>
-            <select className="select" value={draft.role} onChange={(e) => patch({ role: e.target.value })}>
-              {data.team.roles.map((r) => <option key={r.id} value={r.id}>{roleName(t, r)}</option>)}
-            </select>
+            <Dropdown ariaLabel={t('task.role')} value={draft.role} options={data.team.roles.map((r) => ({ value: r.id, label: roleName(t, r) }))}
+              onChange={(v) => patch({ role: v })} />
           </Field>
           <Field label={t('task.assignee')}>
-            <select className="select" value={draft.assignee ?? ''} onChange={(e) => patch({ assignee: e.target.value || null })}>
-              <option value="">{t('tasks.unassigned')}</option>
-              {data.team.members.map((m) => <option key={m.login} value={m.login}>@{m.login}</option>)}
-            </select>
+            <Dropdown ariaLabel={t('task.assignee')} value={draft.assignee ?? ''}
+              options={[{ value: '', label: t('tasks.unassigned') }, ...data.team.members.map((m) => ({ value: m.login, label: `@${m.login}` }))]}
+              onChange={(v) => patch({ assignee: v || null })} />
           </Field>
           <Field label={t('task.status')}>
-            <select className="select" value={draft.status} onChange={(e) => patch({ status: e.target.value as Task['status'] })}>
-              {STATUSES.map((s) => <option key={s} value={s}>{t(`status.${s}`)}</option>)}
-            </select>
+            <Dropdown ariaLabel={t('task.status')} value={draft.status} options={STATUSES.map((s) => ({ value: s, label: t(`status.${s}`) }))}
+              onChange={(v) => patch({ status: v as Task['status'] })} />
           </Field>
           <Field label={t('task.branch')}><div className="mono ellipsis" title={task.branch ?? ''}>{task.branch ?? t('task.noBranch')}</div></Field>
         </div>

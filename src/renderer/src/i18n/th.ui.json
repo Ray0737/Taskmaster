@@ -1,0 +1,22 @@
+{
+  "editor.empty.sub": "เปิดไฟล์จากตัวสำรวจ หรือใช้ปุ่มลัดด้านล่าง",
+  "agent.empty.title": "ถาม agent ได้ทุกเรื่อง",
+  "agent.empty.hint": "agent ทำงานในโปรเจกต์นี้ และรู้บทบาท งาน และโน้ตของทีมคุณ",
+  "agent.history": "เซสชันที่ผ่านมา",
+  "agent.history.recent": "ล่าสุด",
+  "agent.history.empty": "โปรเจกต์นี้ยังไม่มีเซสชันที่ผ่านมา",
+  "agent.history.messages": "{n} ข้อความ",
+  "agent.history.failed": "โหลดเซสชันนั้นไม่ได้",
+  "agent.history.resumed": "เปิดเซสชัน “{title}” ต่อแล้ว",
+  "agent.context.sub": "สิ่งที่ agent ได้รับรู้ก่อนข้อความของคุณ",
+  "agent.context.size": "{n} จาก {max} ตัวอักษร",
+  "agent.context.emptyTitle": "แชททั่วไป",
+  "agent.context.emptyHint": "agent เห็นเฉพาะสิ่งที่คุณพิมพ์ เริ่มงานเพื่อแชร์บทบาท รายละเอียดและขอบเขตไฟล์ของงาน สิ่งที่เพื่อนร่วมทีมกำลังทำ และโน้ตล่าสุดของพวกเขาด้วย",
+  "agent.context.openTasks": "เปิดรายการงาน",
+  "team.add.sub": "ให้สิทธิ์เข้าถึงโปรเจกต์นี้และเพิ่มเขาเข้าทีม",
+  "team.add.placeholder": "ชื่อผู้ใช้ GitHub เช่น octocat",
+  "team.add.willInvite": "ระบบจะส่งคำเชิญ GitHub พร้อมสิทธิ์เขียน เว้นแต่เขามีสิทธิ์อยู่แล้ว",
+  "team.add.noCollabs": "ยังไม่มีผู้ร่วมพัฒนาคนอื่นให้เลือก",
+  "team.add.pick": "หรือเลือกจากผู้ร่วมพัฒนา",
+  "settings.group.defaults": "ค่าเริ่มต้น"
+}

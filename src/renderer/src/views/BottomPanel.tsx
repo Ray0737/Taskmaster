@@ -11,6 +11,7 @@ import { EDITOR_FONT } from '../monaco'
 import { useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
+import { Dropdown } from '../components/Dropdown'
 
 const xtermTheme = () => {
   const u = THEMES[useApp.getState().settings!.theme].ui
@@ -52,9 +53,8 @@ export function BottomPanel() {
         <span className="panel-tab active">{t('panel.terminal')}</span>
         <div className="flex1" />
         {list.length > 1 && (
-          <select className="select-inline" value={active ?? ''} onChange={(e) => useTerm.setState({ active: Number(e.target.value) })} aria-label={t('panel.terminal')}>
-            {list.map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
-          </select>
+          <Dropdown variant="pill" ariaLabel={t('panel.terminal')} value={String(active ?? '')} options={list.map((x) => ({ value: String(x.id), label: x.title }))}
+            onChange={(v) => useTerm.setState({ active: Number(v) })} />
         )}
         <div className="pane-actions">
           <button className="icon-btn" title={t('cmd.newTerminal')} aria-label={t('cmd.newTerminal')} onClick={() => void newTerminal()}><Icon name="add" /></button>

@@ -26,7 +26,7 @@ export function DiffTab({ tab }: { tab: Tab }) {
   if (!d) return null
   return (
     <div className="editor-fill">
-      <DiffEditor original={d.original} modified={d.modified} language={languageOf(tab.path!)} theme={`tm-${s.theme}`}
+      <DiffEditor onMount={(editor) => { editor.layout(); setTimeout(() => editor.layout(), 60) }} original={d.original} modified={d.modified} language={languageOf(tab.path!)} theme={`tm-${s.theme}`}
         options={{ readOnly: true, fontSize: s.fontSize, fontFamily: EDITOR_FONT, automaticLayout: true, renderSideBySide: true,
           scrollbar: { verticalScrollbarSize: 10, horizontalScrollbarSize: 10, useShadows: false } }} />
     </div>

@@ -9,6 +9,8 @@ import { useEditor } from '../stores/editor'
 import { useT } from '../i18n'
 import { registerCommand } from '../commands'
 import { Empty } from '../components/Empty'
+import { Icon } from '../components/Icon'
+import { activityBottom } from './registry'
 import { tabRenderers } from './EditorArea'
 
 const useManual = create<{ chapter: string | null }>(() => ({ chapter: null }))
@@ -76,5 +78,11 @@ export function ManualTab() {
   )
 }
 
+function ManualButton() {
+  const t = useT()
+  return <button className="ab-item" title={t('cmd.manual')} aria-label={t('cmd.manual')} onClick={() => openManual()}><Icon name="book" /></button>
+}
+
+activityBottom.push(ManualButton)
 tabRenderers.manual = ManualTab
 registerCommand({ id: 'manual.open', title: 'cmd.manual', keys: 'F1', run: () => openManual() })

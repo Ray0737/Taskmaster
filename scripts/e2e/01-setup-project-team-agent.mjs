@@ -47,6 +47,7 @@ const waitFor = async (expr, ms = 15000, step = 250) => {
 const click = (sel, text) => ev(`(()=>{const rx=new RegExp(${JSON.stringify(text)},'i');const el=[...document.querySelectorAll(${JSON.stringify(sel)})].find(e=>rx.test((e.innerText||'')+' '+(e.getAttribute('aria-label')||'')+' '+(e.title||'')));if(!el)return false;el.click();return true})()`)
 const typeInto = (sel, text) => ev(`(()=>{const el=document.querySelector(${JSON.stringify(sel)});if(!el)return false;const proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(el,${JSON.stringify(text)});el.dispatchEvent(new Event('input',{bubbles:true}));return true})()`)
 const key = (code, opts = {}) => ev(`(()=>{const e=new KeyboardEvent('keydown',{code:${JSON.stringify(code)},key:${JSON.stringify(opts.key ?? code)},ctrlKey:${!!opts.ctrl},shiftKey:${!!opts.shift},bubbles:true,cancelable:true});(document.activeElement||document.body).dispatchEvent(e);return true})()`)
+const pick = async (label, option) => { await ev(`document.querySelector('button[role=combobox][aria-label="${label}"]')?.click()`); await sleep(250); return click('.dd-item', option) }
 const step = (name, ok, extra = '') => console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? '  — ' + extra : ''}`)
 
 await send('Runtime.enable'); await send('Page.enable'); await sleep(1000)
@@ -96,12 +97,12 @@ await click('button', 'Start task'); await sleep(500)
 step('start task creates tm/<login>/<id> branch', !!(await waitFor(`/tm\\/[^ ]+\\/t-[a-z0-9]{8}/.test(document.querySelector('.statusbar')?.innerText||'')`, 25000)),
   await ev(`document.querySelector('.statusbar')?.innerText.replace(/\\s+/g,' ')`))
 step('task shows Doing in the tasks list', !!(await waitFor(`document.querySelector('.pane-body')?.innerText.includes('Doing')`, 10000)))
-const ctxText = await ev(`(()=>{[...document.querySelectorAll('.agent-head button')].find(b=>/Context/.test(b.innerText))?.click();return new Promise(r=>setTimeout(()=>r(document.querySelector('.modal pre')?.innerText||''),500))})()`)
+const ctxText = await ev(`(()=>{document.querySelector('.composer-tools button[aria-label="Context"]')?.click();return new Promise(r=>setTimeout(()=>r(document.querySelector('.modal .ctx-body')?.innerText||''),500))})()`)
 step('agent context contains task and team prompt', /Your task: Login page/.test(ctxText) && /tm-note/.test(ctxText), JSON.stringify(ctxText.slice(0, 90)))
 await key('Escape'); await click('.modal button', 'Close'); await sleep(300)
 
 // S7 real agent turn (Read-only mode)
-await ev(`(()=>{const s=[...document.querySelectorAll('.agent-head select')].find(x=>/Mode/.test(x.getAttribute('aria-label')||''));if(s){Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s,'plan');s.dispatchEvent(new Event('change',{bubbles:true}))}})()`)
+await pick('Mode', 'Read-only')
 await typeInto('.agent-input textarea', 'Reply with exactly the word PONG and nothing else.')
 await click('.agent-input button', 'Send')
 step('agent shows Working status while running', !!(await waitFor(`/Working/.test(document.querySelector('.agent-status')?.innerText||'')`, 15000)))

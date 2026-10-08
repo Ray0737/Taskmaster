@@ -6,6 +6,7 @@ import { useSetup } from '../stores/setup'
 import { registerCommand } from '../commands'
 import { useT } from '../i18n'
 import { Icon } from '../components/Icon'
+import { Dropdown } from '../components/Dropdown'
 import { setupRows } from './registry'
 
 export function SetupRow({ ok, title, children }: { ok: boolean | null; title: string; children: ReactNode }) {
@@ -98,10 +99,8 @@ export function Welcome() {
     <div className="welcome">
       <div className="welcome-col">
         <div className="welcome-top">
-          <select className="select-inline" value={lang} aria-label={t('settings.language')} onChange={(e) => void set({ lang: e.target.value as 'en' | 'th' })}>
-            <option value="en">English</option>
-            <option value="th">ไทย</option>
-          </select>
+          <Dropdown variant="pill" icon="globe" ariaLabel={t('settings.language')} value={lang}
+            options={[{ value: 'en', label: 'English' }, { value: 'th', label: 'ไทย' }]} onChange={(v) => void set({ lang: v as 'en' | 'th' })} />
         </div>
         <h1 className="welcome-title">{t('welcome.title')}</h1>
         <div className="dim">{t('welcome.subtitle')}</div>
@@ -110,9 +109,9 @@ export function Welcome() {
         <GithubRow />
         {setupRows.map((R, i) => <R key={i} />)}
         <div className="welcome-actions">
-          <button className="btn" disabled={checking} onClick={() => void useSetup.getState().check()}>{t('welcome.recheck')}</button>
+          <button className="btn" disabled={checking} onClick={() => void useSetup.getState().check()}><Icon name="refresh" />{t('welcome.recheck')}</button>
           <button className="btn btn-primary" disabled={checking || !pass}
-            onClick={async () => { await set({ setupDone: true }); useSetup.setState({ open: false }) }}>{t('welcome.continue')}</button>
+            onClick={async () => { await set({ setupDone: true }); useSetup.setState({ open: false }) }}>{t('welcome.continue')}<Icon name="arrow-right" /></button>
         </div>
       </div>
     </div>

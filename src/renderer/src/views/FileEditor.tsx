@@ -33,6 +33,18 @@ export function FileEditor({ path }: { path: string }) {
     return () => { live = false }
   }, [path])
 
+  // Monaco can be created while its box still measures ~5x5 and then never re-measures, so the code stays invisible.
+  // Lay it out on mount and whenever our wrapper changes size.
+  const fill = useRef<HTMLDivElement>(null)
+  const ed = useRef<{ layout(): void } | null>(null)
+  useEffect(() => {
+    const el = fill.current
+    if (!el) return
+    const ro = new ResizeObserver(() => ed.current?.layout())
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [content])
+
   if (!content) return null
   if (content.kind === 'binary') return <Empty text={t('editor.binary')} />
   if (content.kind === 'tooBig') return <Empty text={t('editor.tooBig')} />
@@ -51,8 +63,9 @@ export function FileEditor({ path }: { path: string }) {
           <button className="btn" onClick={() => useEditor.getState().open({ kind: 'diff', diff: 'disk', path, title: t('editor.diffDisk', { name: basename(path) }) })}>{t('editor.compare')}</button>
         </div>
       )}
-      <div className="editor-fill">
+      <div className="editor-fill" ref={fill}>
         <Editor
+          onMount={(editor) => { ed.current = editor; editor.layout(); setTimeout(() => editor.layout(), 60) }}
           path={uriOf(path).toString()}
           defaultValue={content.text}
           theme={`tm-${s.theme}`}

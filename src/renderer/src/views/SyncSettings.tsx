@@ -3,6 +3,9 @@ import { useApp } from '../stores/app'
 import { toast } from '../stores/ui'
 import { useT } from '../i18n'
 import { Field } from '../components/Field'
+import { Dropdown } from '../components/Dropdown'
+import { Group } from '../components/Group'
+import { Icon } from '../components/Icon'
 import { settingsSections } from './registry'
 
 function SyncSection() {
@@ -10,19 +13,19 @@ function SyncSection() {
   const s = useApp((x) => x.settings!)
   const set = useApp((x) => x.set)
   return (
-    <>
+    <Group icon="sync" title={t('settings.sync')}>
       <Field label={t('settings.sync.interval')}>
-        <select className="select" value={s.fetchInterval} onChange={(e) => void set({ fetchInterval: Number(e.target.value) as 15 | 30 | 60 })}>
-          {[15, 30, 60].map((n) => <option key={n} value={n}>{t('settings.sync.seconds', { n })}</option>)}
-        </select>
+        <Dropdown ariaLabel={t('settings.sync.interval')} value={String(s.fetchInterval)}
+          options={[15, 30, 60].map((n) => ({ value: String(n), label: t('settings.sync.seconds', { n }) }))}
+          onChange={(v) => void set({ fetchInterval: Number(v) as 15 | 30 | 60 })} />
       </Field>
       <label className="field-inline" style={{ marginBottom: 16 }}>
         <input type="checkbox" className="check" checked={s.syncPaused}
           onChange={async (e) => { await set({ syncPaused: e.target.checked }); if (!e.target.checked) void call('team.syncNow').catch((err) => toast(errMsg(err), 'error')) }} />
         {t('settings.sync.pause')}
       </label>
-      <div><button className="btn" onClick={() => void call('team.syncNow').catch((e) => toast(errMsg(e), 'error'))}>{t('sync.now')}</button></div>
-    </>
+      <div><button className="btn" onClick={() => void call('team.syncNow').catch((e) => toast(errMsg(e), 'error'))}><Icon name="sync" />{t('sync.now')}</button></div>
+    </Group>
   )
 }
 

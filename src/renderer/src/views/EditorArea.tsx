@@ -7,7 +7,6 @@ import { useT } from '../i18n'
 import { getCommand, runCommand } from '../commands'
 import { relPath, joinPath, extOf } from '@shared/paths'
 import { Icon } from '../components/Icon'
-import { Empty } from '../components/Empty'
 import { FileEditor } from './FileEditor'
 import { DiffTab } from './DiffTab'
 import { editorBanners } from './registry'
@@ -30,14 +29,17 @@ function EmptyEditor() {
   const root = useApp((s) => s.root)
   if (!root && emptyEditorExtras.length) return <>{emptyEditorExtras.map((C, i) => <C key={i} />)}</>
   return (
-    <Empty text={t(root ? 'editor.noFile' : 'editor.noFolder')}>
-      {!root && <button className="btn btn-primary" onClick={() => runCommand('project.openFolder')}>{t('cmd.openFolder')}</button>}
+    <div className="empty-center">
+      <Icon name="layers" className="empty-icon" />
+      <div className="empty-title">{t(root ? 'editor.noFile' : 'editor.noFolder')}</div>
+      {root && <div className="dim">{t('editor.empty.sub')}</div>}
+      {!root && <button className="btn btn-primary" onClick={() => runCommand('project.openFolder')}><Icon name="folder-opened" />{t('cmd.openFolder')}</button>}
       <div className="shortcut-list">
         {SHORTCUTS.map((id) => getCommand(id)).filter((c) => c?.keys).map((c) => (
           <div key={c!.id} style={{ display: 'contents' }}><span>{t(c!.title)}</span><kbd>{c!.keys}</kbd></div>
         ))}
       </div>
-    </Empty>
+    </div>
   )
 }
 
@@ -102,7 +104,7 @@ export function EditorArea() {
       <Tabs />
       {tab.kind === 'file' && tab.path && <Breadcrumbs path={tab.path} />}
       <div className="editor-body">
-        {tab.kind === 'file' && tab.path ? <FileEditor path={tab.path} /> : R ? <R key={tab.id} tab={tab} /> : null}
+        {tab.kind === 'file' && tab.path ? <FileEditor key={tab.path} path={tab.path} /> : R ? <R key={tab.id} tab={tab} /> : null}
       </div>
     </div>
   )
