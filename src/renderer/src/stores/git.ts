@@ -67,3 +67,7 @@ let timer: ReturnType<typeof setTimeout> | undefined
 const soon = () => { clearTimeout(timer); timer = setTimeout(() => void useGit.getState().refresh(), 400) }
 on('fs.changed', soon)
 window.addEventListener('focus', soon)
+
+// CSS class for a badge letter: M/R warn, A/U ok, D/! danger, anything else dim (mono themes: all gray except danger).
+export const letterClass = (l: string): string =>
+  l === 'M' || l === 'R' ? 'warn' : l === 'A' || l === 'U' ? 'ok' : l === 'D' || l === '!' ? 'danger' : 'dim'

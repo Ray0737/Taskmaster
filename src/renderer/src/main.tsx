@@ -8,6 +8,9 @@ import './views/Explorer'
 import './views/SettingsTab'
 import './views/ManualTab'
 import './views/Home'
+import './views/SourceControl'
+import './views/GitStatusItems'
+import './views/AccountSettings'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(<App />)

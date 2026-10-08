@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react'
 import { DiffEditor } from '@monaco-editor/react'
+import { relPath } from '@shared/paths'
 import { call } from '../ipc'
 import { useApp } from '../stores/app'
 import type { Tab } from '../stores/editor'
 import { getModel, languageOf, EDITOR_FONT } from '../monaco'
 
-// Plan 2 adds the 'head' case (git HEAD vs working copy).
+// 'disk': saved file vs editor buffer. 'head': last commit vs what is in the editor (or on disk if not open).
 export async function loadDiff(tab: Tab): Promise<{ original: string; modified: string }> {
   const path = tab.path!
   const disk = await call('fs.read', path)
   const diskText = disk.kind === 'text' ? disk.text : ''
-  return { original: diskText, modified: getModel(path)?.getValue() ?? diskText }
+  const live = getModel(path)?.getValue() ?? diskText
+  if (tab.diff === 'head') {
+    const head = await call('git.show', relPath(useApp.getState().root!, path))
+    return { original: head ?? '', modified: live }
+  }
+  return { original: diskText, modified: live }
 }
 
 export function DiffTab({ tab }: { tab: Tab }) {

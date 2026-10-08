@@ -1,9 +1,10 @@
 import { useEffect, type CSSProperties } from 'react'
 import type { FileEntry } from '@shared/types'
-import { basename, dirname, joinPath } from '@shared/paths'
+import { basename, dirname, joinPath, relPath } from '@shared/paths'
 import { call, errMsg } from '../ipc'
 import { useApp } from '../stores/app'
 import { useExplorer } from '../stores/explorer'
+import { useGit, letterClass } from '../stores/git'
 import { useEditor, openFile } from '../stores/editor'
 import { openMenu, promptDialog, confirmDialog, toast, type MenuEntry } from '../stores/ui'
 import { tr, useT } from '../i18n'
@@ -63,6 +64,10 @@ function menuFor(e: FileEntry): MenuEntry[] {
 function Node({ e, depth }: { e: FileEntry; depth: number }) {
   const open = useExplorer((s) => !!s.expanded[e.path])
   const sel = useExplorer((s) => s.selected === e.path)
+  const root = useApp((s) => s.root)
+  const rel = root ? relPath(root, e.path) : ''
+  // files: their letter; folders: a dot when something inside changed
+  const letter = useGit((s) => (e.dir ? (s.dirtyDirs[rel] ? '•' : '') : (s.letters[rel] ?? '')))
   const activate = (preview: boolean) => {
     useExplorer.setState({ selected: e.path })
     if (e.dir) useExplorer.getState().toggle(e.path)
@@ -83,7 +88,7 @@ function Node({ e, depth }: { e: FileEntry; depth: number }) {
         <span className="tree-chevron">{e.dir && <Icon name={open ? 'chevron-down' : 'chevron-right'} />}</span>
         <Icon name={e.dir ? (open ? 'folder-opened' : 'folder') : fileIcon(e.name)} />
         <span className="ellipsis tree-name">{e.name}</span>
-        {/* git letter */}
+        {letter && <span className={`git-letter ${letterClass(letter)}`}>{letter}</span>}
       </div>
       {e.dir && open && (
         <div role="group" className="tree-group" style={{ '--guide': `${8 + depth * 8 + 7}px` } as CSSProperties}>
