@@ -1,3 +1,7 @@
 import { createRoot } from 'react-dom/client'
+import '@vscode/codicons/dist/codicon.css'
+import './theme/base.css'
+import './coreCommands'
+import App from './App'
 
-createRoot(document.getElementById('root')!).render(<div style={{ color: '#e8e8e8' }}>Taskmaster</div>)
+createRoot(document.getElementById('root')!).render(<App />)
