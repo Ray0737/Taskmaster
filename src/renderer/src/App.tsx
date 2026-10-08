@@ -8,6 +8,7 @@ import { ActivityBar } from './views/ActivityBar'
 import { Workbench } from './views/Workbench'
 import { StatusBar } from './views/StatusBar'
 import { Welcome } from './views/Welcome'
+import { ProjectDialogs } from './views/ProjectDialogs'
 import { Palette } from './views/Palette'
 import { Toasts, DialogHost, MenuHost } from './components/Overlays'
 
@@ -34,6 +35,7 @@ export default function App() {
           <StatusBar />
         </>
       )}
+      <ProjectDialogs />
       <Palette />
       <Toasts />
       <DialogHost />
