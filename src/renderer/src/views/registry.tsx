@@ -20,3 +20,10 @@ export const settingsSections: SettingsSectionDef[] = []
 
 // Rows shown on the Welcome screen below the GitHub row (Plan 3 adds Agents).
 export const setupRows: ComponentType[] = []
+
+// Extra controls in the Agent panel header (Plan 4 adds the Task select).
+export const agentHeaderExtras: ComponentType[] = []
+
+export interface AgentResultInfo { taskId: string | null; ok: boolean; text: string }
+// Called once per finished agent turn (Plan 4 saves the <tm-note> and moves the task to review).
+export const agentHooks: { onResult: ((r: AgentResultInfo) => void)[] } = { onResult: [] }
