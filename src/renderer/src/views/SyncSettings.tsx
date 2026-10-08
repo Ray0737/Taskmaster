@@ -13,13 +13,13 @@ function SyncSection() {
   const s = useApp((x) => x.settings!)
   const set = useApp((x) => x.set)
   return (
-    <Group icon="sync" title={t('settings.sync')}>
+    <Group icon="sync" title={t('settings.group.sync')} desc={t('settings.group.sync.desc')}>
       <Field label={t('settings.sync.interval')}>
         <Dropdown ariaLabel={t('settings.sync.interval')} value={String(s.fetchInterval)}
           options={[15, 30, 60].map((n) => ({ value: String(n), label: t('settings.sync.seconds', { n }) }))}
           onChange={(v) => void set({ fetchInterval: Number(v) as 15 | 30 | 60 })} />
       </Field>
-      <label className="field-inline" style={{ marginBottom: 16 }}>
+      <label className="field-inline">
         <input type="checkbox" className="check" checked={s.syncPaused}
           onChange={async (e) => { await set({ syncPaused: e.target.checked }); if (!e.target.checked) void call('team.syncNow').catch((err) => toast(errMsg(err), 'error')) }} />
         {t('settings.sync.pause')}

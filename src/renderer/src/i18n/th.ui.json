@@ -18,5 +18,17 @@
   "team.add.willInvite": "ระบบจะส่งคำเชิญ GitHub พร้อมสิทธิ์เขียน เว้นแต่เขามีสิทธิ์อยู่แล้ว",
   "team.add.noCollabs": "ยังไม่มีผู้ร่วมพัฒนาคนอื่นให้เลือก",
   "team.add.pick": "หรือเลือกจากผู้ร่วมพัฒนา",
-  "settings.group.defaults": "ค่าเริ่มต้น"
+  "settings.group.defaults": "ค่าเริ่มต้น",
+  "settings.language.desc": "เลือกภาษาที่ใช้ทั้งแอป",
+  "settings.theme.desc": "เลือกชุดสีของทั้งหน้าต่าง",
+  "settings.group.text": "ข้อความ",
+  "settings.group.text.desc": "ขนาดตัวอักษรและการตัดบรรทัดในตัวแก้ไข กด Ctrl+= และ Ctrl+- เพื่อเปลี่ยนขนาดได้เช่นกัน",
+  "settings.autoSave.desc": "บันทึกการแก้ไขลงดิสก์โดยไม่ต้องกด Ctrl+S",
+  "settings.group.detected": "agent ที่ตรวจพบ",
+  "settings.group.detected.desc": "agent เขียนโค้ดที่พบในเครื่องนี้",
+  "settings.group.defaults.desc": "ใช้เมื่อเริ่มแชทใหม่",
+  "settings.account.identity.desc": "ใช้เป็นผู้เขียน commit ของคุณ",
+  "settings.account.github.desc": "จำเป็นสำหรับเชิญเพื่อนร่วมทีมและเปิด pull request",
+  "settings.group.sync": "ซิงก์ทีม",
+  "settings.group.sync.desc": "ความถี่ที่ Taskmaster ดึงงานของเพื่อนร่วมทีม"
 }

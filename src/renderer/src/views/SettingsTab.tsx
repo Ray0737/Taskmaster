@@ -19,14 +19,14 @@ function General() {
   const set = useApp((x) => x.set)
   return (
     <>
-      <Group icon="globe" title={t('settings.language')}>
+      <Group icon="globe" title={t('settings.language')} desc={t('settings.language.desc')}>
         <div className="tabs-inline" role="radiogroup" aria-label={t('settings.language')}>
           {([['en', 'English'], ['th', 'ไทย']] as const).map(([v, label]) => (
             <button key={v} role="radio" aria-checked={s.lang === v} className={`btn${s.lang === v ? ' on' : ''}`} onClick={() => void set({ lang: v })}>{label}</button>
           ))}
         </div>
       </Group>
-      <Group icon="color-mode" title={t('settings.theme')}>
+      <Group icon="color-mode" title={t('settings.theme')} desc={t('settings.theme.desc')}>
         <div className="swatches" role="radiogroup" aria-label={t('settings.theme')}>
           {THEME_IDS.map((id) => {
             const u = THEMES[id].ui
@@ -60,22 +60,22 @@ function EditorSection() {
   const set = useApp((x) => x.set)
   return (
     <>
-      <Group icon="edit" title={t('settings.editor')}>
+      <Group icon="symbol-text" title={t('settings.group.text')} desc={t('settings.group.text.desc')}>
         <Field label={t('settings.fontSize')} hint="10–24">
           <input className="input" type="number" min={10} max={24} value={s.fontSize}
             onChange={(e) => { const n = Number(e.target.value); if (n >= 10 && n <= 24) void set({ fontSize: n }) }} />
         </Field>
-        <label className="field-inline group-row">
+        <label className="field-inline">
           <input type="checkbox" className="check" checked={s.wordWrap} onChange={(e) => void set({ wordWrap: e.target.checked })} />
           {t('settings.wordWrap')}
         </label>
       </Group>
-      <Group icon="save" title={t('settings.autoSave')}>
-        <div className="group-body">
+      <Group icon="save" title={t('settings.autoSave')} desc={t('settings.autoSave.desc')}>
+        <Field label={t('settings.autoSave')}>
           <Dropdown ariaLabel={t('settings.autoSave')} value={s.autoSave}
             options={[{ value: 'off', label: t('settings.autoSave.off') }, { value: 'delay', label: t('settings.autoSave.delay') }]}
             onChange={(v) => void set({ autoSave: v as 'off' | 'delay' })} />
-        </div>
+        </Field>
       </Group>
     </>
   )
@@ -90,6 +90,7 @@ export function SettingsTab() {
   return (
     <div className="split-view">
       <nav className="split-nav scroll" aria-label={t('tab.settings')}>
+        <div className="nav-label">{t('tab.settings')}</div>
         {settingsSections.map((x) => (
           <button key={x.id} className={`row${x.id === sec ? ' sel' : ''}`} onClick={() => setSec(x.id)}>
             <Icon name={SECTION_ICON[x.id] ?? 'circle-small'} />
@@ -98,7 +99,10 @@ export function SettingsTab() {
         ))}
       </nav>
       <div className="split-body scroll">
-        <div className="doc"><h1>{t(S.title)}</h1><S.Comp /></div>
+        <div className="settings-page">
+          <div className="page-head"><Icon name={SECTION_ICON[S.id] ?? 'circle-small'} /><h1>{t(S.title)}</h1></div>
+          <S.Comp />
+        </div>
       </div>
     </div>
   )

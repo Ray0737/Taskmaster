@@ -18,5 +18,17 @@
   "team.add.willInvite": "A GitHub invitation with write access is sent, unless the person already has access.",
   "team.add.noCollabs": "No other collaborators to pick from yet",
   "team.add.pick": "Or pick a collaborator",
-  "settings.group.defaults": "Defaults"
+  "settings.group.defaults": "Defaults",
+  "settings.language.desc": "Choose the language used across the app.",
+  "settings.theme.desc": "Pick a color scheme for the whole window.",
+  "settings.group.text": "Text",
+  "settings.group.text.desc": "Font size and wrapping in the editor. Ctrl+= and Ctrl+- change the size too.",
+  "settings.autoSave.desc": "Save changes to disk without pressing Ctrl+S.",
+  "settings.group.detected": "Detected agents",
+  "settings.group.detected.desc": "Coding agents found on this computer.",
+  "settings.group.defaults.desc": "Used when you start a new chat.",
+  "settings.account.identity.desc": "Used as the author of your commits.",
+  "settings.account.github.desc": "Needed to invite teammates and open pull requests.",
+  "settings.group.sync": "Team sync",
+  "settings.group.sync.desc": "How often Taskmaster fetches your teammates' changes."
 }

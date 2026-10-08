@@ -47,7 +47,8 @@ export function ManualTab() {
   return (
     <div className="split-view">
       <nav className="split-nav" aria-label={t('tab.manual')}>
-        <div style={{ padding: '0 8px 8px' }}>
+        <div className="nav-label">{t('tab.manual')}</div>
+        <div className="nav-filter">
           <input className="input" placeholder={t('manual.filter')} value={filter} onChange={(e) => setFilter(e.target.value)} />
         </div>
         <div className="scroll" style={{ flex: 1 }}>

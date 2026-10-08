@@ -79,7 +79,7 @@ function SessionRow({ s, onPick }: { s: PastSession; onPick: (s: PastSession) =>
   const t = useT()
   const lang = useApp((x) => x.settings!.lang)
   return (
-    <button className="row session-row" title={s.title} onClick={() => onPick(s)}>
+    <button className="row row-tall session-row" title={s.title} onClick={() => onPick(s)}>
       <Icon name="comment" />
       <span className="session-text">
         <span className="ellipsis">{s.title}</span>

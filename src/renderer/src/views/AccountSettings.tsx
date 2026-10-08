@@ -18,7 +18,7 @@ function Account() {
   const changed = name !== (identity?.name ?? '') || email !== (identity?.email ?? '')
   return (
     <>
-      <Group icon="account" title={t('settings.account.identity')}>
+      <Group icon="account" title={t('settings.account.identity')} desc={t('settings.account.identity.desc')}>
         <Field label={t('welcome.identity.name')}>
           <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
         </Field>
@@ -30,8 +30,8 @@ function Account() {
             onClick={() => void useSetup.getState().saveIdentity({ name, email })}><Icon name="save" />{t('welcome.identity.save')}</button>
         </div>
       </Group>
-      <Group icon="github" title={t('settings.account.github')}>
-        <div style={{ marginBottom: 8 }}>
+      <Group icon="github" title={t('settings.account.github')} desc={t('settings.account.github.desc')}>
+        <div>
           {account ? t('settings.account.connected', { login: account.login }) : t('settings.account.none')}
         </div>
         <button className="btn" disabled={connecting} onClick={() => void useSetup.getState().connect()}><Icon name="refresh" />{t('settings.account.reconnect')}</button>

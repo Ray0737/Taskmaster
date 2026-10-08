@@ -19,7 +19,7 @@ function AgentsSection() {
   useEffect(() => { if (!useAgent.getState().detected) void useAgent.getState().detect() }, [])
   return (
     <>
-      <Group icon="hubot" title={t('settings.agents')}>
+      <Group icon="hubot" title={t('settings.group.detected')} desc={t('settings.group.detected.desc')}>
         {detected && agents.length === 0 && <div className="dim">{t('settings.agents.none')}</div>}
         {agents.map((a) => (
           <div key={a.id} className="setup-row" style={{ alignItems: 'center' }}>
@@ -31,7 +31,7 @@ function AgentsSection() {
         ))}
         <div><button className="btn" onClick={() => void useAgent.getState().detect()}><Icon name="refresh" />{t('settings.agents.rescan')}</button></div>
       </Group>
-      <Group icon="settings-gear" title={t('settings.group.defaults')}>
+      <Group icon="settings-gear" title={t('settings.group.defaults')} desc={t('settings.group.defaults.desc')}>
       <Field label={t('settings.agents.default')}>
         <Dropdown ariaLabel={t('settings.agents.default')} value={s.defaultAgent ?? ''}
           options={[{ value: '', label: '—' }, ...agents.map((a) => ({ value: a.id, label: a.label }))]}

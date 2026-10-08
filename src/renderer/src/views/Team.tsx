@@ -72,7 +72,7 @@ function AddMember() {
             <div className="field-label">{t('team.add.pick')}</div>
             <div className="repo-list scroll">
               {pickable.map((c) => (
-                <button key={c.login} className={`row${login === c.login ? ' sel' : ''}`} onClick={() => setLogin(c.login)}>
+                <button key={c.login} className={`row row-tall${login === c.login ? ' sel' : ''}`} onClick={() => setLogin(c.login)}>
                   <img className="avatar" src={c.avatarUrl} alt="" /><span className="ellipsis">@{c.login}</span>
                 </button>
               ))}
@@ -160,7 +160,7 @@ function NewRole() {
     <div style={{ display: 'flex', gap: 6, padding: 8 }}>
       <input className="input" placeholder={t('team.role.name')} aria-label={t('team.role.name')} value={name}
         onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') add() }} />
-      <button className="btn" disabled={!name.trim()} onClick={add}>{t('team.role.new')}</button>
+      <button className="btn btn-primary" disabled={!name.trim()} onClick={add}>{t('team.role.new')}</button>
     </div>
   )
 }

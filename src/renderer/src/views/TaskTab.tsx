@@ -108,7 +108,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
         ))}
         <textarea className="textarea" rows={3} placeholder={t('task.addNote')} aria-label={t('task.addNote')} value={note} onChange={(e) => setNote(e.target.value)} />
         <div style={{ marginTop: 6 }}>
-          <button className="btn" disabled={!note.trim()} onClick={() => { void useTeam.getState().addNote(task.id, note); setNote('') }}>{t('task.saveNote')}</button>
+          <button className="btn btn-primary" disabled={!note.trim()} onClick={() => { void useTeam.getState().addNote(task.id, note); setNote('') }}>{t('task.saveNote')}</button>
         </div>
       </div>
     </div>
