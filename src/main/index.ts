@@ -12,6 +12,7 @@ import { registerAuth } from './services/auth'
 import { registerRecent } from './services/recent'
 import { registerProject } from './services/project'
 import { registerAgents } from './services/agents'
+import { registerTeam, stopTeam } from './services/team'
 
 let win: BrowserWindow | null = null
 
@@ -71,9 +72,10 @@ app.whenReady().then(() => {
   registerRecent()
   registerProject()
   registerAgents()
+  registerTeam()
   registerPty()
   registerManual()
   createWindow()
 })
 app.on('window-all-closed', () => app.quit())
-app.on('before-quit', () => killAllPty())
+app.on('before-quit', () => { killAllPty(); stopTeam() })

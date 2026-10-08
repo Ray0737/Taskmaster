@@ -5,6 +5,7 @@ import { state } from '../state'
 import { git, initRepo, stage, commit } from './git'
 import { createRepo } from './auth'
 import { stopWatch } from './fs'
+import { stopTeam } from './team'
 
 export function nameError(name: string): string | null {
   const n = name.trim()
@@ -41,5 +42,5 @@ export function registerProject(): void {
       return { path }
     } catch (e) { return { path, warning: (e as Error).message } }
   })
-  handle('project.close', async () => { state.root = null; stopWatch() })
+  handle('project.close', async () => { stopTeam(); state.root = null; stopWatch() })
 }

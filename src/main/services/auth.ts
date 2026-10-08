@@ -1,6 +1,12 @@
 import { execFile } from 'child_process'
 import type { Account, RepoInfo } from '@shared/types'
+import { parseGithubRemote } from '@shared/github'
+import { isLogin } from '@shared/team'
 import { handle } from '../ipc'
+import { state } from '../state'
+import { remoteUrl } from './git'
+
+export { parseGithubRemote }
 
 let token: string | null = null // memory only, never written anywhere
 let account: Account | null = null
@@ -44,6 +50,7 @@ async function api<T>(path: string, tok: string, init: RequestInit = {}): Promis
     try { msg = ((await r.json()) as { message?: string }).message ?? msg } catch { /* not json */ }
     throw new Error(`GitHub ${r.status}: ${msg}`)
   }
+  if (r.status === 204) return null as T // e.g. "already a collaborator"
   return (await r.json()) as T
 }
 
@@ -113,8 +120,32 @@ export async function createRepo(name: string, isPrivate: boolean): Promise<Repo
   }))
 }
 
+export async function listCollaborators(owner: string, repo: string): Promise<{ login: string; avatarUrl: string }[]> {
+  const raw = await api<{ login: string; avatar_url: string }[]>(`/repos/${owner}/${repo}/collaborators?per_page=100`, need())
+  return raw.map((u) => ({ login: u.login, avatarUrl: u.avatar_url }))
+}
+
+// 201 + invitation body = invited, 204 = already a collaborator.
+export async function inviteCollaborator(owner: string, repo: string, login: string): Promise<'invited' | 'already'> {
+  const r = await api<unknown>(`/repos/${owner}/${repo}/collaborators/${encodeURIComponent(login)}`, need(), {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ permission: 'push' })
+  })
+  return r === null ? 'already' : 'invited'
+}
+
 export function registerAuth(): void {
   handle('auth.status', loadAccount)
   handle('auth.connect', connectAccount)
   handle('auth.repos', listRepos)
+  const repoOf = async (): Promise<{ owner: string; repo: string }> => {
+    const r = state.root ? parseGithubRemote((await remoteUrl(state.root)) ?? '') : null
+    if (!r) throw new Error('This project is not on GitHub')
+    return r
+  }
+  handle('auth.collaborators', async () => { const r = await repoOf(); return listCollaborators(r.owner, r.repo) })
+  handle('auth.invite', async (login) => {
+    if (!isLogin(login)) throw new Error('Invalid GitHub login')
+    const r = await repoOf()
+    return inviteCollaborator(r.owner, r.repo, login)
+  })
 }

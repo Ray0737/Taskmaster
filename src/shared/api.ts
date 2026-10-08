@@ -1,5 +1,6 @@
 import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList, Account, RepoInfo, RecentProject, AgentInfo, AgentMode } from './types'
 import type { AgentEvent } from './agent'
+import type { Task, Team, TeamData, SyncInfo } from './team'
 
 export type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll'
 
@@ -60,6 +61,21 @@ export interface Api {
   'agent.stop': (runId: number) => Promise<void>
   'agent.sessionGet': (key: string) => Promise<string | null>
   'agent.sessionSet': (key: string, id: string | null) => Promise<void>
+  'team.attach': (login: string) => Promise<{ state: 'enabled' | 'disabled'; offline: boolean }>
+  'team.enable': () => Promise<{ pushed: boolean; error: string | null }>
+  'team.read': () => Promise<TeamData | null>
+  'team.saveTeam': (team: Team) => Promise<void>
+  'team.saveTask': (task: Task) => Promise<void>
+  'team.addNote': (taskId: string, text: string) => Promise<void>
+  'team.setPresence': (p: { taskId: string | null; branch: string | null; status: 'idle' | 'working' }) => Promise<void>
+  'team.syncNow': () => Promise<void>
+  'team.resetToRemote': () => Promise<void>
+  'team.detach': () => Promise<void>
+  'auth.collaborators': () => Promise<{ login: string; avatarUrl: string }[]>
+  'auth.invite': (login: string) => Promise<'invited' | 'already'>
+  'git.startBranch': (name: string) => Promise<void>
+  'git.stashAll': (label: string) => Promise<void>
+  'git.commitAll': (message: string) => Promise<void>
 }
 
 // Every main -> renderer event.
@@ -70,4 +86,6 @@ export interface Events {
   'git.progress': { percent: number; text: string }
   'agent.event': { runId: number; ev: AgentEvent }
   'agent.exit': { runId: number; code: number | null }
+  'team.changed': { at: string }
+  'team.sync': SyncInfo
 }

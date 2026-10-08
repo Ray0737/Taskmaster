@@ -154,6 +154,40 @@ export function cloneRepo(url: string, parent: string, name: string, onProgress:
   })
 }
 
+const hasRef = async (root: string, ref: string): Promise<boolean> => {
+  try { await git(root, ['rev-parse', '--verify', '--quiet', ref]); return true } catch { return false }
+}
+
+// origin's default branch, else local main/master, else null.
+export async function defaultBranch(root: string): Promise<string | null> {
+  try {
+    const b = (await git(root, ['symbolic-ref', '--short', 'refs/remotes/origin/HEAD'])).trim().replace(/^origin\//, '')
+    if (b) return b
+  } catch { /* origin/HEAD is not set */ }
+  for (const n of ['main', 'master']) if (await hasRef(root, `refs/heads/${n}`)) return n
+  return null
+}
+
+// Creates tm/<login>/<id> from the default branch (or switches to it if it exists).
+// --no-track: Sync must not treat origin/main as this branch's upstream.
+export async function startTaskBranch(root: string, name: string): Promise<void> {
+  await git(root, ['check-ref-format', '--branch', name])
+  if (await hasRef(root, `refs/heads/${name}`)) { await git(root, ['switch', name]); return }
+  const base = await defaultBranch(root)
+  const start = base ? ((await hasRef(root, `refs/remotes/origin/${base}`)) ? `origin/${base}` : base) : 'HEAD'
+  await git(root, ['switch', '-c', name, '--no-track', start])
+}
+
+export async function stashAll(root: string, label: string): Promise<void> {
+  await git(root, ['stash', 'push', '-u', '-m', label])
+}
+
+export async function commitEverything(root: string, message: string): Promise<void> {
+  await git(root, ['add', '-A'])
+  if (!(await git(root, ['status', '--porcelain'])).trim()) return
+  await commit(root, message)
+}
+
 export function registerGit(): void {
   const root = (): string => {
     if (!state.root) throw new Error('No project open')
@@ -183,4 +217,7 @@ export function registerGit(): void {
     return cloneRepo(url, parent, name, (percent, text) => emit('git.progress', { percent, text }))
   })
   handle('git.cloneCancel', async () => cancelClone())
+  handle('git.startBranch', async (name) => startTaskBranch(root(), name))
+  handle('git.stashAll', async (label) => stashAll(root(), label))
+  handle('git.commitAll', async (message) => commitEverything(root(), message))
 }
