@@ -7,6 +7,7 @@ import { createHash } from 'crypto'
 import { app } from 'electron'
 import type { AgentInfo, AgentMode } from '@shared/types'
 import { parseClaudeLine, type AgentEvent } from '@shared/agent'
+import { teamPluginDir } from './team'
 import { handle, emit } from '../ipc'
 import { state } from '../state'
 import { log } from '../log'
@@ -72,10 +73,11 @@ export async function detectAgents(pathEnv = process.env.PATH ?? '', exts = defa
   return found.filter((a): a is AgentInfo => a !== null)
 }
 
-export function claudeArgs(o: { system: string; mode: AgentMode; sessionId?: string | null }): string[] {
+export function claudeArgs(o: { system: string; mode: AgentMode; sessionId?: string | null; pluginDir?: string | null }): string[] {
   return [
     '-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--permission-mode', o.mode,
     ...(o.system ? ['--append-system-prompt', o.system] : []),
+    ...(o.pluginDir ? ['--plugin-dir', o.pluginDir] : []),
     ...(o.sessionId ? ['--resume', o.sessionId] : [])
   ]
 }
@@ -200,7 +202,7 @@ export function registerAgents(): void {
     const { cmd, prefix } = resolveCommand(agent.bin)
     const basic = agent.kind === 'basic'
     const full = o.system ? `${o.system}\n\n---\n\n${o.prompt}` : o.prompt
-    const args = basic ? basicArgs(agent.id, full) : claudeArgs({ system: o.system, mode: o.mode, sessionId: o.sessionId })
+    const args = basic ? basicArgs(agent.id, full) : claudeArgs({ system: o.system, mode: o.mode, sessionId: o.sessionId, pluginDir: await teamPluginDir() })
     if (!args) throw new Error(`No adapter for ${agent.id}`)
     const h = streamProcess(
       { cmd, args: [...prefix, ...args], cwd: state.root, input: basic ? '' : o.prompt, parse: basic ? 'text' : 'claude' },

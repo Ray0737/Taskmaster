@@ -43,6 +43,12 @@ function AgentsSection() {
           onChange={(v) => void set({ defaultMode: v as AgentMode })} />
       </Field>
       </Group>
+      <Group icon="extensions" title={t('settings.group.skills')} desc={t('settings.group.skills.desc')}>
+        <label className="field-inline">
+          <input type="checkbox" className="check" checked={s.teamSkills} onChange={(e) => void set({ teamSkills: e.target.checked })} />
+          {t('settings.teamSkills')}
+        </label>
+      </Group>
     </>
   )
 }

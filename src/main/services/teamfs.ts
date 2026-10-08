@@ -4,6 +4,7 @@ import {
   parseTask, parseTeam, parsePresence, parseNoteFile, isTaskId, isLogin, noteFileName,
   type Task, type Team, type Note, type Presence, type TeamData
 } from '@shared/team'
+import { isSkillName, parseSkill, renderSkill, type Skill } from '@shared/skills'
 
 export const TM_DIR = '.taskmaster'
 const NOTE_MAX = 5000
@@ -73,6 +74,33 @@ export async function deleteTask(dir: string, id: string): Promise<void> {
   if (!isTaskId(id)) throw new Error('Invalid task')
   await fsp.rm(join(dir, TM_DIR, 'tasks', `${id}.json`), { force: true })
   await fsp.rm(join(dir, TM_DIR, 'notes', id), { recursive: true, force: true })
+}
+
+// .taskmaster/plugin is a Claude Code plugin ("team"): skills/<name>/SKILL.md, loaded with --plugin-dir.
+export const pluginDir = (dir: string): string => join(dir, TM_DIR, 'plugin')
+
+export async function listSkills(dir: string): Promise<Skill[]> {
+  const base = join(pluginDir(dir), 'skills')
+  const out: Skill[] = []
+  for (const name of await names(base)) {
+    let text = ''
+    try { text = await fsp.readFile(join(base, name, 'SKILL.md'), 'utf8') } catch { continue }
+    const s = parseSkill(name, text)
+    if (s) out.push(s)
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name))
+}
+
+export async function writeSkill(dir: string, skill: Skill): Promise<void> {
+  if (!isSkillName(skill.name)) throw new Error('Invalid skill name')
+  if (!skill.body.trim()) throw new Error('Empty skill')
+  await put(dir, ['plugin', '.claude-plugin', 'plugin.json'], json({ name: 'team', description: 'Skills shared by this team through Taskmaster', version: '1.0.0' }))
+  await put(dir, ['plugin', 'skills', skill.name, 'SKILL.md'], renderSkill(skill))
+}
+
+export async function deleteSkill(dir: string, name: string): Promise<void> {
+  if (!isSkillName(name)) throw new Error('Invalid skill name')
+  await fsp.rm(join(pluginDir(dir), 'skills', name), { recursive: true, force: true })
 }
 
 export async function writePresence(dir: string, p: Presence): Promise<void> {

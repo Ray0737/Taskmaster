@@ -16,6 +16,7 @@ import { sidebarViews } from './registry'
 import { EnableBox } from './TeamBanner'
 import { HelpIcon } from './HelpIcon'
 import { useNow } from './useNow'
+import { TeamSkills } from './TeamSkills'
 
 export const useTeamUi = create<{ addOpen: boolean }>(() => ({ addOpen: false }))
 const openAdd = (): void => useTeamUi.setState({ addOpen: true })
@@ -188,6 +189,7 @@ export function Team() {
       <div className="section-h section-plain"><span className="ellipsis">{t('team.roles')}</span></div>
       {data.team.roles.map((r) => <RoleEditor key={r.id} role={r} />)}
       <NewRole />
+      <TeamSkills />
       {addOpen && <AddMember />}
     </div>
   )

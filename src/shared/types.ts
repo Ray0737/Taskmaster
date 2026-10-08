@@ -14,6 +14,7 @@ export interface Settings {
   autoSave: 'off' | 'delay'
   wordWrap: boolean
   tabSize: 2 | 4 | 8
+  teamSkills: boolean
   minimap: boolean
   lineNumbers: boolean
   terminalFontSize: number

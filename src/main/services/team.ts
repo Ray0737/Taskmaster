@@ -4,7 +4,8 @@ import { handle, emit } from '../ipc'
 import { state } from '../state'
 import { log } from '../log'
 import { getSettings } from './settings'
-import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote } from './teamfs'
+import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote, listSkills, writeSkill, deleteSkill, pluginDir } from './teamfs'
+import type { Skill } from '@shared/skills'
 import { attach, enable, flush, pull, reset, worktreeDir, SyncConflict, type Ctx } from './teamsync'
 
 const BACKOFF = [15, 30, 60, 120, 300] // seconds, after failures
@@ -23,6 +24,12 @@ let me: { taskId: string | null; branch: string | null; status: 'idle' | 'workin
 let queue: Promise<unknown> = Promise.resolve()
 
 // All git work and all file writes in the worktree run one at a time (a rebase must not race a write).
+// Folder the agent host passes to Claude Code as --plugin-dir, only when the user opted in (skills are teammates' instructions).
+export async function teamPluginDir(): Promise<string | null> {
+  if (!ctx || !enabled || !getSettings().teamSkills) return null
+  return (await listSkills(ctx.wt)).length ? pluginDir(ctx.wt) : null
+}
+
 const serial = <T>(fn: () => Promise<T>): Promise<T> => {
   const p = queue.then(fn)
   queue = p.catch(() => undefined)
@@ -134,6 +141,9 @@ export function registerTeam(): void {
     markDirty(`task ${t.title.slice(0, 40)}`)
   }))
   handle('team.deleteTask', (id: string) => serial(async () => { await deleteTask(need().wt, id); markDirty('delete task') }))
+  handle('team.skills', async () => (ctx && enabled ? listSkills(ctx.wt) : []))
+  handle('team.saveSkill', (s: Skill) => serial(async () => { await writeSkill(need().wt, s); markDirty(`skill ${s.name}`) }))
+  handle('team.deleteSkill', (name: string) => serial(async () => { await deleteSkill(need().wt, name); markDirty('delete skill') }))
   handle('team.addNote', (taskId, text) => serial(async () => { const c = need(); await addNote(c.wt, taskId, c.login, text); markDirty('note') }))
   handle('team.setPresence', async (p) => { me = p; await beat() })
   handle('team.syncNow', async () => { await runFlush(); await runPoll() })

@@ -1,5 +1,6 @@
 import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList, Account, RepoInfo, RecentProject, AgentInfo, AgentMode } from './types'
 import type { AgentEvent } from './agent'
+import type { Skill } from './skills'
 import type { PastSession, TranscriptEntry } from './transcript'
 import type { Task, Team, TeamData, SyncInfo } from './team'
 
@@ -70,6 +71,9 @@ export interface Api {
   'team.saveTeam': (team: Team) => Promise<void>
   'team.saveTask': (task: Task) => Promise<void>
   'team.deleteTask': (id: string) => Promise<void>
+  'team.skills': () => Promise<Skill[]>
+  'team.saveSkill': (skill: Skill) => Promise<void>
+  'team.deleteSkill': (name: string) => Promise<void>
   'team.addNote': (taskId: string, text: string) => Promise<void>
   'team.setPresence': (p: { taskId: string | null; branch: string | null; status: 'idle' | 'working' }) => Promise<void>
   'team.syncNow': () => Promise<void>
