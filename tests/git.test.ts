@@ -37,6 +37,12 @@ it('parseStatus handles odd branch lines', () => {
   expect(parseStatus('## main...origin/main [gone]\0').ahead).toBe(0)
 })
 
+it('every git call runs with core.longpaths so deep Windows paths do not break rebase', async () => {
+  const dir = tmp()
+  await initRepo(dir)
+  expect((await git(dir, ['config', '--get', 'core.longpaths'])).trim()).toBe('true')
+})
+
 it('git is installed', async () => {
   expect(await gitVersion()).toMatch(/^\d+\.\d+/)
 })

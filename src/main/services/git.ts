@@ -11,11 +11,14 @@ const lastLines = (s: string): string => s.trim().split(/\r?\n/).filter(Boolean)
 
 export interface RunOpts { input?: string; timeout?: number }
 
+// Windows stops git at 260-character paths (rebase failed with "Filename too long" in a deep profile folder).
+const LONG_PATHS = ['-c', 'core.longpaths=true']
+
 // Never pass credentials or tokens through here: errors are shown to the user and logged.
 export function git(cwd: string, args: string[], o: RunOpts = {}): Promise<string> {
   return new Promise((res, rej) => {
     const p = execFile(
-      'git', args,
+      'git', [...LONG_PATHS, ...args],
       {
         cwd, maxBuffer: 64 * 1024 * 1024, windowsHide: true, timeout: o.timeout ?? 120_000, encoding: 'utf8',
         env: { ...process.env, GIT_TERMINAL_PROMPT: '0', LC_ALL: 'C' }
@@ -134,7 +137,7 @@ export function cloneRepo(url: string, parent: string, name: string, onProgress:
   const target = join(parent, name)
   return new Promise((res, rej) => {
     let tail = ''
-    const p = spawn('git', ['clone', '--progress', '--', url, target], {
+    const p = spawn('git', [...LONG_PATHS, 'clone', '--progress', '--', url, target], {
       windowsHide: true, env: { ...process.env, GIT_TERMINAL_PROMPT: '0', LC_ALL: 'C' }
     })
     cloneProc = p
