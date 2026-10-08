@@ -1,0 +1,44 @@
+{
+  "name": "taskmaster",
+  "productName": "Taskmaster",
+  "version": "0.1.0",
+  "description": "Multiplayer vibecoding IDE",
+  "main": "./out/main/index.js",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build:win": "electron-vite build && electron-builder --win"
+  },
+  "dependencies": {
+    "@lydell/node-pty": "^1.1.0",
+    "@monaco-editor/react": "^4.7.0",
+    "@vscode/codicons": "^0.0.36",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
+    "monaco-editor": "^0.52.2",
+    "picomatch": "^4.0.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-markdown": "^10.1.0",
+    "react-resizable-panels": "^3.0.6",
+    "remark-gfm": "^4.0.1",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/picomatch": "^4.0.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^37.10.3",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^4.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vitest": "^3.2.7"
+  }
+}

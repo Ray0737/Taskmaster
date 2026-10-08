@@ -1,0 +1,17 @@
+appId: com.lieutenant.taskmaster
+productName: Taskmaster
+directories:
+  output: dist
+files:
+  - out/**
+  - package.json
+asarUnpack:
+  - node_modules/@lydell/**
+extraResources:
+  - from: resources/manual
+    to: manual
+win:
+  target: nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
