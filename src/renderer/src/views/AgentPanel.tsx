@@ -10,6 +10,7 @@ import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { agentHeaderExtras, agentFooterExtras } from './registry'
 import { Message } from './AgentMessages'
+import { HelpIcon } from './HelpIcon'
 
 let focusInput: (() => void) | null = null
 registerCommand({
@@ -79,6 +80,7 @@ export function AgentPanel() {
       <div className="pane-title">
         <span className="ellipsis">{t('agent.title')}</span>
         <div className="pane-actions">
+          <HelpIcon chapter="06-agents.md" />
           <button className="icon-btn" title={t('agent.newChat')} aria-label={t('agent.newChat')} onClick={() => void useAgent.getState().newChat()}><Icon name="add" /></button>
         </div>
       </div>

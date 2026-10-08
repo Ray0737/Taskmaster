@@ -13,6 +13,7 @@ import { Icon } from '../components/Icon'
 import { Field } from '../components/Field'
 import { sidebarViews } from './registry'
 import { EnableBox } from './TeamBanner'
+import { HelpIcon } from './HelpIcon'
 import { useNow } from './useNow'
 
 export const useTeamUi = create<{ addOpen: boolean }>(() => ({ addOpen: false }))
@@ -185,8 +186,12 @@ export function Team() {
 function TeamActions() {
   const t = useT()
   const enabled = useTeam((s) => s.status === 'enabled')
-  if (!enabled) return null
-  return <button className="icon-btn" title={t('team.add')} aria-label={t('team.add')} onClick={openAdd}><Icon name="person-add" /></button>
+  return (
+    <>
+      <HelpIcon chapter="04-team-and-roles.md" />
+      {enabled && <button className="icon-btn" title={t('team.add')} aria-label={t('team.add')} onClick={openAdd}><Icon name="person-add" /></button>}
+    </>
+  )
 }
 
 sidebarViews.push({ id: 'team', title: 'view.team', icon: 'organization', Comp: Team, Actions: TeamActions })

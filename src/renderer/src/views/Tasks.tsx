@@ -13,6 +13,7 @@ import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { sidebarViews } from './registry'
 import { EnableBox } from './TeamBanner'
+import { HelpIcon } from './HelpIcon'
 
 const ORDER: TaskStatus[] = ['doing', 'todo', 'review', 'done']
 const ICON: Record<TaskStatus, string> = { todo: 'circle-large-outline', doing: 'play-circle', review: 'eye', done: 'pass' }
@@ -84,8 +85,12 @@ export function Tasks() {
 function TasksActions() {
   const t = useT()
   const enabled = useTeam((s) => s.status === 'enabled')
-  if (!enabled) return null
-  return <button className="icon-btn" title={t('tasks.new')} aria-label={t('tasks.new')} onClick={() => void newTaskFlow()}><Icon name="add" /></button>
+  return (
+    <>
+      <HelpIcon chapter="05-tasks.md" />
+      {enabled && <button className="icon-btn" title={t('tasks.new')} aria-label={t('tasks.new')} onClick={() => void newTaskFlow()}><Icon name="add" /></button>}
+    </>
+  )
 }
 
 function TasksBadge() {
