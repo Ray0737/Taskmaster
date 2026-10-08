@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
 import { git, initRepo, stage, commit, setIdentity } from '../src/main/services/git'
-import { readAll, writeTask, writePresence, addNote, TM_DIR } from '../src/main/services/teamfs'
+import { readAll, writeTask, writePresence, addNote, deleteTask, TM_DIR } from '../src/main/services/teamfs'
 import { attach, enable, flush, pull, reset, fetchContext, isNetworkError, isRejected, SyncConflict, BRANCH, worktreeDir } from '../src/main/services/teamsync'
 import type { Task } from '../src/shared/team'
 
@@ -156,3 +156,23 @@ it('enable gives clear errors without a remote or without a first commit', async
   await expect(enable({ root: noCommit, wt: join(base, 'wt2'), login: 'ray' })).rejects.toThrow('first commit')
   expect(existsSync(join(base, 'wt2'))).toBe(false)
 })
+
+it("a deleted task (and its notes) disappears for teammates and from the remote", async () => {
+  const { ctxA, ctxB, remote } = await setup()
+  await enable(ctxA)
+  await attach(ctxB)
+  await writeTask(ctxA.wt, task("t-aaaaaaaa", "Doomed"))
+  await writeTask(ctxA.wt, task("t-bbbbbbbb", "Kept"))
+  await addNote(ctxA.wt, "t-aaaaaaaa", "ray", "note on the doomed task")
+  await flush(ctxA, "add tasks")
+  await pull(ctxB)
+  expect((await readAll(ctxB.wt))!.tasks.map((t) => t.id).sort()).toEqual(["t-aaaaaaaa", "t-bbbbbbbb"])
+
+  await deleteTask(ctxA.wt, "t-aaaaaaaa")
+  expect(await flush(ctxA, "delete task")).toEqual({ pushed: true })
+  expect(await git(remote, ["ls-tree", "-r", "--name-only", BRANCH])).not.toContain("t-aaaaaaaa")
+  expect(await pull(ctxB)).toBe("changed")
+  const all = (await readAll(ctxB.wt))!
+  expect(all.tasks.map((t) => t.id)).toEqual(["t-bbbbbbbb"])
+  expect(all.notes).toEqual([])
+}, 120_000)
