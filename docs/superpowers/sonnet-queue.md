@@ -2,7 +2,7 @@
 
 Written for: whoever continues Taskmaster next (a person, or a model).
 
-All five plans are implemented, plus the 0.2.0 UI redesign, Delete task and team skills. Latest full run: 141/141 tests, `tsc --noEmit` clean, `npm run build` clean, Windows installer builds and installs.
+All five plans are implemented, plus the 1.0.0 UI redesign, Delete task and team skills. Latest full run: 141/141 tests, `tsc --noEmit` clean, `npm run build` clean, Windows installer builds and installs.
 
 ## Verified in the packaged app (Sonnet, by driving the UI over the DevTools protocol)
 
@@ -30,7 +30,7 @@ Packaged build, isolated profile, scratch git project with a local bare remote, 
 
 ## Still open
 
-- Version 0.2.0 is verified end to end: silent install from `Taskmaster-Setup-0.2.0.exe` (desktop and Start menu shortcuts), e2e scripts 01, 02, 03 and 05 all PASS against the installed app, silent uninstall removes files and shortcuts. 141 tests, `tsc --noEmit` clean.
+- Version 1.0.0 is verified end to end: silent install from `Taskmaster-Setup-1.0.0.exe` (desktop and Start menu shortcuts), e2e scripts 01, 02, 03 and 05 all PASS against the installed app, silent uninstall removes files and shortcuts. 141 tests, `tsc --noEmit` clean.
 - GitHub write actions were not exercised, to avoid public side effects: creating a repository, inviting a collaborator, the real pull request page, Connect/Reconnect login window.
 - Not run: sync conflict banner and Reset to remote through the UI, offline back-off through the UI (both covered by `tests/teamsync.test.ts`).
 - Not run: Thai layout at the minimum window size (960 x 600), very long file names, Thai keyboard layout shortcuts, all four themes visually (mostly Mono Dark and Catppuccin were looked at), keyboard-focus visibility.

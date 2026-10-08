@@ -15,4 +15,4 @@ node scripts/e2e/03-teammate-sync.mjs            9333 "$work\fixture"
 # close the Taskmaster window you started (or stop that one process by its Id)
 ```
 
-Each line prints PASS or FAIL. Use a short work folder (like `$env:TEMP	mf`): git fails with "Filename too long" on very deep paths. Script 05 (tab switching) needs the fixture from script 01, and so does 03. Last full run (v0.2.0, installed from the NSIS installer): 01, 02, 03 and 05 all PASS.
+Each line prints PASS or FAIL. Use a short work folder (like `C:\tmf`): git fails with "Filename too long" on very deep paths. Script 05 (tab switching) needs the fixture from script 01, and so does 03. Last full run (v1.0.0, installed from the NSIS installer): 01, 02, 03 and 05 all PASS.

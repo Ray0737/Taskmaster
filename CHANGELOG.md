@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.2.0
+## 1.0.0
+
+First stable release: every feature in the design spec is built and verified in the installed app (install, e2e scripts, uninstall). Highlights since the 0.1.0 preview:
 
 - Redesigned UI: custom dropdowns, VS Code style agent composer, underline fields, solid and plain buttons, small curves, dividers between regions, centered empty states, a blank-canvas Home page.
 - Settings rebuilt as cards with descriptions: language, theme tabs with a live preview, editor text size, tab size, line numbers, minimap, auto save, terminal font size. Ctrl+= / Ctrl+- / Ctrl+0 change the editor font size.
