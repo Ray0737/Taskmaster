@@ -1,4 +1,4 @@
-import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList } from './types'
+import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, Lang, GitIdentity, GitStatus, BranchList, Account, RepoInfo, RecentProject } from './types'
 
 export type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll'
 
@@ -45,6 +45,14 @@ export interface Api {
   'git.remoteUrl': () => Promise<string | null>
   'git.clone': (url: string, parent: string, name: string) => Promise<string>
   'git.cloneCancel': () => Promise<void>
+  'auth.status': () => Promise<Account | null>
+  'auth.connect': () => Promise<Account | null>
+  'auth.repos': () => Promise<RepoInfo[]>
+  'recent.list': () => Promise<RecentProject[]>
+  'recent.add': (path: string) => Promise<void>
+  'recent.remove': (path: string) => Promise<RecentProject[]>
+  'project.create': (parent: string, name: string, github: false | 'public' | 'private') => Promise<{ path: string; warning?: string }>
+  'project.close': () => Promise<void>
 }
 
 // Every main -> renderer event.
