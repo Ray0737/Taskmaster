@@ -4,6 +4,7 @@ import { useApp } from './stores/app'
 import { openPalette } from './stores/ui'
 import { togglePanel, showPanel } from './layout'
 import { THEME_IDS } from './theme/themes'
+import { useEditor, saveActive } from './stores/editor'
 import type { EditRole } from '@shared/api'
 
 const role = (r: EditRole) => () => call('win.role', r)
@@ -35,6 +36,13 @@ registerCommand({
   run: async () => {
     const p = await call('dialog.openFolder')
     if (!p) return
+    useEditor.getState().closeAll()
     useApp.getState().setRoot(await call('project.open', p))
   }
 })
+
+registerCommand(
+  { id: 'file.save', title: 'cmd.save', keys: 'Ctrl+S', run: saveActive },
+  { id: 'tab.close', title: 'cmd.closeTab', keys: 'Ctrl+W', run: () => { const a = useEditor.getState().active; if (a) void useEditor.getState().close(a) } },
+  { id: 'tab.next', title: 'cmd.nextTab', keys: 'Ctrl+Tab', run: () => useEditor.getState().next() }
+)
