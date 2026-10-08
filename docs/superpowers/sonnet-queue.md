@@ -25,12 +25,22 @@ Rule: Haiku hits the same failure twice → stop, add entry here, move on or wai
 - Plan count mismatch, harmless: the plan says 9 parser tests, the file has 10.
 - Concern for Sonnet: `streamProcess` uses `taskkill /T /F` on Windows and `process.kill(-pid)` elsewhere. The Windows stop path is only covered by the fake-process test, not a real `claude.exe`.
 
-## Plan 04-team: in progress (Haiku)
+## Plan 04-team: done by Haiku (Tasks 1–7)
 
-- Tasks 1–4 done. Commits `2dde232` to `9b99785`. 125/125 tests.
+- All 7 tasks built. Commits `2dde232` to `ab804d1`. Last full run: 131/131 tests, typecheck and `npm run build` green.
+- Tasks 6–7 (Team view, sync item, enable banner, sync settings, open PR) are in one commit, not two. Not verified in the app: the two-person GitHub smoke test in Task 6 Step 5.
 - Plan defect, fixed: `isRejected` in `teamsync.ts` matched only `[rejected]`, `non-fast-forward`, `fetch first`. Git 2.53 prints push rejections as hint lines (`integrate the remote changes`, `fast-forwards`), and `lastLines()` keeps only the last three lines. Without this fix the sync engine never pulled and retried. Added the hint text to the pattern.
 - Concern: `teamsync.ts` `pull()` uses `rebase -X theirs`. The modify/delete conflict test passed on git 2.53, so the plan's "may not raise SyncConflict" fallback was not needed.
-- NOT yet done: Tasks 5–7 (store, Tasks/Team views, agent integration, PR button).
+- Tasks 5–7 done (see the section above).
+
+## Plan 05-docs: Tasks 1–3 done, Task 4 partly done (Haiku)
+
+- Manual: 11 chapters EN and TH, guard tests green (`tests/manual-docs.test.ts`). Commits `22d4929` (and the Thai commit before it).
+- Repo docs: README, CHANGELOG, `docs/ARCHITECTURE.md`, `docs/CONTRIBUTING.md`. Commit `6976131`.
+- Help "?" icons on Tasks, Team and Agent headers. Commit `4230ae5`.
+- BLOCKED: `npm run build:win` (installer). Electron-builder fails at the packaging step with `EPERM` on `win-unpacked.tmp` rename, and later `EBUSY` on `default_app.asar`. Happened with output in `dist/` and in `release/`. Suspect: the project sits under `Documents`, possibly synced by OneDrive or another file-sync client, which locks new files. Not confirmed. Next step for Sonnet: check for a sync client (`Get-Process OneDrive`), or build from a folder outside `Documents`, then re-run the Task 4 Step 4 checks.
+- NOT done: Task 4 Step 5 (the manual-vs-app walkthrough) and Plan 05's app checks. Need a person at the app.
+- Plan defect to fix before Sonnet reruns it: the repo docs say "Node 22 or later", but this machine runs Node 24. Harmless, but doc and reality differ.
 
 ## Known risky tasks (from the plan handoff, not yet attempted)
 
