@@ -4,6 +4,7 @@ import { mkdirSync } from 'fs'
 import { handle } from './ipc'
 import { log, logDir } from './log'
 import { registerSettings } from './services/settings'
+import { registerFs } from './services/fs'
 
 let win: BrowserWindow | null = null
 
@@ -57,6 +58,7 @@ app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
   registerSettings()
   registerWindow()
+  registerFs()
   createWindow()
 })
 app.on('window-all-closed', () => app.quit())

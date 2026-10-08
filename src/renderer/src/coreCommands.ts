@@ -28,3 +28,13 @@ registerCommand(
   { id: 'view.toggleTerminal', title: 'cmd.toggleTerminal', keys: 'Ctrl+`', run: () => togglePanel('panel') },
   { id: 'view.explorer', title: 'cmd.explorer', keys: 'Ctrl+Shift+E', run: () => { useApp.getState().setView('explorer'); showPanel('side') } }
 )
+
+// Plan 2 replaces this with the full project flow (git check, recent list).
+registerCommand({
+  id: 'project.openFolder', title: 'cmd.openFolder',
+  run: async () => {
+    const p = await call('dialog.openFolder')
+    if (!p) return
+    useApp.getState().setRoot(await call('project.open', p))
+  }
+})
