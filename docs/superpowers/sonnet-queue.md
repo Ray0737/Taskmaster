@@ -1,62 +1,53 @@
-# Sonnet queue — tasks too complex for Haiku
+# Handoff notes — what is verified, what is open
 
-Written for: Sonnet picking up a task Haiku got stuck on.
+Written for: whoever continues Taskmaster next (a person, or a model).
 
-Rule: Haiku hits the same failure twice → stop, add entry here, move on or wait.
+All five plans are implemented. Latest full run: 132/132 tests, `tsc --noEmit` clean, `npm run build` clean, Windows installer builds.
 
-## Status
+## Verified in the packaged app (Sonnet, by driving the UI over the DevTools protocol)
 
-- Plan 01-shell: all 11 tasks done by Haiku, 27/27 tests, build green. `npm run dev` launches with no startup errors (45 s run). Manual smoke checklist (Task 11 Step 10) not ticked: needs a person at the window.
-- Plan 02–05: not started.
+Packaged build, isolated profile, scratch git project with a local bare remote, real Claude Code 2.1.121, real GitHub login (`@Ray0737`).
 
-## Plan 02-git-auth: done by Haiku, with notes for review
+- Startup: Welcome screen shows Git 2.53, your Git identity, GitHub login, Claude Code. No console errors across all runs.
+- Packaged app contents: 11 manual chapters per language, native terminal module present and loading.
+- Project: open from Recent, Explorer, preview tab with Monaco, breadcrumbs, quick open (Ctrl+P).
+- Git: Explorer letters (M, U), stage all, commit with Ctrl+Enter keeps the exact multi-line message, clean tree afterwards.
+- Team: Enable Taskmaster, context branch pushed to the remote, project tree stays clean, task create/start creates `tm/<login>/<id>`, agent context contains the task and team prompt.
+- Teammate sync: a teammate's pushed task edit shows in the app; a teammate's damaged task file is skipped without errors.
+- Agent: real turn streams, usage footer, memory across turns, Stop works (one spawned process ends), Full mode shows the red warning, note box appears when no `<tm-note>`.
+- Help icons: Tasks, Team and Agent open their own chapter. Terminal opens with Ctrl+`.
+- Thai: Home screen text is Thai, no horizontal overflow at the default window size.
+- Pull request button on a non-GitHub remote shows the "not on GitHub" toast. Pause setting shows in the status bar.
 
-- Built: all 5 tasks, 46/46 tests, typecheck and build green. Commits `f52dc65` to `dc6ec33`.
-- Plan defect, fixed: `tests/git.test.ts` used a file named `q"uote.txt`. Windows forbids `"` in names, so the test could not run. Replaced with `q'uote.txt`. Sonnet: keep the quote-handling check, but any other Windows-invalid name also needs changing in the plan.
-- Plan defect, fixed: `tests/auth.test.ts` passed an object literal with an extra `extra` field to `toRepoInfo`. TypeScript rejects excess properties in literals, so typecheck failed. Added an `as` cast in the test.
-- NOT verified (needs a real GitHub account and a human): sign-in through Git Credential Manager, `gh` token path, creating a GitHub repo, pushing to a real remote, sync conflict toast, Thai UI on the Welcome screen.
-- Concern for Sonnet: `auth.ts` keeps the token in a module variable. The plan says it never logs, and a grep confirmed no `log(` calls. Re-check any future change that adds logging in that file.
+## Fixed while verifying
 
-## Plan 03-agents: done by Haiku, with notes for review
+- `core.longpaths` (commit `5f7635c`): team sync rebase failed with "Filename too long" once the worktree path plus `.taskmaster` files passed 260 characters, so a teammate's push never reached the app. Every git call now passes `-c core.longpaths=true`. Regression test in `tests/git.test.ts`.
+- Installer: `npm run build:win` fails with `EPERM`/`EBUSY` on `win-unpacked.tmp` when the output folder is inside the project folder (`dist/` or `release/`). Output outside the project works: `npx electron-builder --win --config.directories.output=<folder outside the project>` produced `Taskmaster Setup 0.1.0.exe` (111 MB). Cause not confirmed; Defender and the search indexer are running, OneDrive is running but `Documents` is not redirected into it. A leftover `release/win-unpacked.tmp` is still locked and ignored by `.gitignore`; delete it after a reboot.
 
-- Built: all 5 tasks. Commits `1028c2c` to `e4fdee9`. Typecheck and build green.
-- Real CLI check: one real `claude -p --output-format stream-json` call (prompt via stdin) exited 0 and returned `PONG`, cost about $0.10. Its result line is kept as `tests/agent-real.test.ts`.
-- NOT verified (needs a person at the app): Stop kills the real child tree, session resume after restart, Full/Edit/Read-only modes, the Retry path, Thai layout of the panel.
-- Plan count mismatch, harmless: the plan says 9 parser tests, the file has 10.
-- Concern for Sonnet: `streamProcess` uses `taskkill /T /F` on Windows and `process.kill(-pid)` elsewhere. The Windows stop path is only covered by the fake-process test, not a real `claude.exe`.
+## Correction to earlier notes
 
-## Plan 04-team: done by Haiku (Tasks 1–7)
+- Haiku reported "`npm run dev` launches with no startup errors". That check was invalid: this shell has `ELECTRON_RUN_AS_NODE=1` set, so Electron ran as plain Node and exited at once. Run Electron from a shell where that variable is unset (`Remove-Item Env:ELECTRON_RUN_AS_NODE`).
 
-- All 7 tasks built. Commits `2dde232` to `ab804d1`. Last full run: 131/131 tests, typecheck and `npm run build` green.
-- Tasks 6–7 (Team view, sync item, enable banner, sync settings, open PR) are in one commit, not two. Not verified in the app: the two-person GitHub smoke test in Task 6 Step 5.
-- Plan defect, fixed: `isRejected` in `teamsync.ts` matched only `[rejected]`, `non-fast-forward`, `fetch first`. Git 2.53 prints push rejections as hint lines (`integrate the remote changes`, `fast-forwards`), and `lastLines()` keeps only the last three lines. Without this fix the sync engine never pulled and retried. Added the hint text to the pattern.
-- Concern: `teamsync.ts` `pull()` uses `rebase -X theirs`. The modify/delete conflict test passed on git 2.53, so the plan's "may not raise SyncConflict" fallback was not needed.
-- Tasks 5–7 done (see the section above).
+## Still open
 
-## Plan 05-docs: Tasks 1–3 done, Task 4 partly done (Haiku)
+- GitHub write actions were not exercised, to avoid public side effects: creating a repository, inviting a collaborator, the real pull request page, Connect/Reconnect login window.
+- Not run: the NSIS installer itself (install, upgrade, uninstall). The unpacked build was run directly.
+- Not run: sync conflict banner and Reset to remote through the UI, offline back-off through the UI (both covered by `tests/teamsync.test.ts`).
+- Not run: Thai layout at the minimum window size (960 × 600), very long file names, Thai keyboard layout shortcuts, all four themes visually, keyboard-focus visibility.
+- Not run: manual-vs-app walkthrough (Plan 05 Task 4 Step 5).
+- The installer uses the default Electron icon and is not code-signed.
+- The repo docs say "Node 22 or later"; this machine runs Node 24.
 
-- Manual: 11 chapters EN and TH, guard tests green (`tests/manual-docs.test.ts`). Commits `22d4929` (and the Thai commit before it).
-- Repo docs: README, CHANGELOG, `docs/ARCHITECTURE.md`, `docs/CONTRIBUTING.md`. Commit `6976131`.
-- Help "?" icons on Tasks, Team and Agent headers. Commit `4230ae5`.
-- BLOCKED: `npm run build:win` (installer). Electron-builder fails at the packaging step with `EPERM` on `win-unpacked.tmp` rename, and later `EBUSY` on `default_app.asar`. Happened with output in `dist/` and in `release/`. Suspect: the project sits under `Documents`, possibly synced by OneDrive or another file-sync client, which locks new files. Not confirmed. Next step for Sonnet: check for a sync client (`Get-Process OneDrive`), or build from a folder outside `Documents`, then re-run the Task 4 Step 4 checks.
-- NOT done: Task 4 Step 5 (the manual-vs-app walkthrough) and Plan 05's app checks. Need a person at the app.
-- Plan defect to fix before Sonnet reruns it: the repo docs say "Node 22 or later", but this machine runs Node 24. Harmless, but doc and reality differ.
+## Plan defects found and fixed (for anyone rerunning the plans)
 
-## Known risky tasks (from the plan handoff, not yet attempted)
+- Plan 02 Task 1: test used file name `q"uote.txt`, invalid on Windows. Now `q'uote.txt`.
+- Plan 02 Task 2: test passed an object literal with an extra property to `toRepoInfo`, a TypeScript error. Added a cast.
+- Plan 04 Task 3: `isRejected` missed git 2.53's hint-only push rejection text, so sync never pulled and retried. Pattern widened.
+- Plan 04 Task 3 (new): git needs `core.longpaths` on Windows (see above).
+- Plan 03: plan says 9 parser tests, the file has 10. Harmless.
 
-- Manual smoke checklists at the end of each task — user runs the app.
+## Things to keep in mind
 
-## Stuck entries
-
-_(none yet)_
-
-Template:
-
-```
-### <plan> task <n> — <short title>
-- Failing step: <command>
-- Exact error: <one line>
-- What Haiku tried: <list>
-- Files touched: <paths>
-- Status: open | done
-```
+- `auth.ts` keeps the GitHub token in memory only and never logs. A grep confirmed no `log(` calls. Re-check if logging is added there.
+- `streamProcess` stops agents with `taskkill /T /F` on Windows and `process.kill(-pid)` elsewhere.
+- `teamsync.ts` `pull()` rebases with `-X theirs`: the local file wins per file. The modify/delete conflict test raises `SyncConflict` on git 2.53.
