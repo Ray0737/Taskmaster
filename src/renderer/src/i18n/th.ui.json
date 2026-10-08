@@ -30,5 +30,6 @@
   "settings.account.identity.desc": "ใช้เป็นผู้เขียน commit ของคุณ",
   "settings.account.github.desc": "จำเป็นสำหรับเชิญเพื่อนร่วมทีมและเปิด pull request",
   "settings.group.sync": "ซิงก์ทีม",
-  "settings.group.sync.desc": "ความถี่ที่ Taskmaster ดึงงานของเพื่อนร่วมทีม"
+  "settings.group.sync.desc": "ความถี่ที่ Taskmaster ดึงงานของเพื่อนร่วมทีม",
+  "task.notePlaceholder": "เขียนโน้ตถึงทีมของคุณ"
 }

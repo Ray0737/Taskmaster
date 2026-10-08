@@ -82,7 +82,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
         </div>
         {preview
           ? <div className="msg-md" style={{ minHeight: 120 }}><ReactMarkdown remarkPlugins={[remarkGfm]}>{draft.brief}</ReactMarkdown></div>
-          : <textarea className="textarea" rows={8} aria-label={t('task.brief')} value={draft.brief} onChange={(e) => patch({ brief: e.target.value })} />}
+          : <textarea className="textarea" rows={6} aria-label={t('task.brief')} value={draft.brief} onChange={(e) => patch({ brief: e.target.value })} />}
 
         <div className="field-label" style={{ margin: '16px 0 4px' }}>{t('task.scope')}</div>
         <div className="field-hint" style={{ marginBottom: 6 }}>{t('task.scopeHint')}</div>
@@ -106,7 +106,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
             <div style={{ whiteSpace: 'pre-wrap' }}>{n.text}</div>
           </div>
         ))}
-        <textarea className="textarea" rows={3} placeholder={t('task.addNote')} aria-label={t('task.addNote')} value={note} onChange={(e) => setNote(e.target.value)} />
+        <textarea className="textarea" rows={3} placeholder={t('task.notePlaceholder')} aria-label={t('task.addNote')} value={note} onChange={(e) => setNote(e.target.value)} />
         <div style={{ marginTop: 6 }}>
           <button className="btn btn-primary" disabled={!note.trim()} onClick={() => { void useTeam.getState().addNote(task.id, note); setNote('') }}>{t('task.saveNote')}</button>
         </div>

@@ -30,5 +30,6 @@
   "settings.account.identity.desc": "Used as the author of your commits.",
   "settings.account.github.desc": "Needed to invite teammates and open pull requests.",
   "settings.group.sync": "Team sync",
-  "settings.group.sync.desc": "How often Taskmaster fetches your teammates' changes."
+  "settings.group.sync.desc": "How often Taskmaster fetches your teammates' changes.",
+  "task.notePlaceholder": "Write a note for your team"
 }

@@ -27,28 +27,32 @@ function General() {
         </div>
       </Group>
       <Group icon="color-mode" title={t('settings.theme')} desc={t('settings.theme.desc')}>
-        <div className="swatches" role="radiogroup" aria-label={t('settings.theme')}>
-          {THEME_IDS.map((id) => {
-            const u = THEMES[id].ui
-            const sel = s.theme === id
-            return (
-              <button key={id} role="radio" aria-checked={sel} className={`swatch${sel ? ' sel' : ''}`} onClick={() => void set({ theme: id })}>
-                <span className="swatch-thumb" style={{ background: u['bg-0'] }} aria-hidden="true">
-                  <span className="sw-side" style={{ background: u['bg-1'] }} />
-                  <span className="sw-main">
-                    <span className="sw-bar" style={{ background: u.accent }} />
-                    <span className="sw-line" style={{ background: u.fg }} />
-                    <span className="sw-line" style={{ background: u.fg, width: '50%' }} />
-                  </span>
-                </span>
-                <span className="swatch-label">
-                  {sel && <Icon name="check" />}
-                  <span className="ellipsis">{THEMES[id].label}</span>
-                </span>
-              </button>
-            )
-          })}
+        <div className="tabs-inline" role="radiogroup" aria-label={t('settings.theme')} style={{ flexWrap: 'wrap' }}>
+          {THEME_IDS.map((id) => (
+            <button key={id} role="radio" aria-checked={s.theme === id} className={`btn${s.theme === id ? ' on' : ''}`} onClick={() => void set({ theme: id })}>{THEMES[id].label}</button>
+          ))}
         </div>
+        {(() => {
+          const u = THEMES[s.theme].ui
+          return (
+            <div className="theme-preview" style={{ background: u['bg-0'] }} aria-hidden="true">
+              <div className="tp-side" style={{ background: u['bg-1'] }}>
+                <span style={{ background: u.selected }} /><span style={{ background: u['fg-faint'] }} /><span style={{ background: u['fg-faint'] }} /><span style={{ background: u['fg-faint'] }} />
+              </div>
+              <div className="tp-main">
+                <div className="tp-tabs" style={{ background: u['bg-bar'] }}>
+                  <span className="tp-tab" style={{ background: u['bg-0'], boxShadow: `inset 0 -2px 0 ${u.accent}` }} />
+                  <span className="tp-tab" style={{ background: u['bg-1'] }} />
+                </div>
+                <div className="tp-code">
+                  <span style={{ background: u.accent, width: '38%' }} /><span style={{ background: u.fg, width: '66%' }} /><span style={{ background: u['fg-dim'], width: '52%' }} />
+                  <span style={{ background: u.danger, width: '24%' }} /><span style={{ background: u.fg, width: '58%' }} />
+                </div>
+              </div>
+              <div className="tp-status" style={{ background: u.accent }} />
+            </div>
+          )
+        })()}
       </Group>
     </>
   )

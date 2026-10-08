@@ -181,11 +181,11 @@ export function Team() {
           <button className="btn" onClick={() => runCommand('task.new')}>{t('team.onboarding.3')}</button>
         </div>
       )}
-      <div className="section-h" style={{ padding: '0 8px' }}>
+      <div className="section-h section-plain">
         <span className="ellipsis">{t('team.members')}</span><span className="badge">{data.team.members.length}</span>
       </div>
       {data.team.members.map((m) => <MemberRow key={m.login} m={m} />)}
-      <div className="section-h" style={{ padding: '0 8px', marginTop: 8 }}><span className="ellipsis">{t('team.roles')}</span></div>
+      <div className="section-h section-plain"><span className="ellipsis">{t('team.roles')}</span></div>
       {data.team.roles.map((r) => <RoleEditor key={r.id} role={r} />)}
       <NewRole />
       {addOpen && <AddMember />}

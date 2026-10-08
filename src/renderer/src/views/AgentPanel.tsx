@@ -55,11 +55,11 @@ function ContextDialog({ onClose }: { onClose: () => void }) {
           <>
             <div className="ctx-meta">
               <span className="dim small">{t('agent.context.size', { n: system.length, max: PROMPT_CAP })}</span>
-              <button className="btn btn-small" onClick={() => { void navigator.clipboard.writeText(system); setCopied(true); setTimeout(() => setCopied(false), 1200) }}>
+              <button className="btn btn-small btn-soft" onClick={() => { void navigator.clipboard.writeText(system); setCopied(true); setTimeout(() => setCopied(false), 1200) }}>
                 <Icon name={copied ? 'check' : 'copy'} />{copied ? t('agent.copied') : t('agent.copy')}
               </button>
             </div>
-            <div className="ctx-body mono selectable">{system}</div>
+            <div className="ctx-body selectable">{system}</div>
           </>
         ) : (
           <div className="empty-center ctx-empty">
@@ -69,7 +69,7 @@ function ContextDialog({ onClose }: { onClose: () => void }) {
             <button className="btn" onClick={() => { onClose(); runCommand('view.tasks') }}><Icon name="checklist" />{t('agent.context.openTasks')}</button>
           </div>
         )}
-        <div className="modal-actions"><button autoFocus className="btn" onClick={onClose}>{t('common.close')}</button></div>
+        <div className="modal-actions"><button autoFocus className="btn btn-primary" onClick={onClose}>{t('common.close')}</button></div>
       </div>
     </div>
   )
