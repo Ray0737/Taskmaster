@@ -7,6 +7,7 @@ import { ActivityBar } from './views/ActivityBar'
 import { Workbench } from './views/Workbench'
 import { StatusBar } from './views/StatusBar'
 import { Toasts, DialogHost, MenuHost } from './components/Overlays'
+import { Palette } from './views/Palette'
 
 export default function App() {
   const s = useApp((x) => x.settings)
@@ -25,6 +26,7 @@ export default function App() {
         <Workbench />
       </div>
       <StatusBar />
+      <Palette />
       <Toasts />
       <DialogHost />
       <MenuHost />

@@ -34,6 +34,11 @@ registerCommand(
   { id: 'view.explorer', title: 'cmd.explorer', keys: 'Ctrl+Shift+E', run: () => { useApp.getState().setView('explorer'); showPanel('side') } }
 )
 
+registerCommand(
+  { id: 'palette.open', title: 'cmd.palette', keys: 'Ctrl+Shift+P', run: () => openPalette('>') },
+  { id: 'quickOpen', title: 'cmd.quickOpen', keys: 'Ctrl+P', run: () => openPalette('') }
+)
+
 registerCommand({ id: 'terminal.new', title: 'cmd.newTerminal', keys: 'Ctrl+Shift+`', run: () => newTerminal() })
 
 // Plan 2 replaces this with the full project flow (git check, recent list).
