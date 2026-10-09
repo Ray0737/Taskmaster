@@ -4,7 +4,8 @@ import { handle, emit } from '../ipc'
 import { state } from '../state'
 import { log } from '../log'
 import { getSettings } from './settings'
-import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote, listSkills, writeSkill, deleteSkill, pluginDir } from './teamfs'
+import { join } from 'path'
+import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote, listSkills, writeSkill, deleteSkill, pluginDir, listImages, addImage, readImage, removeImage, attachDir } from './teamfs'
 import type { Skill } from '@shared/skills'
 import { attach, enable, flush, pull, reset, worktreeDir, SyncConflict, type Ctx } from './teamsync'
 
@@ -28,6 +29,12 @@ let queue: Promise<unknown> = Promise.resolve()
 export async function teamPluginDir(): Promise<string | null> {
   if (!ctx || !enabled || !getSettings().teamSkills) return null
   return (await listSkills(ctx.wt)).length ? pluginDir(ctx.wt) : null
+}
+
+// Absolute paths of a task's screenshots, for the agent host (empty when Taskmaster is off).
+export async function teamTaskImages(taskId: string | null): Promise<string[]> {
+  if (!ctx || !enabled || !taskId) return []
+  return (await listImages(ctx.wt, taskId)).map((f) => join(attachDir(ctx!.wt, taskId), f))
 }
 
 const serial = <T>(fn: () => Promise<T>): Promise<T> => {
@@ -141,6 +148,15 @@ export function registerTeam(): void {
     markDirty(`task ${t.title.slice(0, 40)}`)
   }))
   handle('team.deleteTask', (id: string) => serial(async () => { await deleteTask(need().wt, id); markDirty('delete task') }))
+  handle('team.images', async (id: string) => (ctx && enabled ? listImages(ctx.wt, id) : []))
+  handle('team.imagePath', async (id: string, file: string) => {
+    const c = need()
+    if (!(await listImages(c.wt, id)).includes(file)) throw new Error('Invalid image')
+    return join(attachDir(c.wt, id), file)
+  })
+  handle('team.imageData', async (id: string, file: string) => readImage(need().wt, id, file))
+  handle('team.addImage', (id: string, b64: string, ext: string) => serial(async () => { const f = await addImage(need().wt, id, b64, ext); markDirty('screenshot'); return f }))
+  handle('team.removeImage', (id: string, file: string) => serial(async () => { await removeImage(need().wt, id, file); markDirty('remove screenshot') }))
   handle('team.skills', async () => (ctx && enabled ? listSkills(ctx.wt) : []))
   handle('team.saveSkill', (s: Skill) => serial(async () => { await writeSkill(need().wt, s); markDirty(`skill ${s.name}`) }))
   handle('team.deleteSkill', (name: string) => serial(async () => { await deleteSkill(need().wt, name); markDirty('delete skill') }))

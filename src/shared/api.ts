@@ -59,7 +59,7 @@ export interface Api {
   'project.close': () => Promise<void>
   'agent.detect': () => Promise<AgentInfo[]>
   // runId is chosen by the renderer so it can match events that arrive before this call resolves.
-  'agent.run': (o: { runId: number; agentId: string; prompt: string; system: string; mode: AgentMode; sessionId: string | null }) => Promise<void>
+  'agent.run': (o: { runId: number; agentId: string; prompt: string; system: string; mode: AgentMode; model: string; taskId: string | null; sessionId: string | null }) => Promise<void>
   'agent.stop': (runId: number) => Promise<void>
   'agent.sessionGet': (key: string) => Promise<string | null>
   'agent.sessionSet': (key: string, id: string | null) => Promise<void>
@@ -71,6 +71,11 @@ export interface Api {
   'team.saveTeam': (team: Team) => Promise<void>
   'team.saveTask': (task: Task) => Promise<void>
   'team.deleteTask': (id: string) => Promise<void>
+  'team.images': (taskId: string) => Promise<string[]>
+  'team.imageData': (taskId: string, file: string) => Promise<string>
+  'team.imagePath': (taskId: string, file: string) => Promise<string>
+  'team.addImage': (taskId: string, base64: string, ext: string) => Promise<string>
+  'team.removeImage': (taskId: string, file: string) => Promise<void>
   'team.skills': () => Promise<Skill[]>
   'team.saveSkill': (skill: Skill) => Promise<void>
   'team.deleteSkill': (name: string) => Promise<void>

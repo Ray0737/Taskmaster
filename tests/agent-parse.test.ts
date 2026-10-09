@@ -78,3 +78,13 @@ it('needsLogin spots auth problems', () => {
   expect(needsLogin('OAuth token expired, authentication_error 401')).toBe(true)
   expect(needsLogin('Cannot read property of undefined')).toBe(false)
 })
+
+it('reads the plan usage window from rate_limit_event (the CLI reports it on every turn)', () => {
+  const ev = parseClaudeLine(J({ type: 'rate_limit_event', rate_limit_info: { status: 'allowed', resetsAt: 1791532200, rateLimitType: 'five_hour', utilization: 0.42 }, session_id: SID }))
+  expect(ev).toEqual([{ t: 'limit', kind: 'five_hour', status: 'allowed', utilization: 0.42, resetsAt: 1791532200 }])
+  expect(parseClaudeLine(J({ type: 'rate_limit_event', rate_limit_info: { status: 'allowed_warning', rateLimitType: 'seven_day' } }))[0]).toMatchObject({ kind: 'seven_day', utilization: null, resetsAt: null })
+})
+
+it('init carries the model the CLI resolved', () => {
+  expect(parseClaudeLine(J({ type: 'system', subtype: 'init', session_id: SID, model: 'claude-sonnet-5-5' }))).toEqual([{ t: 'init', sessionId: SID, model: 'claude-sonnet-5-5' }])
+})

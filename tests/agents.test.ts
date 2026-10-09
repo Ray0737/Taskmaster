@@ -125,3 +125,7 @@ it('streamProcess: stop kills the whole process tree', async () => {
   expect(events.some((e) => e.t === 'stopped')).toBe(true)
   expect(events.some((e) => e.t === 'result')).toBe(false)
 })
+
+it('claudeArgs adds --model only when a model is picked', () => {
+  expect(claudeArgs({ system: '', mode: 'plan', model: 'opus' })).toEqual(['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--permission-mode', 'plan', '--model', 'opus'])
+})

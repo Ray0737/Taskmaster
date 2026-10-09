@@ -69,11 +69,50 @@ export async function writeTask(dir: string, task: Task): Promise<void> {
   await put(dir, ['tasks', `${t.id}.json`], json(t))
 }
 
-// Removes the task file and its notes. Missing files are fine (a teammate may have deleted it first).
+// Removes the task file, its notes and its screenshots. Missing files are fine (a teammate may have deleted it first).
 export async function deleteTask(dir: string, id: string): Promise<void> {
   if (!isTaskId(id)) throw new Error('Invalid task')
   await fsp.rm(join(dir, TM_DIR, 'tasks', `${id}.json`), { force: true })
   await fsp.rm(join(dir, TM_DIR, 'notes', id), { recursive: true, force: true })
+  await fsp.rm(join(dir, TM_DIR, 'attachments', id), { recursive: true, force: true })
+}
+
+// Screenshots pasted into a task. Files come from teammates too, so names and size are checked on every read and write.
+export const IMG_MAX_BYTES = 4 * 1024 * 1024
+export const IMG_MAX_PER_TASK = 10
+const IMG_MIME: Record<string, string> = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' }
+const isImageName = (f: string): boolean => /^[\w-]{1,40}\.(png|jpg|webp|gif)$/.test(f)
+export const attachDir = (dir: string, id: string): string => join(dir, TM_DIR, 'attachments', id)
+
+export async function listImages(dir: string, id: string): Promise<string[]> {
+  if (!isTaskId(id)) return []
+  return (await names(attachDir(dir, id))).filter(isImageName).sort()
+}
+
+export async function addImage(dir: string, id: string, b64: string, ext: string, now = Date.now()): Promise<string> {
+  if (!isTaskId(id)) throw new Error('Invalid task')
+  if (!Object.hasOwn(IMG_MIME, ext)) throw new Error('Only png, jpg, webp and gif images')
+  const bytes = Buffer.from(b64, 'base64')
+  if (!bytes.length) throw new Error('Empty image')
+  if (bytes.length > IMG_MAX_BYTES) throw new Error('Image is over 4 MB')
+  if ((await listImages(dir, id)).length >= IMG_MAX_PER_TASK) throw new Error('A task keeps at most 10 screenshots')
+  const file = `${now}.${ext}`
+  await fsp.mkdir(attachDir(dir, id), { recursive: true })
+  await fsp.writeFile(join(attachDir(dir, id), file), bytes)
+  return file
+}
+
+export async function readImage(dir: string, id: string, file: string): Promise<string> {
+  if (!isTaskId(id) || !isImageName(file)) throw new Error('Invalid image')
+  const p = join(attachDir(dir, id), file)
+  if ((await fsp.stat(p)).size > IMG_MAX_BYTES) throw new Error('Image is over 4 MB')
+  const bytes = await fsp.readFile(p)
+  return `data:${IMG_MIME[file.split('.')[1]]};base64,${bytes.toString('base64')}`
+}
+
+export async function removeImage(dir: string, id: string, file: string): Promise<void> {
+  if (!isTaskId(id) || !isImageName(file)) throw new Error('Invalid image')
+  await fsp.rm(join(attachDir(dir, id), file), { force: true })
 }
 
 // .taskmaster/plugin is a Claude Code plugin ("team"): skills/<name>/SKILL.md, loaded with --plugin-dir.

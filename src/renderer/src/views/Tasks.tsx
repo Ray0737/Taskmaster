@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import type { Task, TaskStatus } from '@shared/team'
+import { STATUSES, type Task, type TaskStatus } from '@shared/team'
 import { errMsg } from '../ipc'
 import { useApp } from '../stores/app'
 import { useEditor } from '../stores/editor'
 import { useTeam, roleName } from '../stores/team'
-import { openMenu, toast } from '../stores/ui'
+import { openMenu, toast, confirmDialog } from '../stores/ui'
 import { registerCommand } from '../commands'
 import { showPanel } from '../layout'
-import { startTask } from '../tasks'
+import { startTask, setTaskStatus } from '../tasks'
 import { tr, useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
@@ -31,11 +31,13 @@ export async function newTaskFlow(): Promise<void> {
   } catch (e) { toast(errMsg(e), 'error') }
 }
 
-function Row({ task }: { task: Task }) {
+function Row({ task, selected, onPick }: { task: Task; selected: boolean; onPick: (task: Task, how: 'open' | 'toggle' | 'range') => void }) {
   const t = useT()
   const role = useTeam((s) => s.data?.team.roles.find((r) => r.id === task.role))
   return (
-    <div className="row" role="button" tabIndex={0} title={task.title} onClick={() => openTask(task)} onKeyDown={(e) => { if (e.key === 'Enter') openTask(task) }}>
+    <div className={`row${selected ? ' sel' : ''}`} role="button" aria-pressed={selected} tabIndex={0} title={task.title}
+      onClick={(e) => onPick(task, e.shiftKey ? 'range' : e.ctrlKey || e.metaKey ? 'toggle' : 'open')}
+      onKeyDown={(e) => { if (e.key === 'Enter') onPick(task, 'open'); else if (e.key === ' ') { e.preventDefault(); onPick(task, 'toggle') } }}>
       <Icon name={ICON[task.status]} />
       <span className="ellipsis flex1">{task.title}</span>
       <span className="tag ellipsis" style={{ maxWidth: 80 }}>{roleName(t, role)}</span>
@@ -52,8 +54,28 @@ export function Tasks() {
   const [mine, setMine] = useState(true)
   const [role, setRole] = useState('')
   const [shut, setShut] = useState<Record<TaskStatus, boolean>>({ doing: false, todo: false, review: false, done: true })
+  const [sel, setSel] = useState<string[]>([]) // selected task ids (Ctrl+click toggles, Shift+click selects a range, Space toggles)
+  const [anchor, setAnchor] = useState<string | null>(null)
   if (status !== 'enabled' || !data) return <EnableBox />
   const list = data.tasks.filter((x) => (!mine || x.assignee === me) && (!role || x.role === role))
+  const shown = ORDER.flatMap((st) => (shut[st] ? [] : list.filter((x) => x.status === st))) // rows in display order
+  const picked = sel.filter((id) => shown.some((x) => x.id === id))
+  const pick = (task: Task, how: 'open' | 'toggle' | 'range') => {
+    if (how === 'range' && anchor) {
+      const a = shown.findIndex((x) => x.id === anchor), b = shown.findIndex((x) => x.id === task.id)
+      if (a >= 0 && b >= 0) { setSel(shown.slice(Math.min(a, b), Math.max(a, b) + 1).map((x) => x.id)); return }
+    }
+    if (how === 'toggle' || how === 'range') { setSel(picked.includes(task.id) ? picked.filter((id) => id !== task.id) : [...picked, task.id]); setAnchor(task.id); return }
+    setSel([]); setAnchor(task.id); openTask(task)
+  }
+  const bulk = async (fn: (task: Task) => Promise<void>) => {
+    for (const id of picked) { const task = data.tasks.find((x) => x.id === id); if (task) await fn(task) }
+  }
+  const bulkDelete = async () => {
+    const ok = await confirmDialog({ title: t('tasks.bulk.deleteTitle', { n: picked.length }), text: t('tasks.bulk.deleteText'), danger: true, confirmLabel: t('tasks.bulk.delete') })
+    if (!ok) return
+    try { await bulk((x) => useTeam.getState().deleteTask(x.id)); toast(t('tasks.bulk.deleted', { n: picked.length })); setSel([]) } catch (e) { toast(errMsg(e), 'error') }
+  }
   return (
     <div style={{ paddingBottom: 16 }}>
       <div style={{ display: 'flex', gap: 6, padding: 8, alignItems: 'center' }}>
@@ -65,6 +87,17 @@ export function Tasks() {
           options={[{ value: '', label: t('tasks.allRoles') }, ...data.team.roles.map((r) => ({ value: r.id, label: roleName(t, r) }))]}
           onChange={setRole} />
       </div>
+      {picked.length > 0 && (
+        <div className="bulk-bar">
+          <span className="dim small">{t('tasks.selected', { n: picked.length })}</span>
+          <Dropdown variant="pill" ariaLabel={t('tasks.bulk.status')} value=""
+            options={[{ value: '', label: t('tasks.bulk.status') }, ...STATUSES.map((st) => ({ value: st, label: t(`status.${st}`) }))]}
+            onChange={(v) => { if (v) void bulk((x) => setTaskStatus(x.id, v as TaskStatus)) }} />
+          {me && <button className="btn btn-small" onClick={() => void bulk((x) => useTeam.getState().saveTask({ ...x, assignee: me })).catch((e) => toast(errMsg(e), 'error'))}><Icon name="account" />{t('tasks.bulk.assignMe')}</button>}
+          <button className="btn btn-small btn-delete" onClick={() => void bulkDelete()}><Icon name="trash" />{t('tasks.bulk.delete')}</button>
+          <button className="icon-btn" title={t('tasks.bulk.clear')} aria-label={t('tasks.bulk.clear')} onClick={() => setSel([])}><Icon name="close" /></button>
+        </div>
+      )}
       {list.length === 0 && <Empty text={t(mine ? 'tasks.emptyMine' : 'tasks.empty')} />}
       {ORDER.map((s) => {
         const items = list.filter((x) => x.status === s)
@@ -76,7 +109,7 @@ export function Tasks() {
               <span className="ellipsis">{t(`status.${s}`)}</span>
               <span className="badge">{items.length}</span>
             </button>
-            {!shut[s] && items.map((x) => <Row key={x.id} task={x} />)}
+            {!shut[s] && items.map((x) => <Row key={x.id} task={x} selected={picked.includes(x.id)} onPick={pick} />)}
           </div>
         )
       })}

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { STATUSES, type Task } from '@shared/team'
-import { errMsg } from '../ipc'
+import { call, on, errMsg } from '../ipc'
 import { useEditor, type Tab } from '../stores/editor'
 import { useTeam, roleName } from '../stores/team'
 import { confirmDialog, toast } from '../stores/ui'
@@ -15,6 +15,7 @@ import { Group } from '../components/Group'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { openPullRequest } from '../pr'
+import { clipboardImages, saveShots } from '../shots'
 import { tabRenderers } from './EditorArea'
 
 export function TaskTab({ tab }: { tab: Tab }) {
@@ -26,6 +27,15 @@ export function TaskTab({ tab }: { tab: Tab }) {
   const [glob, setGlob] = useState('')
   const [note, setNote] = useState('')
   const pending = useRef(false)
+  const [shots, setShots] = useState<{ file: string; src: string }[]>([])
+  const [zoom, setZoom] = useState<string | null>(null)
+  const loadShots = () => {
+    if (!tab.taskId) return
+    void call('team.images', tab.taskId)
+      .then((names) => Promise.all(names.map(async (file) => ({ file, src: await call('team.imageData', tab.taskId!, file) }))))
+      .then(setShots).catch(() => setShots([]))
+  }
+  useEffect(() => { loadShots(); return on('team.changed', loadShots) }, [tab.taskId])
   // Edits are merged and saved 600 ms after the last keystroke; a teammate's change is shown once ours is saved.
   const save = useRef(mergeDebounce<Partial<Task>>((p) => {
     pending.current = false
@@ -47,6 +57,16 @@ export function TaskTab({ tab }: { tab: Tab }) {
     if (g && !draft.files.includes(g)) patch({ files: [...draft.files, g] })
     setGlob('')
   }
+  // Ctrl+V anywhere on the page: image items become screenshots, plain text pastes as usual.
+  const onPaste = async (e: React.ClipboardEvent) => {
+    const files = clipboardImages(e.clipboardData)
+    if (!files.length) return
+    e.preventDefault()
+    try { await saveShots(task.id, files) } catch (err) { toast(`${t('task.shotFailed')}: ${errMsg(err)}`, 'error') }
+    loadShots()
+  }
+  const copyShotPath = (file: string) => { void call('team.imagePath', task.id, file).then((p) => navigator.clipboard.writeText(p)).then(() => toast(t('task.shotCopied'))).catch((err) => toast(errMsg(err), 'error')) }
+  const removeShot = (file: string) => { void call('team.removeImage', task.id, file).then(loadShots).catch((err) => toast(errMsg(err), 'error')) }
   const remove = async () => {
     const ok = await confirmDialog({ title: t('task.delete.title'), text: t('task.delete.text', { title: task.title }), danger: true, confirmLabel: t('task.delete') })
     if (!ok) return
@@ -59,7 +79,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
 
   return (
     <div className="split-body scroll" style={{ height: '100%', background: 'var(--bg-0)' }}>
-      <div className="settings-page task-page selectable">
+      <div className="settings-page task-page selectable" tabIndex={-1} onPaste={(e) => void onPaste(e)}>
         <header className="task-head">
           <input className="input task-title" autoFocus={task.title === t('tasks.untitled')} onFocus={(e) => { if (task.title === t('tasks.untitled')) e.currentTarget.select() }} aria-label={t('task.title')} value={draft.title} onChange={(e) => patch({ title: e.target.value })} />
           <div className="task-meta">
@@ -108,6 +128,21 @@ export function TaskTab({ tab }: { tab: Tab }) {
             : <textarea className="textarea" rows={6} aria-label={t('task.brief')} value={draft.brief} onChange={(e) => patch({ brief: e.target.value })} />}
         </Group>
 
+        <Group icon="file-media" title={t('task.shots')} desc={t('task.group.shots.desc')}>
+          {shots.length === 0 && <div className="dim">{t('task.shotsEmpty')}</div>}
+          {shots.length > 0 && (
+            <div className="task-shots">
+              {shots.map((x) => (
+                <div key={x.file} className="task-shot">
+                  <img src={x.src} alt="" onClick={() => setZoom(x.src)} />
+                  <button className="icon-btn shot-copy" title={t('task.shotCopy')} aria-label={t('task.shotCopy')} onClick={() => copyShotPath(x.file)}><Icon name="copy" /></button>
+                  <button className="icon-btn" title={t('task.shotRemove')} aria-label={t('task.shotRemove')} onClick={() => removeShot(x.file)}><Icon name="close" /></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </Group>
+
         <Group icon="filter" title={t('task.scope')} desc={t('task.scopeHint')}>
           {draft.files.length > 0 && (
             <div className="task-globs">
@@ -141,6 +176,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
           </div>
         </Group>
       </div>
+      {zoom && <div className="modal-back" onMouseDown={() => setZoom(null)}><img className="shot-zoom" src={zoom} alt="" /></div>}
     </div>
   )
 }

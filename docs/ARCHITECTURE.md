@@ -38,7 +38,7 @@ The window runs with `contextIsolation`, `sandbox`, no Node integration and a st
 | Git | `git.version/identity/setIdentity/isRepo/init/status/stage/unstage/discard/commit/branches/switch/sync/show/remoteUrl/clone/cloneCancel/startBranch/stashAll/commitAll` |
 | GitHub | `auth.status/connect/repos/collaborators/invite` |
 | Agents | `agent.detect/run/stop/sessionGet/sessionSet` |
-| Team | `team.attach/enable/read/saveTeam/saveTask/deleteTask/skills/saveSkill/deleteSkill/addNote/setPresence/syncNow/resetToRemote/detach` |
+| Team | `team.attach/enable/read/saveTeam/saveTask/deleteTask/images/imageData/addImage/removeImage/skills/saveSkill/deleteSkill/addNote/setPresence/syncNow/resetToRemote/detach` |
 | Events | `fs.changed`, `pty.data`, `pty.exit`, `git.progress`, `agent.event`, `agent.exit`, `team.changed`, `team.sync` |
 
 ## Registries (how views plug in)
@@ -67,6 +67,7 @@ Branch `taskmaster/context`, checked out as a worktree at `<userData>/worktrees/
   team.json                          { lead, members:[{login, role, joinedAt}], roles:[{id, label, prompt}] }
   tasks/<id>.json                    Task  (id = t-xxxxxxxx)
   notes/<task id>/<time>-<login>.md  one file per note
+  attachments/<task id>/<ms>.<ext>   screenshots pasted into a task (png/jpg/webp/gif, 4 MB, 10 per task); the agent host passes the folder with --add-dir and lists the paths in the system prompt
   presence/<login>.json              { login, taskId, branch, status, at }
   plugin/.claude-plugin/plugin.json  Claude Code plugin "team" (team skills)
   plugin/skills/<name>/SKILL.md      one team skill each; loaded with --plugin-dir only if settings.teamSkills is on

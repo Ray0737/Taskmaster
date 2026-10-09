@@ -1,8 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { AgentMode } from '@shared/types'
+import { CLAUDE_MODELS, CLAUDE_MODEL_LABEL } from '@shared/agent'
+import { LimitBadges } from './LimitBadges'
 import type { PastSession } from '@shared/transcript'
 import { PROMPT_CAP } from '@shared/prompt'
-import { call } from '../ipc'
+import { call, errMsg } from '../ipc'
+import { clipboardImages, saveShots } from '../shots'
 import { useApp } from '../stores/app'
 import { useAgent } from '../stores/agent'
 import { toast } from '../stores/ui'
@@ -131,7 +134,7 @@ function AgentEmpty({ canHistory, onHistory }: { canHistory: boolean; onHistory:
   const recent = (history ?? []).slice(0, 3)
   return (
     <div className="empty-center agent-empty">
-      <Icon name="hubot" className="empty-icon" />
+      <Icon name="terminal" className="empty-icon" />
       <div className="empty-title">{t('agent.empty.title')}</div>
       <div className="dim">{root ? t('agent.empty.hint') : t('agent.needProject')}</div>
       <div className="empty-actions">
@@ -151,7 +154,7 @@ function AgentEmpty({ canHistory, onHistory }: { canHistory: boolean; onHistory:
 export function AgentPanel() {
   const t = useT()
   const root = useApp((s) => s.root)
-  const { agents, detected, agentId, mode, items, runId, usage } = useAgent()
+  const { agents, detected, agentId, mode, items, runId, usage, model, resolvedModel } = useAgent()
   const agent = agents.find((a) => a.id === agentId)
   const [text, setText] = useState('')
   const [ctx, setCtx] = useState(false)
@@ -182,6 +185,16 @@ export function AgentPanel() {
     void useAgent.getState().send(v)
   }
 
+  // An image pasted into the chat is saved as a screenshot of the selected task and its path is typed into the message.
+  const pasteShots = async (files: File[]) => {
+    const taskId = useAgent.getState().taskId
+    if (!taskId) { toast(t('agent.shot.needTask'), 'error'); return }
+    try {
+      const paths = await Promise.all((await saveShots(taskId, files)).map((n) => call('team.imagePath', taskId, n)))
+      setText((x) => (x && !x.endsWith(' ') ? x + ' ' : x) + paths.join(' ') + ' ')
+    } catch (err) { toast(errMsg(err), 'error') }
+  }
+
   const status = running ? <RunStatus />
     : usage
       ? <span>{t('agent.usage', { inTokens: fmt(usage.inTokens), outTokens: fmt(usage.outTokens) }) + (usage.costUsd != null ? t('agent.cost', { cost: usage.costUsd.toFixed(2) }) : '')}</span>
@@ -190,8 +203,9 @@ export function AgentPanel() {
   return (
     <div className="pane">
       <div className="pane-title">
-        <Icon name="hubot" />
+        <Icon name="terminal" />
         <span className="ellipsis">{t('agent.title')}</span>
+        <span className="pane-limits"><LimitBadges /></span>
         <div className="pane-actions">
           {canHistory && <button className="icon-btn" title={t('agent.history')} aria-label={t('agent.history')} onClick={() => setHist(true)}><Icon name="history" /></button>}
           <HelpIcon chapter="06-agents.md" />
@@ -222,16 +236,22 @@ export function AgentPanel() {
               <textarea ref={ta} className="composer-input" rows={2} value={text} disabled={!root || !agent} aria-label={t('agent.placeholder')}
                 placeholder={root ? t('agent.placeholder') : t('agent.needProject')}
                 onChange={(e) => setText(e.target.value)}
+                onPaste={(e) => { const files = clipboardImages(e.clipboardData); if (files.length) { e.preventDefault(); void pasteShots(files) } }}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); submit() } }} />
               <div className="composer-bar">
                 <div className="composer-tools">
-                  <Dropdown variant="pill" icon="hubot" ariaLabel={t('agent.select')} disabled={running} value={agentId ?? ''}
+                  <Dropdown variant="pill" icon="terminal" ariaLabel={t('agent.select')} disabled={running} value={agentId ?? ''}
                     options={agents.map((a) => ({ value: a.id, label: `${a.label}${a.kind === 'basic' ? ` (${t('agent.basic')})` : ''}` }))}
                     onChange={(v) => useAgent.getState().setAgent(v)} />
                   {agent?.kind === 'claude' && (
+                    <>
+                    <Dropdown variant="pill" icon="symbol-class" ariaLabel={t('agent.model')} disabled={running} value={model}
+                      options={[{ value: '', label: resolvedModel ? `${t('agent.model.default')} (${resolvedModel})` : t('agent.model.default') }, ...CLAUDE_MODELS.map((m) => ({ value: m, label: CLAUDE_MODEL_LABEL[m] }))]}
+                      onChange={(v) => useAgent.getState().setModel(v)} />
                     <Dropdown variant="pill" className={mode === 'bypassPermissions' ? 'danger' : ''} icon={MODE_ICON[mode]} ariaLabel={t('agent.mode')} disabled={running} value={mode}
                       options={MODES.map((m) => ({ value: m, label: t(`agent.mode.${m}`) }))}
                       onChange={(v) => useAgent.getState().setMode(v as AgentMode)} />
+                    </>
                   )}
                   {agentHeaderExtras.map((X, i) => <X key={i} />)}
                   <button className="icon-btn" title={t('agent.context')} aria-label={t('agent.context')} onClick={() => setCtx(true)}><Icon name="info" /></button>

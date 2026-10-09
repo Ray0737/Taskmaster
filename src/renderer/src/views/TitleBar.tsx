@@ -1,5 +1,6 @@
 import { useApp } from '../stores/app'
 import { useT } from '../i18n'
+import { LimitBadges } from './LimitBadges'
 import { openMenu, type MenuEntry } from '../stores/ui'
 import { getCommand, hasCommand, runCommand } from '../commands'
 import { Icon } from '../components/Icon'
@@ -18,7 +19,6 @@ const MENUS: { label: string; items: string[] }[] = [
 export function TitleBar() {
   const t = useT()
   const root = useApp((s) => s.root)
-
   const open = (m: (typeof MENUS)[number], el: HTMLElement) => {
     const entries: MenuEntry[] = []
     for (const id of m.items) {
@@ -49,7 +49,7 @@ export function TitleBar() {
           <span className="ellipsis">{root ? basename(root) : 'Taskmaster'}</span>
         </button>
       </div>
-      <div className="tb-right" />
+      <div className="tb-right"><LimitBadges /></div>
     </header>
   )
 }

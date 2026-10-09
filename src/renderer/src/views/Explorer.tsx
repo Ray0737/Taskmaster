@@ -56,7 +56,8 @@ function menuFor(e: FileEntry): MenuEntry[] {
     { label: tr('explorer.delete'), keys: 'Delete', danger: true, run: safe(() => remove(e)) },
     'sep',
     { label: tr('explorer.reveal'), run: safe(() => call('fs.reveal', e.path)) },
-    { label: tr('explorer.copyPath'), run: safe(() => navigator.clipboard.writeText(e.path)) }
+    { label: tr('explorer.copyPath'), run: safe(() => navigator.clipboard.writeText(e.path)) },
+    { label: tr('explorer.copyRelPath'), run: safe(() => navigator.clipboard.writeText(relPath(useApp.getState().root ?? '', e.path))) }
   )
   return items
 }

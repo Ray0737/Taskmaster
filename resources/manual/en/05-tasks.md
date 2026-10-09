@@ -33,3 +33,11 @@ When the agent ends its answer with a short `<tm-note>` summary, Taskmaster save
 **Open pull request** (in the task tab and in Source Control on a `tm/…` branch) opens GitHub's pull request page for the branch. Press Sync first so the branch is on GitHub.
 
 Notes from the whole team are visible to every agent: the newest five are included in what each agent is told, so a back-end note about a new endpoint reaches the front-end agent.
+
+## Screenshots
+
+Open a task and press **Ctrl+V** after copying an image (a screen capture, for example). It appears under **Screenshots**; click it to enlarge, or use the cross to remove it. Screenshots are shared with the team like notes (up to 10 per task, 4 MB each, png, jpg, webp or gif). When an agent runs with that task selected, it is told where the screenshots are and can open them, so "here is what is wrong, fix it" works with a picture.
+
+## Selecting several tasks
+
+In the task list, `Ctrl+click` (or `Space`) adds or removes a task from the selection and `Shift+click` selects everything between the last click and this one. A bar appears with **Set status**, **Assign to me** and **Delete** for all selected tasks. A plain click opens one task and clears the selection.

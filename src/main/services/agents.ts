@@ -1,13 +1,14 @@
 import { execFile, spawn } from 'child_process'
 import { existsSync, readFileSync, promises as fsp } from 'fs'
 import { homedir } from 'os'
+import { CLAUDE_MODELS } from '@shared/agent'
 import { parseTranscript, sessionTitle, countPrompts, type PastSession, type TranscriptEntry } from '@shared/transcript'
 import { join, dirname, delimiter } from 'path'
 import { createHash } from 'crypto'
 import { app } from 'electron'
 import type { AgentInfo, AgentMode } from '@shared/types'
 import { parseClaudeLine, type AgentEvent } from '@shared/agent'
-import { teamPluginDir } from './team'
+import { teamPluginDir, teamTaskImages } from './team'
 import { handle, emit } from '../ipc'
 import { state } from '../state'
 import { log } from '../log'
@@ -73,11 +74,13 @@ export async function detectAgents(pathEnv = process.env.PATH ?? '', exts = defa
   return found.filter((a): a is AgentInfo => a !== null)
 }
 
-export function claudeArgs(o: { system: string; mode: AgentMode; sessionId?: string | null; pluginDir?: string | null }): string[] {
+export function claudeArgs(o: { system: string; mode: AgentMode; model?: string; sessionId?: string | null; pluginDir?: string | null; addDir?: string | null }): string[] {
   return [
     '-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--permission-mode', o.mode,
+    ...(o.model ? ['--model', o.model] : []),
     ...(o.system ? ['--append-system-prompt', o.system] : []),
     ...(o.pluginDir ? ['--plugin-dir', o.pluginDir] : []),
+    ...(o.addDir ? ['--add-dir', o.addDir] : []),
     ...(o.sessionId ? ['--resume', o.sessionId] : [])
   ]
 }
@@ -201,8 +204,10 @@ export function registerAgents(): void {
     if (!agent) throw new Error('Agent not found — rescan in Settings → Agents')
     const { cmd, prefix } = resolveCommand(agent.bin)
     const basic = agent.kind === 'basic'
-    const full = o.system ? `${o.system}\n\n---\n\n${o.prompt}` : o.prompt
-    const args = basic ? basicArgs(agent.id, full) : claudeArgs({ system: o.system, mode: o.mode, sessionId: o.sessionId, pluginDir: await teamPluginDir() })
+    const shots = basic ? [] : await teamTaskImages(o.taskId)
+    const system = shots.length ? `${o.system}\n\nScreenshots attached to this task (open them with your file reading tool, they show what the task is about):\n${shots.map((s) => `- ${s}`).join('\n')}` : o.system
+    const full = system ? `${system}\n\n---\n\n${o.prompt}` : o.prompt
+    const args = basic ? basicArgs(agent.id, full) : claudeArgs({ system, addDir: shots.length ? dirname(shots[0]) : null, mode: o.mode, model: (CLAUDE_MODELS as readonly string[]).includes(o.model) ? o.model : '', sessionId: o.sessionId, pluginDir: await teamPluginDir() })
     if (!args) throw new Error(`No adapter for ${agent.id}`)
     const h = streamProcess(
       { cmd, args: [...prefix, ...args], cwd: state.root, input: basic ? '' : o.prompt, parse: basic ? 'text' : 'claude' },

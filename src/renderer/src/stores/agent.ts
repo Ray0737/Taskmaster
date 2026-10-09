@@ -16,6 +16,10 @@ interface AgentState {
   startedAt: number | null
   sessionId: string | null
   usage: { inTokens: number; outTokens: number; costUsd: number | null } | null
+  limits: Record<string, { utilization: number | null; status: string; resetsAt: number | null }> // latest plan usage window per kind
+  model: string // --model id for Claude Code; '' = CLI default
+  resolvedModel: string | null // model the CLI reported on its last init
+  setModel(m: string): void
   taskId: string | null // set by Plan 4
   scope: string[] // task scope globs, set by Plan 4
   system: string // system prompt text, set by Plan 4 (empty = plain chat)
@@ -42,7 +46,7 @@ export const useAgent = create<AgentState>((set, get) => {
   const push = (item: NewItem): void => set((s) => ({ items: [...s.items, { ...item, id: nextId() } as Item] }))
   return {
     agents: [], detected: false, agentId: null, mode: 'acceptEdits', items: [], runId: null, startedAt: null,
-    sessionId: null, usage: null, taskId: null, scope: [], system: '', lastPrompt: '',
+    sessionId: null, usage: null, limits: {}, model: '', resolvedModel: null, taskId: null, scope: [], system: '', lastPrompt: '',
 
     detect: async () => {
       const agents = await call('agent.detect')
@@ -55,6 +59,7 @@ export const useAgent = create<AgentState>((set, get) => {
 
     setAgent: (id) => set({ agentId: id, sessionId: null, items: [], usage: null }),
     setMode: (mode) => set({ mode }),
+    setModel: (model) => set({ model }),
 
     setContext: (c) => {
       const changedTask = c.taskId !== get().taskId
@@ -71,7 +76,7 @@ export const useAgent = create<AgentState>((set, get) => {
       set({ runId, startedAt: Date.now(), lastPrompt: prompt })
       try {
         const sessionId = agent.kind === 'claude' ? (s.sessionId ?? (await call('agent.sessionGet', keyOf(s)))) : null
-        await call('agent.run', { runId, agentId: agent.id, prompt, system: s.system, mode: s.mode, sessionId })
+        await call('agent.run', { runId, agentId: agent.id, prompt, system: s.system, mode: s.mode, model: s.model, taskId: s.taskId, sessionId })
       } catch (e) {
         if (get().runId === runId) {
           set({ runId: null, startedAt: null })
@@ -119,8 +124,12 @@ export const useAgent = create<AgentState>((set, get) => {
 on('agent.event', ({ runId, ev }) => {
   const s = useAgent.getState()
   if (runId !== s.runId) return
+  if (ev.t === 'limit') {
+    useAgent.setState((st) => ({ limits: { ...st.limits, [ev.kind]: { utilization: ev.utilization, status: ev.status, resetsAt: ev.resetsAt } } }))
+    return
+  }
   if (ev.t === 'init') {
-    useAgent.setState({ sessionId: ev.sessionId })
+    useAgent.setState({ sessionId: ev.sessionId, ...(ev.model ? { resolvedModel: ev.model } : {}) })
     void call('agent.sessionSet', keyOf(s), ev.sessionId)
     return
   }

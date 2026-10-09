@@ -4,20 +4,25 @@ Written for: whoever continues Taskmaster next (a person, or a model starting a 
 
 ## State
 
-Version 1.0.0, pushed to https://github.com/Ray0737/Taskmaster.git (`main`). 141 tests pass, `npm run typecheck` is clean. Installer: `npm run build:win:local` writes `%LOCALAPPDATA%\Taskmaster\dist\Taskmaster-Setup-1.0.0.exe` (not code-signed, so SmartScreen warns).
+Version 1.1.0, pushed to https://github.com/Ray0737/Taskmaster.git (`main`). 145 unit tests pass, `npm run typecheck` is clean. Installer: `npm run build:win:local` writes `%LOCALAPPDATA%\Taskmaster\dist\Taskmaster-Setup-1.1.0.exe` (not code-signed, so SmartScreen warns). No `v1.1.0` git tag or GitHub release was made.
 
-Verified in the installed app: silent install with desktop and Start menu shortcuts, e2e scripts 01, 02, 03 and 05 all PASS, silent uninstall removes everything.
+New in 1.1.0 (see `CHANGELOG.md`): task multi-select with bulk actions, screenshots on tasks (paste on the task page or in the agent chat, Copy path, the agent can open them), Copy Relative Path in the Explorer, agent model picker, View usage button, rounded window frame, terminal icon for the agent, and the Thai string fix.
+
+Verified on the built 1.1.0 `win-unpacked` app (2026-10-09): e2e 01, 02, 03, 05, 06, 07 all PASS. Script 08 (multi-select, screenshots, chat paste, Copy path, one real agent turn that read a red screenshot) passes every step when run on its own. Run the scripts in this order on a fresh profile and fixture: 01, then 02, 03, 05, 06, 07, 08. Script 03 renames the task to "Login page (edited by B)", and 08 copes with that. Script 01 deletes the fixture folder, which fails with EPERM if the app still has it open, so restart the app first.
 
 Older details live in `docs/superpowers/sonnet-queue.md`, `docs/ARCHITECTURE.md`, `CHANGELOG.md`.
 
 ## Not verified yet
 
-- Team skills UI (Team view, Skills list, add/edit/delete dialog) and the Settings, Agents toggle "Use team skills in the agent" were never looked at in a running app. Only the plugin loading was checked (`claude --plugin-dir` returned the skill's code word).
-- Themes other than Mono Dark and Catppuccin Mocha. Keyboard-focus visibility.
-- Thai layout at the minimum window size (960 x 600), Thai keyboard shortcuts, very long file names.
-- GitHub write actions: create repo, invite collaborator, real pull request page, reconnect login window.
+- Thai text after the fix: the bundle has no garbled text and the strings are valid, but the team join toast (`team.joined`) was not triggered in the running app.
+- Themes: only the background colour was checked. Looks at the other themes (mono-light, mocha, github-dark) were not done by eye; screenshots are in the fixture folder from script 07.
+- Keyboard focus: Tab moves through the menu bar and its focus style shows. Other controls (rows, tabs, dropdowns, icon buttons) have `:focus-visible` rules in `base.css` but were not checked in the running app.
+- Thai at 960 x 600 was checked with an emulated viewport (`Emulation.setDeviceMetricsOverride`), not a real window resize.
+- GitHub write actions: create repo, invite collaborator, real pull request page, reconnect login window. Script 04 exists but needs a real GitHub account and makes real changes, so it was not run.
 - Sync conflict banner and offline back-off through the UI (the logic is covered by `tests/teamsync.test.ts`).
 - Last-minute UI changes were seen only in Mono Dark: Clone dialog hover, composer placeholder height, VS Code style dividers.
+- Agent model picker: Opus 5.5 fails on Claude Code 2.1.121 (needs a newer CLI). Sonnet 5.5 and Haiku 5.5 work. The pick is not saved between app launches.
+- View usage opens `https://claude.ai/settings/usage`; the URL was not confirmed to be the right page. The CLI rarely sends a percentage.
 
 ## Not built (user said hold off)
 
@@ -36,6 +41,7 @@ A Markdown viewer is the cheapest: the app already renders Markdown (react-markd
 - Do not kill processes by name; the user may be running Taskmaster. Test builds go to the scratchpad (`npx electron-builder --win --dir --config.directories.output=<dir>`), not over `%LOCALAPPDATA%\Taskmaster\dist`.
 - Run e2e scripts from a short work folder (like `C:\tmf`); git fails on very deep paths. See `scripts/e2e/README.md`.
 - Drive the app over CDP: launch with `--remote-debugging-port=<port> --user-data-dir=<scratch>`.
+- Thai i18n files: keep the text as real UTF-8. Editing them through a shell with `\` escapes can corrupt the characters. Check with `grep -rl "à¸" src` (should print nothing).
 - UI taste (from the user): underline fields, no hover boxes on plain buttons (color change or left accent bar), solid buttons for primary actions, small curves only on a few surfaces, sentence case labels, no em dashes in text, thin dividers between regions like VS Code. Screenshots with notes arrive in `Screenshots/` (git-ignored).
 - Never commit credentials. `.gitignore` covers `.env*`, keys, tokens. The GitHub token lives in memory only (`auth.ts`).
 - Commit trailer: `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` (use the current model's name).

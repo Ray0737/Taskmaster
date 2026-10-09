@@ -11,7 +11,7 @@ import { Icon } from '../components/Icon'
 import { settingsSections } from './registry'
 import { tabRenderers } from './EditorArea'
 
-const SECTION_ICON: Record<string, string> = { general: 'settings-gear', editor: 'edit', account: 'account', agents: 'hubot', sync: 'sync' }
+const SECTION_ICON: Record<string, string> = { general: 'settings-gear', editor: 'edit', account: 'account', agents: 'terminal', sync: 'sync' }
 
 // Lets the user type any number; applies as soon as it is in range, and clamps on blur or Enter.
 function NumInput({ value, min, max, label, onCommit }: { value: number; min: number; max: number; label: string; onCommit: (n: number) => void }) {

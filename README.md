@@ -48,4 +48,4 @@ Node 22 or later and Git 2.30 or later are needed for development.
 
 ## Status
 
-Version 1.0.0. Not in this version: real-time co-editing, an in-app merge-conflict editor, in-app pull request review, macOS and Linux builds. The installer is not code-signed.
+Version 1.1.0. Not in this version: real-time co-editing, an in-app merge-conflict editor, in-app pull request review, macOS and Linux builds. The installer is not code-signed.

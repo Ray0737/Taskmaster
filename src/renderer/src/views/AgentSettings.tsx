@@ -19,7 +19,7 @@ function AgentsSection() {
   useEffect(() => { if (!useAgent.getState().detected) void useAgent.getState().detect() }, [])
   return (
     <>
-      <Group icon="hubot" title={t('settings.group.detected')} desc={t('settings.group.detected.desc')}>
+      <Group icon="terminal" title={t('settings.group.detected')} desc={t('settings.group.detected.desc')}>
         {detected && agents.length === 0 && <div className="dim">{t('settings.agents.none')}</div>}
         {agents.map((a) => (
           <div key={a.id} className="setup-row" style={{ alignItems: 'center' }}>
