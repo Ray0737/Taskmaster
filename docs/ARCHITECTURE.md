@@ -94,3 +94,7 @@ Ids and logins from files are validated before use (they become file and branch 
 ## Notifications and agent proposals
 
 `shared/notify.ts` (`diffTeam`) compares two reads of the team data and returns what concerns me. `stores/team.ts` runs it on every refresh that was not caused by our own save and calls `teamListeners`; `stores/notices.ts` turns those events into notices and also turns `<tm-assign login title role>brief</tm-assign>` blocks in the agent's answer (`extractAssignments`) into proposals. A proposal creates a task only when approved, and the login must be a team member. Notices live in memory for the open project.
+
+## Languages and Run File
+
+Monaco (full bundle) highlights most languages by extension; `monaco.ts` adds `.ino` (C++) and .NET project files (XML) and configures JS and TS (JSX on, semantic errors off because there are no node_modules types in the editor). `shared/run.ts` (`runLine`) maps an extension to a PowerShell line; `runFile.ts` saves the file and types the line into the terminal (`runInTerminal`). There is no language server: completions beyond JS and TS, go-to-definition and live diagnostics for Python, C, C++ and C# would need one (pyright, clangd, OmniSharp) behind a Monaco LSP client.

@@ -21,7 +21,7 @@ export function mergeSettings(raw: unknown): Settings {
   const r = obj(raw), l = obj(r.layout), d = DEFAULT_SETTINGS, dl = d.layout
   return {
     lang: pick(r.lang, ['en', 'th'] as const, d.lang),
-    theme: pick(r.theme, ['mono-dark', 'mono-light', 'mocha', 'github-dark'] as const, d.theme),
+    theme: pick(r.theme, ['mono-dark', 'mono-light', 'mocha', 'github-dark', 'claude-dark'] as const, d.theme),
     fontSize: num(r.fontSize, 10, 24, d.fontSize),
     autoSave: pick(r.autoSave, ['off', 'delay'] as const, d.autoSave),
     wordWrap: bool(r.wordWrap, d.wordWrap),

@@ -2,12 +2,13 @@
 
 ## Themes
 
-Four themes are included:
+Five themes are included:
 
 - **Mono Dark** (default): black, gray text, no colors except red for errors.
 - **Mono Light**: the same in white.
 - **Catppuccin Mocha**: purple accent on deep blue-gray.
 - **GitHub Dark**: the GitHub dark palette.
+- **Claude Dark**: the warm charcoal of Claude desktop, cream text and a terracotta accent.
 
 Change the theme in **Settings → General** (click a swatch), by clicking the theme name in the status bar, or with the command **Change Theme…** (Ctrl+Shift+P). The editor, terminal and window buttons change with it.
 

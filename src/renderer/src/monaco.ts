@@ -74,6 +74,22 @@ for (const id of THEME_IDS) {
   })
 }
 
+// Extensions Monaco does not know: Arduino sketches are C++, .NET and Visual Studio project files are XML.
+monaco.languages.register({ id: 'cpp', extensions: ['.ino', '.pde'] })
+monaco.languages.register({ id: 'xml', extensions: ['.csproj', '.vcxproj', '.props', '.targets', '.xaml', '.resx'] })
+
+// JS, JSX, TS and TSX: JSX understood, completions inside the file. Semantic errors are off on purpose: the editor has no node_modules
+// types, so every import would be flagged. Syntax errors stay on. (ponytail: a real language server per language would replace this.)
+const ts = monaco.languages.typescript
+const tsOptions = {
+  target: ts.ScriptTarget.ESNext, module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.NodeJs,
+  jsx: ts.JsxEmit.ReactJSX, allowJs: true, allowNonTsExtensions: true, esModuleInterop: true, allowSyntheticDefaultImports: true
+}
+for (const d of [ts.typescriptDefaults, ts.javascriptDefaults]) {
+  d.setCompilerOptions(tsOptions)
+  d.setDiagnosticsOptions({ noSemanticValidation: true, noSyntaxValidation: false })
+}
+
 export { monaco }
 export const uriOf = (path: string) => monaco.Uri.file(path)
 export const getModel = (path: string) => monaco.editor.getModel(uriOf(path))

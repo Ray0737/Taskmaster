@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Theme: Claude Dark, the warm charcoal of Claude desktop with a terracotta accent.
+- Layout: the activity bar, sidebar, editor, terminal and agent panels are rounded cards on a frame instead of boxes joined by lines.
+- Languages: Arduino .ino files are highlighted as C++, .NET project files as XML; JSX and TSX are understood and JS and TS show syntax errors (Python, C, C++, C#, Java, Go and more were already highlighted by Monaco).
+- Run File (play button above the code, Ctrl+F5): python, node, tsx, gcc, g++, dotnet, java, go and PowerShell scripts run in the terminal; unsaved edits are saved first.
+- Chat: a person icon on your messages, and a "Cooking..." indicator (terminal icon, rotating word, animated dots) while the agent works.
 - Markdown preview: right-click a .md file in the Explorer, Open Preview (also a command palette entry). Rendered, read-only, follows unsaved edits.
 - Window: a maximized or full-screen window fills the screen (no outer frame, no corner curve); the frame shows only in a smaller window.
 - Usage icon now sits with history, help and new chat (same style, shown on hover with them).

@@ -6,6 +6,8 @@ import { call } from '../ipc'
 import { useT } from '../i18n'
 import { getCommand, runCommand } from '../commands'
 import { relPath, joinPath, extOf } from '@shared/paths'
+import { runLine } from '@shared/run'
+import { runFile } from '../runFile'
 import { Icon } from '../components/Icon'
 import { FileEditor } from './FileEditor'
 import { DiffTab } from './DiffTab'
@@ -71,6 +73,7 @@ function Tabs() {
 }
 
 function Breadcrumbs({ path }: { path: string }) {
+  const t = useT()
   const root = useApp((s) => s.root)
   if (!root) return null
   const parts = relPath(root, path).split('/')
@@ -88,6 +91,7 @@ function Breadcrumbs({ path }: { path: string }) {
           <button className="crumb" onClick={(e) => void show(i, e.currentTarget)}>{p}</button>
         </span>
       ))}
+      {runLine(path) && <button className="icon-btn crumb-run" title={t('run.tip')} aria-label={t('run.tip')} onClick={() => void runFile(path)}><Icon name="play" /></button>}
     </div>
   )
 }

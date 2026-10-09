@@ -6,6 +6,7 @@ import { togglePanel, showPanel, panels } from './layout'
 import { THEME_IDS } from './theme/themes'
 import { useEditor, saveActive } from './stores/editor'
 import { useTerm, newTerminal } from './stores/terminal'
+import { runActiveFile } from './runFile'
 import type { EditRole } from '@shared/api'
 
 const role = (r: EditRole) => () => call('win.role', r)
@@ -44,6 +45,7 @@ registerCommand(
   { id: 'quickOpen', title: 'cmd.quickOpen', keys: 'Ctrl+P', run: () => openPalette('') }
 )
 
+registerCommand({ id: 'file.run', title: 'cmd.runFile', keys: 'Ctrl+F5', run: () => runActiveFile() })
 registerCommand({ id: 'terminal.new', title: 'cmd.newTerminal', keys: 'Ctrl+Shift+`', run: () => newTerminal() })
 
 // Plan 2 replaces this with the full project flow (git check, recent list).

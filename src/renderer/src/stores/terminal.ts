@@ -37,6 +37,14 @@ export async function newTerminal(cmd?: string): Promise<void> {
   useTerm.setState((s) => ({ list: [...s.list, { id, title, exited: false }], active: id }))
 }
 
+// Types a command into the active terminal (opening one if needed) and runs it.
+export async function runInTerminal(line: string): Promise<void> {
+  if (!useTerm.getState().list.some((t) => !t.exited)) await newTerminal()
+  showPanel('panel')
+  const id = useTerm.getState().active
+  if (id !== null) await call('pty.write', id, line + '\r')
+}
+
 export async function killTerminal(id: number): Promise<void> {
   await call('pty.kill', id)
   useTerm.setState((s) => {

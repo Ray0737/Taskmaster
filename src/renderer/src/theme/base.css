@@ -151,6 +151,7 @@ html[data-max] .app { border-radius: 0; }
 .tab:hover .tab-close.dirty .when-idle { display: none; }
 .breadcrumbs { height: 22px; flex: none; display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--fg-dim); overflow: hidden; white-space: nowrap; background: var(--bg-0); }
 .crumb { padding: 0 2px; }
+.crumb-run { margin-left: auto; width: 20px; height: 20px; }
 .crumb:hover, .crumb:focus-visible { color: var(--fg); background: var(--hover); }
 .crumb-sep { padding: 0 2px; }
 .editor-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
@@ -464,3 +465,27 @@ kbd { color: var(--fg-dim); font-size: 12px; }
 .notice-title { font-weight: 600; overflow-wrap: anywhere; }
 .notice-brief { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .notice-actions { display: flex; gap: 6px; margin-top: 4px; }
+
+/* ---------- chat: human icon, cooking indicator ---------- */
+.msg-user { display: flex; gap: 8px; align-items: flex-start; }
+.msg-user .codicon { flex: none; margin-top: 3px; color: var(--fg-dim); }
+.msg-cooking { display: flex; align-items: center; gap: 8px; padding: 4px 2px; color: var(--fg-dim); }
+.cook-icon { color: var(--accent); animation: cook-pulse 1.4s ease-in-out infinite; }
+.cook-dots { display: inline-flex; gap: 3px; }
+.cook-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: cook-dot 1.2s ease-in-out infinite; }
+.cook-dots i:nth-child(2) { animation-delay: 0.2s; }
+.cook-dots i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes cook-pulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+@keyframes cook-dot { 0%, 80%, 100% { opacity: 0.2; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) { .cook-icon, .cook-dots i { animation: none; } }
+
+/* ---------- rounded panels: the regions float on the frame instead of sitting in boxes ---------- */
+.app { background: var(--bg-bar); }
+.main { gap: 6px; padding: 0 6px 6px; }
+.activitybar { background: var(--bg-1); border-radius: 10px; box-shadow: none; }
+.pane, .editor-area { border-radius: 10px; overflow: hidden; }
+.sash-v { width: 6px; margin: 0; }
+.sash-h { height: 6px; margin: 0; }
+.sash::after { display: none; }
+.sash { border-radius: 3px; }
+.titlebar, .statusbar { box-shadow: none; }

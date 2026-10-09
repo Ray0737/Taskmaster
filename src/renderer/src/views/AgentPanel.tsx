@@ -31,6 +31,20 @@ const fmt = (n: number): string => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : St
 const MODES: AgentMode[] = ['plan', 'acceptEdits', 'bypassPermissions']
 const MODE_ICON: Record<AgentMode, string> = { plan: 'eye', acceptEdits: 'edit', bypassPermissions: 'warning' }
 
+// Shown under the chat while the agent works: terminal icon, a rotating word, animated dots.
+function Cooking() {
+  const t = useT()
+  const [i, setI] = useState(0)
+  useEffect(() => { const x = setInterval(() => setI((n) => n + 1), 2600); return () => clearInterval(x) }, [])
+  return (
+    <div className="msg-cooking" role="status">
+      <Icon name="terminal" className="cook-icon" />
+      <span>{t(`agent.cook.${i % 5}`)}</span>
+      <span className="cook-dots" aria-hidden="true"><i /><i /><i /></span>
+    </div>
+  )
+}
+
 function RunStatus() {
   const t = useT()
   const startedAt = useAgent((s) => s.startedAt)
@@ -224,6 +238,7 @@ export function AgentPanel() {
             <div ref={msgs} className="agent-msgs"
               onScroll={(e) => { const el = e.currentTarget; setStick(el.scrollHeight - el.scrollTop - el.clientHeight < 40) }}>
               {items.length === 0 ? <AgentEmpty canHistory={canHistory} onHistory={() => setHist(true)} /> : items.map((i) => <Message key={i.id} item={i} />)}
+              {running && items.length > 0 && <Cooking />}
             </div>
             {!stick && items.length > 0 && (
               <button className="btn new-msgs" onClick={() => { setStick(true) }}><Icon name="arrow-down" />{t('agent.newMessages')}</button>

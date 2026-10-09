@@ -115,7 +115,7 @@ function Notice({ item }: { item: Extract<Item, { kind: 'notice' }> }) {
 
 export const Message = memo(function Message({ item }: { item: Item }) {
   switch (item.kind) {
-    case 'user': return <div className="msg-user">{item.text}</div>
+    case 'user': return <div className="msg-user"><Icon name="account" /><span>{item.text}</span></div>
     case 'assistant':
       return (
         <div className="msg-md">

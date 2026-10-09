@@ -45,6 +45,14 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
       '#238636', '#ffffff', '#2ea043', '#f85149', '#3fb950', '#d29922', '#12261e', '#25171c', '#30363d', '#484f58']),
     syntax: { comment: '#8b949e', keyword: '#ff7b72', string: '#a5d6ff', number: '#79c0ff', fn: '#d2a8ff', type: '#ffa657',
       variable: '#e6edf3', operator: '#e6edf3', tag: '#7ee787', attribute: '#79c0ff' }
+  },
+  // The warm dark of Claude desktop: charcoal with a slight brown, cream text, terracotta accent.
+  'claude-dark': {
+    label: 'Claude Dark', dark: true,
+    ui: ui(['#262624', '#1f1e1d', '#1a1918', '#30302e', '#3a3937', '#43423f', '#4d4c48', '#faf9f5', '#c2c0b6', '#8a8880', '#d97757',
+      '#d97757', '#1a1918', '#e58a6c', '#ef6b5b', '#8fc79a', '#e3b062', '#2d3a2e', '#44302d', '#3f3e3b', '#5a5955']),
+    syntax: { comment: '#8a8880', keyword: '#d97757', string: '#a9c98a', number: '#e3b062', fn: '#7fb2d9', type: '#e3b062',
+      variable: '#ece9dd', operator: '#b0aea5', tag: '#d97757', attribute: '#e3b062' }
   }
 }
 

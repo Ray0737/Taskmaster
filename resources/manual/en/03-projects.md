@@ -30,3 +30,9 @@ Choose **Clone into**, press **Clone**. A progress bar shows the download and **
 ## Markdown preview
 
 Right-click a `.md` file in the Explorer and choose **Open Preview** to read it rendered, with headings, tables and links. The preview follows your edits, saved or not. It is read-only; edit in the file's own tab. Links open in your browser. The same command is in the command palette as "Open Markdown Preview".
+
+## Languages and running a file
+
+The editor colors Python, C, C++, C#, Java, Go, JavaScript, TypeScript, JSX and TSX, JSON, HTML, CSS, Markdown, shell and many more by file extension. Arduino sketches (`.ino`) are shown as C++ and .NET project files (`.csproj`, `.xaml`) as XML. JavaScript and TypeScript suggest completions inside the file and flag syntax errors; there are no error squiggles for imports, because the editor does not read `node_modules`.
+
+Press the play button above the code, or **Run File** (Ctrl+F5), to run the current file in the terminal with the tools on your computer: `python`, `node`, `npx tsx` (TypeScript and TSX), `gcc` and `g++` (compiled into the temp folder), `dotnet run`, `java` and `go run`. The tool must be installed and on your PATH. Unsaved changes are saved first. Arduino sketches cannot be run yet.

@@ -1,4 +1,4 @@
-export type ThemeId = 'mono-dark' | 'mono-light' | 'mocha' | 'github-dark'
+export type ThemeId = 'mono-dark' | 'mono-light' | 'mocha' | 'github-dark' | 'claude-dark'
 export type Lang = 'en' | 'th'
 export type AgentMode = 'plan' | 'acceptEdits' | 'bypassPermissions'
 
