@@ -5,7 +5,7 @@ import { getModel, disposeModel } from '../monaco'
 import { confirmDialog } from './ui'
 import { tr } from '../i18n'
 
-export type TabKind = 'file' | 'diff' | 'settings' | 'manual' | 'task'
+export type TabKind = 'file' | 'diff' | 'settings' | 'manual' | 'task' | 'mdpreview'
 export interface Tab { id: string; kind: TabKind; title: string; path?: string; taskId?: string; diff?: 'disk' | 'head'; preview: boolean }
 type NewTab = Omit<Tab, 'id' | 'preview'>
 

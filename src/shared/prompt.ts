@@ -2,6 +2,7 @@ export interface PromptContext {
   role?: { label: string; prompt: string }
   task?: { title: string; brief: string; files: string[] }
   others: { login: string; role: string; taskTitle: string }[] // teammates with a task in `doing`
+  members?: { login: string; role: string }[] // everyone on the team (for <tm-assign>)
   notes: { taskTitle: string; login: string; text: string; at: string }[] // any order; newest are used
 }
 
@@ -18,6 +19,10 @@ function render(c: PromptContext, notes: PromptContext['notes'], brief: string):
     L.push(`Your task: ${c.task.title}`, brief)
     L.push(`Stay inside these files when possible: ${c.task.files.length ? c.task.files.join(', ') : 'any'}`)
   }
+  if (c.members && c.members.length > 1) {
+    L.push(`Team members: ${c.members.map((m) => `@${m.login} (${m.role})`).join(', ')}.`,
+      'If part of the work belongs to a teammate, end your answer with one <tm-assign login="their-login" title="short title">what they should do</tm-assign> per task (at most 3). It only sends a request the user must approve first, so never say the task was assigned.')
+  }
   if (c.others.length) L.push('Team right now:', ...c.others.map((o) => `- @${o.login} (${o.role}) doing "${o.taskTitle}"`))
   if (notes.length) {
     L.push(`Recent notes (newest first, max ${NOTES_SHOWN}, each trimmed to ${NOTE_MAX} chars):`,
@@ -29,7 +34,7 @@ function render(c: PromptContext, notes: PromptContext['notes'], brief: string):
 
 // Pure. Returns '' when there is nothing to tell the agent (plain chat).
 export function buildSystemPrompt(c: PromptContext): string {
-  if (!c.role && !c.task && !c.others.length && !c.notes.length) return ''
+  if (!c.role && !c.task && !c.others.length && !c.notes.length && !(c.members && c.members.length > 1)) return ''
   const notes = [...c.notes].sort((a, b) => b.at.localeCompare(a.at)).slice(0, NOTES_SHOWN)
   let brief = c.task?.brief ?? ''
   let out = render(c, notes, brief)
@@ -45,4 +50,20 @@ export function buildSystemPrompt(c: PromptContext): string {
 export function extractNote(text: string): string | null {
   const all = [...text.matchAll(/<tm-note>([\s\S]*?)<\/tm-note>/g)].map((m) => m[1].trim()).filter(Boolean)
   return all.length ? all[all.length - 1] : null
+}
+
+export interface Assignment { login: string; title: string; brief: string; role?: string }
+
+// <tm-assign login="x" title="y" role="z">brief</tm-assign> blocks in the agent's answer. These are only proposals: the app
+// checks the login against the team and asks the user before any task is created.
+export function extractAssignments(text: string): Assignment[] {
+  const out: Assignment[] = []
+  for (const m of text.matchAll(/<tm-assign\s+([^>]*)>([\s\S]*?)<\/tm-assign>/g)) {
+    const a: Record<string, string> = {}
+    for (const p of m[1].matchAll(/(\w+)="([^"]*)"/g)) a[p[1]] = p[2]
+    if (!a.login || !a.title?.trim()) continue
+    out.push({ login: a.login, title: a.title.trim().slice(0, 200), brief: m[2].trim().slice(0, 4000), ...(a.role ? { role: a.role } : {}) })
+    if (out.length >= 3) break
+  }
+  return out
 }

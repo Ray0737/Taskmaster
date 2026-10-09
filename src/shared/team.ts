@@ -13,7 +13,7 @@ export interface Role { id: string; label: string; prompt: string }
 export interface Member { login: string; role: string; joinedAt: string }
 export interface Team { lead: string; members: Member[]; roles: Role[] }
 export interface Note { taskId: string; login: string; at: string; text: string; file: string }
-export interface Presence { login: string; taskId: string | null; branch: string | null; status: 'idle' | 'working'; at: string }
+export interface Presence { login: string; taskId: string | null; branch: string | null; status: 'idle' | 'working'; running?: boolean; at: string } // running: their agent is answering right now
 export interface TeamData { team: Team; tasks: Task[]; notes: Note[]; presence: Presence[] }
 export type SyncState = 'off' | 'idle' | 'syncing' | 'offline' | 'conflict'
 export interface SyncInfo { state: SyncState; at: string | null; error: string | null }
@@ -88,6 +88,7 @@ export function parsePresence(raw: unknown): Presence | null {
     taskId: isTaskId(o.taskId) ? o.taskId : null,
     branch: typeof o.branch === 'string' && o.branch ? o.branch.slice(0, 200) : null,
     status: o.status === 'working' ? 'working' : 'idle',
+    running: o.running === true,
     at: iso(o.at)
   }
 }
@@ -119,6 +120,7 @@ export function buildPromptContext(d: TeamData, me: string, taskId: string | nul
     role: role ? { label: role.label, prompt: role.prompt } : undefined,
     task: task ? { title: task.title, brief: task.brief, files: task.files } : undefined,
     others,
+    members: d.team.members.map((m) => ({ login: m.login, role: roleOf(m.role)?.label ?? m.role })),
     notes: d.notes.map((n) => ({ taskTitle: d.tasks.find((t) => t.id === n.taskId)?.title ?? n.taskId, login: n.login, text: n.text, at: n.at }))
   }
 }

@@ -205,8 +205,8 @@ export function AgentPanel() {
       <div className="pane-title">
         <Icon name="terminal" />
         <span className="ellipsis">{t('agent.title')}</span>
-        <span className="pane-limits"><LimitBadges /></span>
         <div className="pane-actions">
+          <LimitBadges />
           {canHistory && <button className="icon-btn" title={t('agent.history')} aria-label={t('agent.history')} onClick={() => setHist(true)}><Icon name="history" /></button>}
           <HelpIcon chapter="06-agents.md" />
           <button className="icon-btn" title={t('agent.newChat')} aria-label={t('agent.newChat')} onClick={() => void useAgent.getState().newChat()}><Icon name="add" /></button>
@@ -240,15 +240,15 @@ export function AgentPanel() {
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); submit() } }} />
               <div className="composer-bar">
                 <div className="composer-tools">
-                  <Dropdown variant="pill" icon="terminal" ariaLabel={t('agent.select')} disabled={running} value={agentId ?? ''}
+                  <Dropdown variant="pill" icon="terminal" iconOnly compact ariaLabel={t('agent.select')} disabled={running} value={agentId ?? ''}
                     options={agents.map((a) => ({ value: a.id, label: `${a.label}${a.kind === 'basic' ? ` (${t('agent.basic')})` : ''}` }))}
                     onChange={(v) => useAgent.getState().setAgent(v)} />
                   {agent?.kind === 'claude' && (
                     <>
-                    <Dropdown variant="pill" icon="symbol-class" ariaLabel={t('agent.model')} disabled={running} value={model}
+                    <Dropdown variant="pill" icon="symbol-class" compact iconOnly={model === ''} ariaLabel={t('agent.model')} disabled={running} value={model}
                       options={[{ value: '', label: resolvedModel ? `${t('agent.model.default')} (${resolvedModel})` : t('agent.model.default') }, ...CLAUDE_MODELS.map((m) => ({ value: m, label: CLAUDE_MODEL_LABEL[m] }))]}
                       onChange={(v) => useAgent.getState().setModel(v)} />
-                    <Dropdown variant="pill" className={mode === 'bypassPermissions' ? 'danger' : ''} icon={MODE_ICON[mode]} ariaLabel={t('agent.mode')} disabled={running} value={mode}
+                    <Dropdown variant="pill" className={mode === 'bypassPermissions' ? 'danger' : ''} icon={MODE_ICON[mode]} iconOnly compact ariaLabel={t('agent.mode')} disabled={running} value={mode}
                       options={MODES.map((m) => ({ value: m, label: t(`agent.mode.${m}`) }))}
                       onChange={(v) => useAgent.getState().setMode(v as AgentMode)} />
                     </>

@@ -11,6 +11,7 @@ import { tr, useT } from '../i18n'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { fileIcon } from './EditorArea'
+import { isMarkdown, openPreview } from './MdPreview'
 import { sidebarViews } from './registry'
 
 const safe = (fn: () => Promise<unknown>) => () => { void fn().catch((e) => toast(errMsg(e), 'error')) }
@@ -51,6 +52,7 @@ async function remove(e: FileEntry) {
 function menuFor(e: FileEntry): MenuEntry[] {
   const items: MenuEntry[] = []
   if (e.dir) items.push({ label: tr('explorer.newFile'), run: safe(() => createIn(e.path, false)) }, { label: tr('explorer.newFolder'), run: safe(() => createIn(e.path, true)) }, 'sep')
+  if (!e.dir && isMarkdown(e.name)) items.push({ label: tr('explorer.preview'), run: () => openPreview(e.path) }, 'sep')
   items.push(
     { label: tr('explorer.rename'), keys: 'F2', run: safe(() => rename(e)) },
     { label: tr('explorer.delete'), keys: 'Delete', danger: true, run: safe(() => remove(e)) },

@@ -8,7 +8,7 @@ import { createHash } from 'crypto'
 import { app } from 'electron'
 import type { AgentInfo, AgentMode } from '@shared/types'
 import { parseClaudeLine, type AgentEvent } from '@shared/agent'
-import { teamPluginDir, teamTaskImages } from './team'
+import { teamPluginDir, teamTaskImages, setAgentRunning } from './team'
 import { handle, emit } from '../ipc'
 import { state } from '../state'
 import { log } from '../log'
@@ -212,9 +212,10 @@ export function registerAgents(): void {
     const h = streamProcess(
       { cmd, args: [...prefix, ...args], cwd: state.root, input: basic ? '' : o.prompt, parse: basic ? 'text' : 'claude' },
       (ev) => emit('agent.event', { runId: o.runId, ev }),
-      (code) => { runs.delete(o.runId); emit('agent.exit', { runId: o.runId, code }) }
+      (code) => { runs.delete(o.runId); if (!runs.size) setAgentRunning(false); emit('agent.exit', { runId: o.runId, code }) }
     )
     runs.set(o.runId, h)
+    setAgentRunning(true)
   })
   handle('agent.stop', async (id) => { runs.get(id)?.stop() })
   handle('agent.sessionGet', async (key) => readSessionMap()[key] ?? null)

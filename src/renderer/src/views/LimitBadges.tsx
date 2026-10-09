@@ -1,14 +1,18 @@
 import { useAgent } from '../stores/agent'
 import { useT } from '../i18n'
 import { call } from '../ipc'
+import { Icon } from '../components/Icon'
 
 // ponytail: the CLI gives no reliable percent, so one button opens the real numbers on claude.ai. Reading the OAuth token to fetch them ourselves was rejected as unsafe.
 const USAGE_URL = 'https://claude.ai/settings/usage'
 
-// "View usage", prefixed with a window's percent (5hr 42%) only when the CLI reported one. Hover lists reset times.
+// A small usage icon, shown only while Claude Code is the selected agent (other agents report no plan limits).
+// The 5hr or 7d percent is added next to it only when the CLI reported one; hover lists the reset times.
 export function LimitBadges() {
   const t = useT()
   const limits = useAgent((s) => s.limits)
+  const isClaude = useAgent((s) => s.agents.find((a) => a.id === s.agentId)?.kind === 'claude')
+  if (!isClaude) return null
   const nameOf = (kind: string) => (kind === 'five_hour' ? '5hr' : kind === 'seven_day' ? '7d' : kind)
   const known = Object.entries(limits)
     .filter(([, l]) => l.status === 'rejected' || l.utilization != null)
@@ -18,8 +22,8 @@ export function LimitBadges() {
     return t('agent.limit.tip', { name: nameOf(kind), reset: reset ? t('agent.limit.reset', { time: reset }) : '' })
   })
   return (
-    <button className="tb-limit" title={[...tip, t('agent.limit.open')].join('\n')} onClick={() => void call('shell.openExternal', USAGE_URL)}>
-      {[...known, t('agent.limit.view')].join(' · ')}
+    <button className="icon-btn tb-limit" title={[t('agent.limit.view'), ...tip, t('agent.limit.open')].join('\n')} aria-label={t('agent.limit.view')} onClick={() => void call('shell.openExternal', USAGE_URL)}>
+      <Icon name="graph" />{known.length > 0 && <span> {known.join(' · ')}</span>}
     </button>
   )
 }

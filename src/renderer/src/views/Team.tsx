@@ -103,14 +103,16 @@ function MemberRow({ m }: { m: Member }) {
   const task = p?.taskId ? data.tasks.find((x) => x.id === p.taskId) : undefined
   const text = st === 'offline' ? t('team.presence.offline')
     : st === 'idle' ? t('team.presence.idle')
-      : task ? t('team.presence.working', { task: task.title }) : t('team.presence.workingNoTask')
+      : p?.running ? (task ? t('team.presence.running', { task: task.title }) : t('team.presence.runningNoTask'))
+        : task ? t('team.presence.working', { task: task.title }) : t('team.presence.workingNoTask')
   const role = data.team.roles.find((r) => r.id === m.role)
   return (
     <div className="row" style={{ height: 'auto', minHeight: 44, padding: '4px 8px', cursor: 'default' }}>
       <span className="avatar-letter" style={{ opacity: st === 'offline' ? 0.5 : 1 }}>{m.login[0].toUpperCase()}</span>
       <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
         <span className="ellipsis">@{m.login}{lead ? ` · ${t('team.lead')}` : ''}{m.login === me ? ` · ${t('team.you')}` : ''}</span>
-        <span className={`small ellipsis ${st === 'working' ? 'ok' : 'dim'}`} title={text}>{text}</span>
+        <span className={`small ellipsis ${st === 'working' ? 'ok' : 'dim'}`} title={text}>{p?.running && st === 'working' && <Icon name="loading" className="codicon-modifier-spin" />} {text}</span>
+        {st === 'working' && p?.branch && <span className="dim small mono ellipsis" title={p.branch}><Icon name="git-branch" /> {p.branch}</span>}
       </span>
       {canEdit
         ? (

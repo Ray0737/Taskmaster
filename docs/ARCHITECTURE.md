@@ -53,7 +53,7 @@ The window runs with `contextIsolation`, `sandbox`, no Node integration and a st
 | `setupRows` | rows on the Welcome screen |
 | `agentHeaderExtras`, `agentFooterExtras`, `agentHooks.onResult` | the agent panel (task select, note box, note capture) |
 | `editorBanners` | strips above the editor |
-| `tabRenderers` (in `EditorArea.tsx`) | content of tab kinds (`settings`, `manual`, `task`, `diff`) |
+| `tabRenderers` (in `EditorArea.tsx`) | content of tab kinds (`settings`, `manual`, `task`, `diff`, `mdpreview`) |
 | `emptyEditorExtras` | what the editor shows when no folder is open (Home) |
 
 The import order in `main.tsx` is the display order. Commands are registered with `registerCommand`; a later registration with the same id replaces the earlier one.
@@ -68,7 +68,7 @@ Branch `taskmaster/context`, checked out as a worktree at `<userData>/worktrees/
   tasks/<id>.json                    Task  (id = t-xxxxxxxx)
   notes/<task id>/<time>-<login>.md  one file per note
   attachments/<task id>/<ms>.<ext>   screenshots pasted into a task (png/jpg/webp/gif, 4 MB, 10 per task); the agent host passes the folder with --add-dir and lists the paths in the system prompt
-  presence/<login>.json              { login, taskId, branch, status, at }
+  presence/<login>.json              { login, taskId, branch, status, running, at }  (running: the agent host reports a run via setAgentRunning)
   plugin/.claude-plugin/plugin.json  Claude Code plugin "team" (team skills)
   plugin/skills/<name>/SKILL.md      one team skill each; loaded with --plugin-dir only if settings.teamSkills is on
   plugin/skills/<name>/.source       only for skills imported from GitHub (services/skillimport.ts): the folder keeps all its files and the editor is read-only
@@ -90,3 +90,7 @@ Ids and logins from files are validated before use (they become file and branch 
 - **A language:** add `xx.json` files next to `en*.json`, extend `Lang` and `mergeSettings`, add it to `dicts` in `i18n/index.ts` and to the language selects, and write `resources/manual/xx/`.
 - **An agent CLI:** add a row to `KNOWN` in `services/agents.ts`; for a basic one-shot CLI add its flags to `basicArgs`. For full support write a parser like `parseClaudeLine` with a fixture test.
 - **A sidebar view / settings section / status item:** create a file under `views/`, push into the matching registry, import it in `main.tsx`.
+
+## Notifications and agent proposals
+
+`shared/notify.ts` (`diffTeam`) compares two reads of the team data and returns what concerns me. `stores/team.ts` runs it on every refresh that was not caused by our own save and calls `teamListeners`; `stores/notices.ts` turns those events into notices and also turns `<tm-assign login title role>brief</tm-assign>` blocks in the agent's answer (`extractAssignments`) into proposals. A proposal creates a task only when approved, and the login must be a team member. Notices live in memory for the open project.

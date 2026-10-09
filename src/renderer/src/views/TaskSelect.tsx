@@ -13,7 +13,7 @@ export function TaskSelect() {
   if (status !== 'enabled' || !data) return null
   const list = data.tasks.filter((x) => (x.assignee === me && x.status !== 'done') || x.id === activeTaskId)
   return (
-    <Dropdown variant="pill" icon="checklist" ariaLabel={t('task.select')} disabled={running} value={activeTaskId ?? ''}
+    <Dropdown variant="pill" icon="checklist" compact iconOnly={!activeTaskId} style={{ maxWidth: 130 }} ariaLabel={t('task.select')} disabled={running} value={activeTaskId ?? ''}
       options={[{ value: '', label: t('task.none') }, ...list.map((x) => ({ value: x.id, label: x.title }))]}
       onChange={(v) => useTeam.getState().setActiveTask(v || null)} />
   )

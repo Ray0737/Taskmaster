@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Markdown preview: right-click a .md file in the Explorer, Open Preview (also a command palette entry). Rendered, read-only, follows unsaved edits.
+- Window: a maximized or full-screen window fills the screen (no outer frame, no corner curve); the frame shows only in a smaller window.
+- Usage icon now sits with history, help and new chat (same style, shown on hover with them).
+- Notifications tab (bell): tasks assigned to you, notes on your tasks, teammates starting a task, and task proposals from your agent.
+- Agent proposals: the agent knows the team and can end its answer with a task for a teammate. It appears in Notifications and nothing is created until you press Approve and assign; a login that is not on the team is refused.
+- Team view: a member shows "agent running" while their agent answers, and the branch they are on.
+- Agent composer: the agent, model and mode pickers are icons (labels in the tooltip), the task picker shortens, and the usage button is a small icon. Usage, model and mode only show while Claude Code is the selected agent.
 - Team skills: Import from GitHub. Paste a repo, folder or SKILL.md link, tick the skills found, and the whole skill folder (scripts and reference files too) is copied to the team. Limits: 60 files, 500 KB per file, 1.5 MB per skill. Imported skills show their source and are read-only; a warning appears when scripts are included. Public repos only. When a repo ships the same skill in several folders (skills/x, .claude/skills/x), one is kept: a visible, shallow folder first.
 - Tasks: the bulk bar has a one-click Mark done for every selected task.
 

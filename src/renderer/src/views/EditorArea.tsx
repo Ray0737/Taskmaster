@@ -21,7 +21,7 @@ export const emptyEditorExtras: ComponentType[] = []
 const ICONS: Record<string, string> = { md: 'markdown', json: 'json', png: 'file-media', jpg: 'file-media', jpeg: 'file-media', gif: 'file-media', svg: 'file-media', webp: 'file-media' }
 const CODE = new Set(['ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs', 'py', 'go', 'rs', 'java', 'c', 'cpp', 'h', 'cs', 'css', 'scss', 'html', 'vue', 'svelte', 'sql', 'sh', 'ps1', 'yml', 'yaml', 'toml'])
 export const fileIcon = (name: string): string => ICONS[extOf(name)] ?? (CODE.has(extOf(name)) ? 'file-code' : 'file')
-const KIND_ICON: Record<TabKind, string> = { file: 'file', diff: 'diff', settings: 'settings-gear', manual: 'book', task: 'checklist' }
+const KIND_ICON: Record<TabKind, string> = { file: 'file', diff: 'diff', settings: 'settings-gear', manual: 'book', task: 'checklist', mdpreview: 'preview' }
 const SHORTCUTS = ['quickOpen', 'palette.open', 'view.toggleTerminal', 'agent.focus', 'manual.open']
 
 function EmptyEditor() {

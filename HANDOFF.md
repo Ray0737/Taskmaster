@@ -23,6 +23,9 @@ Older details live in `docs/superpowers/sonnet-queue.md`, `docs/ARCHITECTURE.md`
 - Last-minute UI changes were seen only in Mono Dark: Clone dialog hover, composer placeholder height, VS Code style dividers.
 - Agent model picker: Opus 5.5 fails on Claude Code 2.1.121 (needs a newer CLI). Sonnet 5.5 and Haiku 5.5 work. The pick is not saved between app launches.
 - View usage opens `https://claude.ai/settings/usage`; the URL was not confirmed to be the right page. The CLI rarely sends a percentage.
+- Notifications for teammate events (assigned to you, note on your task, someone started a task) are covered by unit tests of `diffTeam` but were not driven through a real two-person sync in the UI. Agent proposals and presence are covered by e2e script 10.
+- Proposals and notifications live in memory only; closing the app drops pending proposals. The raw `<tm-assign>` text still shows in the chat message.
+- After the 1.1.0 release (unreleased, see CHANGELOG): GitHub skill import, Mark done, Notifications tab, agent proposals, agent-running presence, compact composer, Markdown preview, full-screen frame. Quit and restart the whole app after pulling: the main process does not hot reload, and a stale one gives "No handler registered" errors.
 
 ## Not built (user said hold off)
 
@@ -32,6 +35,8 @@ Older details live in `docs/superpowers/sonnet-queue.md`, `docs/ARCHITECTURE.md`
 - Import skills from `~/.claude/skills`, a "cancelled" task status, a `v1.0.0` git tag and GitHub release.
 
 ## Possible IDE features (not decided)
+
+A Markdown preview (right-click a .md file, Open Preview) now exists.
 
 A Markdown viewer is the cheapest: the app already renders Markdown (react-markdown and remark-gfm in the manual and task brief), so a Preview toggle on `.md` tabs is small. Others, by cost: image viewer (png, jpg, svg), find in files (search across the project), JSON/CSV viewers, split editor, minimap and breadcrumbs already exist. Ask the user before adding; keep to the "lazy" rule, reuse what exists.
 

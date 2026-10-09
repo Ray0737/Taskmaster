@@ -16,6 +16,13 @@ export default function App() {
   const s = useApp((x) => x.settings)
   const setupOpen = useSetup((x) => x.open)
   useEffect(() => { void useApp.getState().load(); installKeybindings() }, [])
+  // A maximized or full-screen window fills the screen: the frame and rounded corners only show in a smaller window.
+  useEffect(() => {
+    const fit = () => document.documentElement.toggleAttribute('data-max', outerWidth >= screen.availWidth - 2 && outerHeight >= screen.availHeight - 2)
+    fit()
+    addEventListener('resize', fit)
+    return () => removeEventListener('resize', fit)
+  }, [])
   useEffect(() => {
     if (!s) return
     applyTheme(s.theme)

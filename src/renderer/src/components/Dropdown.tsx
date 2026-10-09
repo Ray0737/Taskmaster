@@ -13,6 +13,8 @@ interface Props {
   // field: underlined, fills its container (forms). pill: compact, no line (toolbars).
   variant?: 'field' | 'pill'
   icon?: string
+  compact?: boolean // no chevron
+  iconOnly?: boolean // icon and chevron only; the label is in the tooltip and the list
   className?: string
   style?: CSSProperties
 }
@@ -20,7 +22,7 @@ interface Props {
 interface Pos { left: number; width: number; top?: number; bottom?: number; maxHeight: number }
 
 // Replaces <select>: the native popup cannot follow the theme. Opens above the trigger when there is no room below.
-export function Dropdown({ value, options, onChange, ariaLabel, disabled, variant = 'field', icon, className = '', style }: Props) {
+export function Dropdown({ value, options, onChange, ariaLabel, disabled, variant = 'field', icon, compact, iconOnly, className = '', style }: Props) {
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState<Pos | null>(null)
   const trigger = useRef<HTMLButtonElement>(null)
@@ -82,16 +84,16 @@ export function Dropdown({ value, options, onChange, ariaLabel, disabled, varian
   return (
     <>
       <button ref={trigger} type="button" role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-label={ariaLabel}
-        title={ariaLabel} disabled={disabled} className={`dd dd-${variant} ${className}`} style={style}
+        title={iconOnly && current ? `${ariaLabel}: ${current.label}` : ariaLabel} disabled={disabled} className={`dd dd-${variant}${iconOnly ? ' dd-icononly' : ''} ${className}`} style={style}
         onClick={() => setOpen((o) => !o)}
         onKeyDown={(e) => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); setOpen(true) } }}>
         {icon && <Icon name={icon} />}
-        <span className="ellipsis dd-label">{current?.label ?? ''}</span>
-        <Icon name="chevron-down" className="dd-chev" />
+        {!iconOnly && <span className="ellipsis dd-label">{current?.label ?? ''}</span>}
+        {!compact && <Icon name="chevron-down" className="dd-chev" />}
       </button>
       {open && createPortal(
         <div ref={list} role="listbox" aria-label={ariaLabel} className="dd-list"
-          style={{ left: pos?.left ?? 0, minWidth: pos?.width, top: pos?.top, bottom: pos?.bottom, maxHeight: pos?.maxHeight, visibility: pos ? 'visible' : 'hidden' }}
+          style={{ left: pos?.left ?? 0, minWidth: iconOnly ? 170 : pos?.width, top: pos?.top, bottom: pos?.bottom, maxHeight: pos?.maxHeight, visibility: pos ? 'visible' : 'hidden' }}
           onKeyDown={(e) => {
             if (e.key === 'Escape') { e.preventDefault(); close(true) }
             else if (e.key === 'ArrowDown') { e.preventDefault(); move(1) }

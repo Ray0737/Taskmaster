@@ -26,3 +26,7 @@ Choose **Clone into**, press **Clone**. A progress bar shows the download and **
 ## Closing
 
 **File → Close Folder** returns to Home. Taskmaster stops syncing the team while no project is open.
+
+## Markdown preview
+
+Right-click a `.md` file in the Explorer and choose **Open Preview** to read it rendered, with headings, tables and links. The preview follows your edits, saved or not. It is read-only; edit in the file's own tab. Links open in your browser. The same command is in the command palette as "Open Markdown Preview".

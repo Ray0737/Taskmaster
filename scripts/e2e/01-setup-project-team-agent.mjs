@@ -112,7 +112,7 @@ step('agent answer streams into the chat', !!answered)
 step('footer shows token usage after the turn', !!(await waitFor(`/in .* out /.test(document.querySelector('.agent-status')?.innerText||'')`, 60000)),
   await ev(`document.querySelector('.agent-status')?.innerText`))
 await sleep(2500)
-step('task note captured or note box offered', !!(await ev(`!!document.querySelector('.agent-foot .notice') || /Review/.test(document.querySelector('.pane-body')?.innerText||'')`)),
+step('task note captured or note box offered', !!(await ev(`!!document.querySelector('.agent-foot .notice') || /Review/.test(document.body.innerText)`)),
   await ev(`(document.querySelector('.agent-foot .notice')?.innerText||'').slice(0,60) + ' / list: ' + (document.querySelector('.pane-body')?.innerText||'').replace(/\\s+/g,' ').slice(0,100)`))
 
 // S8 terminal

@@ -23,6 +23,7 @@ let flushTimer: ReturnType<typeof setTimeout> | undefined
 let pollTimer: ReturnType<typeof setTimeout> | undefined
 let beatTimer: ReturnType<typeof setInterval> | undefined
 let me: { taskId: string | null; branch: string | null; status: 'idle' | 'working' } = { taskId: null, branch: null, status: 'idle' }
+let agentRunning = false // shown to teammates as "agent running"
 let queue: Promise<unknown> = Promise.resolve()
 
 // All git work and all file writes in the worktree run one at a time (a rebase must not race a write).
@@ -36,6 +37,13 @@ export async function teamPluginDir(): Promise<string | null> {
 export async function teamTaskImages(taskId: string | null): Promise<string[]> {
   if (!ctx || !enabled || !taskId) return []
   return (await listImages(ctx.wt, taskId)).map((f) => join(attachDir(ctx!.wt, taskId), f))
+}
+
+// Called by the agent host when a run starts or the last run ends; teammates see it within one sync.
+export function setAgentRunning(on: boolean): void {
+  if (agentRunning === on) return
+  agentRunning = on
+  if (ctx && enabled) void beat()
 }
 
 const serial = <T>(fn: () => Promise<T>): Promise<T> => {
@@ -89,7 +97,7 @@ function schedulePoll(): void {
 
 const beat = (): Promise<void> => serial(async () => {
   if (!ctx || !enabled) return
-  await writePresence(ctx.wt, { login: ctx.login, ...me, at: new Date().toISOString() })
+  await writePresence(ctx.wt, { login: ctx.login, ...me, running: agentRunning, at: new Date().toISOString() })
   markDirty('presence')
 })
 
@@ -105,7 +113,7 @@ function start(): void {
 
 export function stopTeam(): void {
   clearTimeout(flushTimer); clearTimeout(pollTimer); clearInterval(beatTimer)
-  ctx = null; enabled = false; me = { taskId: null, branch: null, status: 'idle' }
+  ctx = null; enabled = false; agentRunning = false; me = { taskId: null, branch: null, status: 'idle' }
   setInfo('off')
 }
 

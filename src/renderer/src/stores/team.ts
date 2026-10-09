@@ -4,6 +4,7 @@ import {
   type Role, type Task, type Team, type TeamData, type SyncInfo
 } from '@shared/team'
 import { buildSystemPrompt, extractNote } from '@shared/prompt'
+import { diffTeam, type TeamEvent } from '@shared/notify'
 import { call, on, errMsg } from '../ipc'
 import { useApp } from './app'
 import { useGit } from './git'
@@ -27,7 +28,7 @@ interface TeamState {
   busy: boolean
   attach(): Promise<void>
   enable(): Promise<void>
-  refresh(): Promise<void>
+  refresh(quiet?: boolean): Promise<void> // quiet: our own change, so no notifications
   reset(): void
   saveTask(t: Task): Promise<void>
   deleteTask(id: string): Promise<void>
@@ -40,6 +41,9 @@ interface TeamState {
 }
 
 const OFF: SyncInfo = { state: 'off', at: null, error: null }
+
+// Called with what a teammate changed (the notifications store listens).
+export const teamListeners: ((events: TeamEvent[]) => void)[] = []
 
 // Tells the agent panel what the agent should know (role, task, scope, team) — see buildSystemPrompt.
 function pushAgentContext(): void {
@@ -93,11 +97,15 @@ export const useTeam = create<TeamState>((set, get) => ({
     } catch (e) { toast(errMsg(e), 'error') } finally { set({ busy: false }) }
   },
 
-  refresh: async () => {
+  refresh: async (quiet = false) => {
     if (get().status !== 'enabled') return
     try {
-      set({ data: await call('team.read') })
+      const prev = get().data
+      const next = await call('team.read')
+      set({ data: next })
       pushAgentContext()
+      const me = get().me
+      if (!quiet && prev && next && me) { const ev = diffTeam(prev, next, me); if (ev.length) for (const l of teamListeners) l(ev) }
     } catch { /* keep the last data */ }
   },
 
@@ -106,11 +114,11 @@ export const useTeam = create<TeamState>((set, get) => ({
     pushAgentContext()
   },
 
-  saveTask: async (t) => { await call('team.saveTask', t); await get().refresh() },
+  saveTask: async (t) => { await call('team.saveTask', t); await get().refresh(true) },
   deleteTask: async (id) => {
     await call('team.deleteTask', id)
     if (get().activeTaskId === id) get().setActiveTask(null)
-    await get().refresh()
+    await get().refresh(true)
   },
 
   createTask: async (title) => {
@@ -125,8 +133,8 @@ export const useTeam = create<TeamState>((set, get) => ({
     return task
   },
 
-  saveTeam: async (t) => { await call('team.saveTeam', t); await get().refresh() },
-  addNote: async (taskId, text) => { await call('team.addNote', taskId, text); await get().refresh() },
+  saveTeam: async (t) => { await call('team.saveTeam', t); await get().refresh(true) },
+  addNote: async (taskId, text) => { await call('team.addNote', taskId, text); await get().refresh(true) },
   setActiveTask: (id) => { set({ activeTaskId: id, pendingNote: null }); pushAgentContext() },
 
   // Saves the note and moves a task that is `doing` to `review` (spec §8).
