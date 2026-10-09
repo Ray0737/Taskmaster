@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { basename } from '@shared/paths'
 import { call, on } from '../ipc'
-import { getModel, disposeModel } from '../monaco'
+import { getModel, disposeModel, formatPath } from '../monaco'
+import { useApp } from './app'
 import { confirmDialog } from './ui'
 import { tr } from '../i18n'
 
@@ -24,6 +25,7 @@ interface EditorState {
   conflict: Record<string, boolean> // by path: changed on disk while dirty
   deleted: Record<string, boolean> // by path
   flash: Record<string, boolean> // by path: reloaded from disk just now
+  reveal: { path: string; line: number; col: number; len: number } | null // a search hit to select once the editor shows the file
   open(t: NewTab, preview?: boolean): void
   close(id: string): Promise<void>
   closeAll(): void
@@ -34,7 +36,7 @@ interface EditorState {
 }
 
 export const useEditor = create<EditorState>((set, get) => ({
-  tabs: [], active: null, dirty: {}, conflict: {}, deleted: {}, flash: {},
+  tabs: [], active: null, dirty: {}, conflict: {}, deleted: {}, flash: {}, reveal: null,
 
   open: (t, preview = false) => {
     const id = tabId(t)
@@ -99,7 +101,13 @@ export const useEditor = create<EditorState>((set, get) => ({
 export const openFile = (path: string, o: { preview?: boolean } = {}): void =>
   useEditor.getState().open({ kind: 'file', path, title: basename(path) }, o.preview ?? false)
 
+export const openAt = (path: string, line: number, col: number, len: number): void => {
+  openFile(path)
+  useEditor.setState({ reveal: { path, line, col, len } })
+}
+
 export async function saveFile(path: string): Promise<void> {
+  if (useApp.getState().settings?.formatOnSave) await formatPath(path).catch(() => false) // JS, TS, JSON, CSS and HTML only
   const m = getModel(path)
   if (!m) return
   await call('fs.write', path, m.getValue())

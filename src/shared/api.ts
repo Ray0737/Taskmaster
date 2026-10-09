@@ -2,6 +2,7 @@ import type { Settings, SettingsPatch, FileEntry, FileContent, ManualChapter, La
 import type { AgentEvent } from './agent'
 import type { Skill } from './skills'
 import type { PastSession, TranscriptEntry } from './transcript'
+import type { SearchQuery, SearchResult } from './search'
 import type { Task, Team, TeamData, SyncInfo } from './team'
 
 export type EditRole = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll'
@@ -71,6 +72,7 @@ export interface Api {
   'team.saveTeam': (team: Team) => Promise<void>
   'team.saveTask': (task: Task) => Promise<void>
   'team.deleteTask': (id: string) => Promise<void>
+  'search.run': (q: SearchQuery) => Promise<SearchResult>
   'team.images': (taskId: string) => Promise<string[]>
   'team.imageData': (taskId: string, file: string) => Promise<string>
   'team.imagePath': (taskId: string, file: string) => Promise<string>

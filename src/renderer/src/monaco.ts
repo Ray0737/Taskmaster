@@ -100,4 +100,16 @@ export function languageOf(path: string): string {
   return monaco.languages.getLanguages().find((l) => l.extensions?.includes(ext))?.id ?? 'plaintext'
 }
 
+// Runs the editor's own formatter for this file (Monaco ships one for JS, TS, JSON, CSS and HTML). False when the language has none.
+export async function formatPath(path: string): Promise<boolean> {
+  const uri = uriOf(path).toString()
+  const ed = monaco.editor.getEditors().find((x) => x.getModel()?.uri.toString() === uri)
+  const action = ed?.getAction('editor.action.formatDocument')
+  if (!ed || !action || !action.isSupported()) return false
+  ed.focus() // the palette had focus; the formatter works on the focused editor
+  await new Promise((r) => setTimeout(r, 50))
+  await action.run()
+  return true
+}
+
 export const EDITOR_FONT = '"Cascadia Code", Consolas, "Courier New", monospace'

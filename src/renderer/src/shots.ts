@@ -6,6 +6,8 @@ const EXT: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', '
 export const clipboardImages = (d: DataTransfer): File[] =>
   [...d.items].filter((i) => i.kind === 'file' && Object.hasOwn(EXT, i.type)).map((i) => i.getAsFile()).filter((f): f is File => !!f)
 
+export const imageFiles = (l: Iterable<File>): File[] => [...l].filter((f) => Object.hasOwn(EXT, f.type))
+
 // Saves each image as a screenshot of the task; returns the stored file names.
 export async function saveShots(taskId: string, files: File[]): Promise<string[]> {
   const out: string[] = []

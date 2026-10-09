@@ -47,3 +47,5 @@ In the task list, `Ctrl+click` (or `Space`) adds or removes a task from the sele
 The bell in the left bar opens **Notifications**. It lists what teammates did that concerns you (a task assigned to you, a note on a task you own or created, someone starting a task) and the task proposals from your own agent. The badge counts what you have not read.
 
 When several people work on the team, your agent knows who is on it. If part of the work belongs to a teammate, it can end its answer with a proposal. Nothing is created from that: the proposal appears in Notifications, and only **Approve and assign** creates the task for that teammate. **Dismiss** drops it. A proposal for someone who is not on the team is refused. Proposals are kept only while the app is open.
+
+You can also add a screenshot with **Upload image** or by dragging an image file onto the task page.

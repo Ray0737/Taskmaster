@@ -16,6 +16,7 @@ export interface Settings {
   tabSize: 2 | 4 | 8
   teamSkills: boolean
   minimap: boolean
+  formatOnSave: boolean
   lineNumbers: boolean
   terminalFontSize: number
   defaultAgent: string | null

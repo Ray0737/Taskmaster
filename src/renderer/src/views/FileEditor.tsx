@@ -36,7 +36,19 @@ export function FileEditor({ path }: { path: string }) {
   // Monaco can be created while its box still measures ~5x5 and then never re-measures, so the code stays invisible.
   // Lay it out on mount and whenever our wrapper changes size.
   const fill = useRef<HTMLDivElement>(null)
-  const ed = useRef<{ layout(): void } | null>(null)
+  const ed = useRef<{ layout(): void; revealLineInCenter(n: number): void; setSelection(r: { startLineNumber: number; startColumn: number; endLineNumber: number; endColumn: number }): void; focus(): void } | null>(null)
+  const reveal = useEditor((x) => x.reveal)
+  // A search hit asks for this file: select the match once the editor exists (on mount, or right away if it is already open).
+  // A freshly mounted editor can still be laying itself out, so on mount it is applied three times before the request is dropped.
+  const applyReveal = (last = true) => {
+    const r = useEditor.getState().reveal
+    if (!r || r.path !== path || !ed.current) return
+    ed.current.revealLineInCenter(r.line)
+    ed.current.setSelection({ startLineNumber: r.line, startColumn: r.col, endLineNumber: r.line, endColumn: r.col + r.len })
+    ed.current.focus()
+    if (last) useEditor.setState({ reveal: null })
+  }
+  useEffect(applyReveal, [reveal, content])
   useEffect(() => {
     const el = fill.current
     if (!el) return
@@ -65,7 +77,7 @@ export function FileEditor({ path }: { path: string }) {
       )}
       <div className="editor-fill" ref={fill}>
         <Editor
-          onMount={(editor) => { ed.current = editor; editor.layout(); setTimeout(() => editor.layout(), 60) }}
+          onMount={(editor) => { ed.current = editor; editor.layout(); setTimeout(() => { editor.layout(); applyReveal(false) }, 60); setTimeout(() => applyReveal(false), 350); setTimeout(() => applyReveal(), 800) }}
           path={uriOf(path).toString()}
           defaultValue={content.text}
           theme={`tm-${s.theme}`}

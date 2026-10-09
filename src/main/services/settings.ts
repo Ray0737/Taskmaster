@@ -6,7 +6,7 @@ import { handle } from '../ipc'
 import { writeJsonAtomic } from '../util'
 
 export const DEFAULT_SETTINGS: Settings = {
-  lang: 'en', theme: 'mono-dark', fontSize: 14, autoSave: 'off', wordWrap: false, tabSize: 4, teamSkills: false, minimap: true, lineNumbers: true, terminalFontSize: 13,
+  lang: 'en', theme: 'mono-dark', fontSize: 14, autoSave: 'off', wordWrap: false, tabSize: 4, teamSkills: false, minimap: true, formatOnSave: false, lineNumbers: true, terminalFontSize: 13,
   defaultAgent: null, defaultMode: 'acceptEdits', fetchInterval: 15, syncPaused: false, setupDone: false,
   layout: { sidebar: 20, agent: 28, panel: 30, sidebarVisible: true, agentVisible: true, panelVisible: false }
 }
@@ -28,6 +28,7 @@ export function mergeSettings(raw: unknown): Settings {
     tabSize: pick(r.tabSize, [2, 4, 8] as const, d.tabSize),
     teamSkills: bool(r.teamSkills, d.teamSkills),
     minimap: bool(r.minimap, d.minimap),
+    formatOnSave: bool(r.formatOnSave, d.formatOnSave),
     lineNumbers: bool(r.lineNumbers, d.lineNumbers),
     terminalFontSize: num(r.terminalFontSize, 10, 24, d.terminalFontSize),
     defaultAgent: typeof r.defaultAgent === 'string' ? r.defaultAgent : null,

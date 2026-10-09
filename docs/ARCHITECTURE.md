@@ -34,6 +34,7 @@ The window runs with `contextIsolation`, `sandbox`, no Node integration and a st
 |---|---|
 | App | `settings.get/set`, `win.setOverlay/role`, `shell.openExternal`, `app.quit/openLogs`, `dialog.openFolder`, `manual.list/read` |
 | Project and files | `project.open/create/close`, `recent.list/add/remove`, `fs.list/read/write/create/rename/delete/reveal/listAll` |
+| Search | `search.run` |
 | Terminal | `pty.available/create/write/resize/kill` |
 | Git | `git.version/identity/setIdentity/isRepo/init/status/stage/unstage/discard/commit/branches/switch/sync/show/remoteUrl/clone/cloneCancel/startBranch/stashAll/commitAll` |
 | GitHub | `auth.status/connect/repos/collaborators/invite` |
@@ -98,3 +99,7 @@ Ids and logins from files are validated before use (they become file and branch 
 ## Languages and Run File
 
 Monaco (full bundle) highlights most languages by extension; `monaco.ts` adds `.ino` (C++) and .NET project files (XML) and configures JS and TS (JSX on, semantic errors off because there are no node_modules types in the editor). `shared/run.ts` (`runLine`) maps an extension to a PowerShell line; `runFile.ts` saves the file and types the line into the terminal (`runInTerminal`). There is no language server: completions beyond JS and TS, go-to-definition and live diagnostics for Python, C, C++ and C# would need one (pyright, clangd, OmniSharp) behind a Monaco LSP client.
+
+## Find in files and formatting
+
+`shared/search.ts` holds the query, the matcher (`buildMatcher`) and the per-file scan (`scanText`); `services/search.ts` walks the project (skipping dependency and build folders, symlinks, binaries and files over 1 MB, capped at 2000 hits, 400 files and 10 s) and `views/Search.tsx` shows the result. A click calls `openAt`, which stores a `reveal` request that `FileEditor` applies once the editor exists. Formatting uses Monaco's own formatter (`formatPath` in `monaco.ts`); `saveFile` calls it first when `settings.formatOnSave` is on. A regular expression runs in the main process on lines of at most 400 characters; a pathological pattern could still be slow (ponytail: move the search into a worker thread if that ever matters).

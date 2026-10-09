@@ -117,6 +117,10 @@ function EditorSection() {
             options={[{ value: 'off', label: t('settings.autoSave.off') }, { value: 'delay', label: t('settings.autoSave.delay') }]}
             onChange={(v) => void set({ autoSave: v as 'off' | 'delay' })} />
         </Field>
+        <label className="field-inline">
+          <input type="checkbox" className="check" checked={s.formatOnSave} onChange={(e) => void set({ formatOnSave: e.target.checked })} />
+          {t('settings.formatOnSave')}
+        </label>
       </Group>
       <Group icon="terminal" title={t('settings.group.terminal')} desc={t('settings.group.terminal.desc')}>
         <Field label={t('settings.terminalFontSize')} hint="10–24">

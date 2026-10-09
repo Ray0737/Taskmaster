@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Find in Files: a Search view (Ctrl+Shift+F) with match case, whole word and regular expression; click a hit to open the file with the match selected. Skips dependency and build folders, binary and big files.
+- Format Document (Shift+Alt+F) and a Format on save setting, for JS, TS, JSON, CSS and HTML.
+- Task screenshots: an Upload image button, and drag and drop of image files onto the task page.
 - Theme: Claude Dark, the warm charcoal of Claude desktop with a terracotta accent.
 - Layout: the activity bar, sidebar, editor, terminal and agent panels are rounded cards on a frame instead of boxes joined by lines.
 - Languages: Arduino .ino files are highlighted as C++, .NET project files as XML; JSX and TSX are understood and JS and TS show syntax errors (Python, C, C++, C#, Java, Go and more were already highlighted by Monaco).

@@ -28,6 +28,8 @@ __ZOOM__
 | Ctrl+Alt+B | Toggle agent panel |
 | Ctrl+` | Toggle terminal |
 | Ctrl+F5 | Run the current file |
+| Ctrl+Shift+F | Find in files |
+| Shift+Alt+F | Format the current file |
 | Ctrl+` | Toggle terminal |
 | Ctrl+Shift+` | New terminal |
 | Ctrl+Shift+` | New terminal |

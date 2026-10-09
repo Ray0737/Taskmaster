@@ -38,6 +38,7 @@
   "settings.tabSize.n": "{n} spaces",
   "settings.lineNumbers": "Show line numbers",
   "settings.minimap": "Show minimap",
+  "settings.formatOnSave": "Format on save (JS, TS, JSON, CSS, HTML)",
   "settings.group.terminal": "Terminal",
   "settings.group.terminal.desc": "Text size in the built-in terminal.",
   "settings.terminalFontSize": "Terminal font size",

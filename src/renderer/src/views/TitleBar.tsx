@@ -10,7 +10,7 @@ import { basename } from '@shared/paths'
 const MENUS: { label: string; items: string[] }[] = [
   { label: 'menu.file', items: ['project.new', 'project.openFolder', 'project.clone', 'sep', 'file.save', 'sep', 'settings.open', 'sep', 'project.close', 'app.quit'] },
   { label: 'menu.edit', items: ['edit.undo', 'edit.redo', 'sep', 'edit.cut', 'edit.copy', 'edit.paste', 'edit.selectAll'] },
-  { label: 'menu.view', items: ['palette.open', 'sep', 'view.toggleSidebar', 'view.toggleAgent', 'view.toggleTerminal', 'sep', 'view.explorer', 'view.scm', 'view.tasks', 'view.team', 'view.notifications', 'sep', 'theme.pick', 'lang.toggle'] },
+  { label: 'menu.view', items: ['palette.open', 'sep', 'view.toggleSidebar', 'view.toggleAgent', 'view.toggleTerminal', 'sep', 'view.explorer', 'search.find', 'view.scm', 'view.tasks', 'view.team', 'view.notifications', 'sep', 'theme.pick', 'lang.toggle'] },
   { label: 'menu.go', items: ['quickOpen', 'tab.next'] },
   { label: 'menu.terminal', items: ['terminal.new', 'view.toggleTerminal'] },
   { label: 'menu.help', items: ['manual.open', 'setup.check', 'app.openLogs'] }

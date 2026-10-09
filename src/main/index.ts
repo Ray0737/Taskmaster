@@ -5,6 +5,7 @@ import { handle } from './ipc'
 import { log, logDir } from './log'
 import { registerSettings } from './services/settings'
 import { registerFs } from './services/fs'
+import { registerSearch } from './services/search'
 import { registerPty, killAllPty } from './services/pty'
 import { registerManual } from './services/manual'
 import { registerGit } from './services/git'
@@ -67,6 +68,7 @@ app.whenReady().then(() => {
   registerSettings()
   registerWindow()
   registerFs()
+  registerSearch()
   registerGit()
   registerAuth()
   registerRecent()

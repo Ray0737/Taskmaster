@@ -7,6 +7,9 @@ import { THEME_IDS } from './theme/themes'
 import { useEditor, saveActive } from './stores/editor'
 import { useTerm, newTerminal } from './stores/terminal'
 import { runActiveFile } from './runFile'
+import { formatPath } from './monaco'
+import { toast } from './stores/ui'
+import { tr } from './i18n'
 import type { EditRole } from '@shared/api'
 
 const role = (r: EditRole) => () => call('win.role', r)
@@ -45,6 +48,15 @@ registerCommand(
   { id: 'quickOpen', title: 'cmd.quickOpen', keys: 'Ctrl+P', run: () => openPalette('') }
 )
 
+registerCommand({
+  id: 'editor.format', title: 'cmd.format', keys: 'Shift+Alt+F',
+  run: async () => {
+    const { tabs, active } = useEditor.getState()
+    const t = tabs.find((x) => x.id === active)
+    if (t?.kind !== 'file' || !t.path) { toast(tr('run.noFile')); return }
+    if (!(await formatPath(t.path).catch(() => false))) toast(tr('format.none'))
+  }
+})
 registerCommand({ id: 'file.run', title: 'cmd.runFile', keys: 'Ctrl+F5', run: () => runActiveFile() })
 registerCommand({ id: 'terminal.new', title: 'cmd.newTerminal', keys: 'Ctrl+Shift+`', run: () => newTerminal() })
 

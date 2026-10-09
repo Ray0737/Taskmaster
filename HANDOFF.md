@@ -25,7 +25,7 @@ Older details live in `docs/superpowers/sonnet-queue.md`, `docs/ARCHITECTURE.md`
 - View usage opens `https://claude.ai/settings/usage`; the URL was not confirmed to be the right page. The CLI rarely sends a percentage.
 - Notifications for teammate events (assigned to you, note on your task, someone started a task) are covered by unit tests of `diffTeam` but were not driven through a real two-person sync in the UI. Agent proposals and presence are covered by e2e script 10.
 - Proposals and notifications live in memory only; closing the app drops pending proposals. The raw `<tm-assign>` text still shows in the chat message.
-- After the 1.1.0 release (unreleased, see CHANGELOG): GitHub skill import, Mark done, Notifications tab, agent proposals, agent-running presence, compact composer, Markdown preview, full-screen frame, Claude Dark theme, rounded panels, Run File, chat icons. Quit and restart the whole app after pulling: the main process does not hot reload, and a stale one gives "No handler registered" errors.
+- After the 1.1.0 release (unreleased, see CHANGELOG): GitHub skill import, Mark done, Notifications tab, agent proposals, agent-running presence, compact composer, Markdown preview, full-screen frame, Claude Dark theme, rounded panels, Run File, chat icons, Find in Files, Format Document and Format on save, screenshot upload and drop. Quit and restart the whole app after pulling: the main process does not hot reload, and a stale one gives "No handler registered" errors.
 
 ## Not built (user said hold off)
 
@@ -39,7 +39,7 @@ Older details live in `docs/superpowers/sonnet-queue.md`, `docs/ARCHITECTURE.md`
 - Chat app integration, LINE first (the user's idea; scope not decided). LieutenantOS already talks to LINE, Discord and Instagram: reuse what is there before building anything.
 - Arduino support: `.ino` files already highlight as C++ and Run File says it is not supported yet. Next step would be `arduino-cli` (compile, upload, board and port pickers, serial monitor in the terminal panel).
 - A language server for real IntelliSense in Python, C, C++ and C# (pyright, clangd, OmniSharp). Today only JS and TS complete inside the file, and there are no import diagnostics.
-- Missing for a daily-driver IDE: find in files, debugger, a formatter or format on save, extensions, and a way to choose which Python, Node or compiler Run File uses.
+- Missing for a daily-driver IDE: a debugger, formatters for languages other than JS, TS, JSON, CSS and HTML, replace in files, extensions, and a way to choose which Python, Node or compiler Run File uses. (Find in files and Format on save now exist.)
 
 ## Possible IDE features (not decided)
 

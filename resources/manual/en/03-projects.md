@@ -36,3 +36,11 @@ Right-click a `.md` file in the Explorer and choose **Open Preview** to read it 
 The editor colors Python, C, C++, C#, Java, Go, JavaScript, TypeScript, JSX and TSX, JSON, HTML, CSS, Markdown, shell and many more by file extension. Arduino sketches (`.ino`) are shown as C++ and .NET project files (`.csproj`, `.xaml`) as XML. JavaScript and TypeScript suggest completions inside the file and flag syntax errors; there are no error squiggles for imports, because the editor does not read `node_modules`.
 
 Press the play button above the code, or **Run File** (Ctrl+F5), to run the current file in the terminal with the tools on your computer: `python`, `node`, `npx tsx` (TypeScript and TSX), `gcc` and `g++` (compiled into the temp folder), `dotnet run`, `java` and `go run`. The tool must be installed and on your PATH. Unsaved changes are saved first. Arduino sketches cannot be run yet.
+
+## Find in files
+
+The **Search** view in the left bar (Ctrl+Shift+F, or **Find in Files**) searches every text file in the project while you type. Three buttons next to the box match case, match whole words, or read the text as a regular expression. Results are grouped by file; click one to open the file with the match selected. Build and dependency folders (`node_modules`, `dist`, `out`, `.git` and similar), binary files and files over 1 MB are skipped, and a very long list is cut short with a note.
+
+## Formatting
+
+**Format Document** (Shift+Alt+F) tidies the current file. It works for JavaScript, TypeScript, JSON, CSS and HTML. Turn on **Format on save** in Settings, Editor to format those files every time you save. Other languages say they have no formatter.

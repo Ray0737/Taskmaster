@@ -38,6 +38,7 @@
   "settings.tabSize.n": "{n} ช่องว่าง",
   "settings.lineNumbers": "แสดงเลขบรรทัด",
   "settings.minimap": "แสดงแผนที่ย่อ",
+  "settings.formatOnSave": "จัดรูปแบบเมื่อบันทึก (JS, TS, JSON, CSS, HTML)",
   "settings.group.terminal": "เทอร์มินัล",
   "settings.group.terminal.desc": "ขนาดตัวอักษรในเทอร์มินัลในตัว",
   "settings.terminalFontSize": "ขนาดตัวอักษรเทอร์มินัล",

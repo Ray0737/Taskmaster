@@ -15,7 +15,7 @@ import { Group } from '../components/Group'
 import { Icon } from '../components/Icon'
 import { Empty } from '../components/Empty'
 import { openPullRequest } from '../pr'
-import { clipboardImages, saveShots } from '../shots'
+import { clipboardImages, imageFiles, saveShots } from '../shots'
 import { tabRenderers } from './EditorArea'
 
 export function TaskTab({ tab }: { tab: Tab }) {
@@ -29,6 +29,7 @@ export function TaskTab({ tab }: { tab: Tab }) {
   const pending = useRef(false)
   const [shots, setShots] = useState<{ file: string; src: string }[]>([])
   const [zoom, setZoom] = useState<string | null>(null)
+  const upload = useRef<HTMLInputElement>(null)
   const loadShots = () => {
     if (!tab.taskId) return
     void call('team.images', tab.taskId)
@@ -65,6 +66,13 @@ export function TaskTab({ tab }: { tab: Tab }) {
     try { await saveShots(task.id, files) } catch (err) { toast(`${t('task.shotFailed')}: ${errMsg(err)}`, 'error') }
     loadShots()
   }
+  // Upload button and drag and drop: the same screenshots as paste.
+  const addFiles = async (list: Iterable<File> | null) => {
+    const files = imageFiles(list ?? [])
+    if (!files.length) return
+    try { await saveShots(task.id, files) } catch (err) { toast(`${t('task.shotFailed')}: ${errMsg(err)}`, 'error') }
+    loadShots()
+  }
   const copyShotPath = (file: string) => { void call('team.imagePath', task.id, file).then((p) => navigator.clipboard.writeText(p)).then(() => toast(t('task.shotCopied'))).catch((err) => toast(errMsg(err), 'error')) }
   const removeShot = (file: string) => { void call('team.removeImage', task.id, file).then(loadShots).catch((err) => toast(errMsg(err), 'error')) }
   const remove = async () => {
@@ -79,7 +87,9 @@ export function TaskTab({ tab }: { tab: Tab }) {
 
   return (
     <div className="split-body scroll" style={{ height: '100%', background: 'var(--bg-0)' }}>
-      <div className="settings-page task-page selectable" tabIndex={-1} onPaste={(e) => void onPaste(e)}>
+      <div className="settings-page task-page selectable" tabIndex={-1} onPaste={(e) => void onPaste(e)}
+        onDragOver={(e) => { if (e.dataTransfer.types.includes('Files')) e.preventDefault() }}
+        onDrop={(e) => { if (e.dataTransfer.files.length) { e.preventDefault(); void addFiles(e.dataTransfer.files) } }}>
         <header className="task-head">
           <input className="input task-title" autoFocus={task.title === t('tasks.untitled')} onFocus={(e) => { if (task.title === t('tasks.untitled')) e.currentTarget.select() }} aria-label={t('task.title')} value={draft.title} onChange={(e) => patch({ title: e.target.value })} />
           <div className="task-meta">
@@ -141,6 +151,10 @@ export function TaskTab({ tab }: { tab: Tab }) {
               ))}
             </div>
           )}
+          <div>
+            <input ref={upload} type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden onChange={(e) => { const l = e.target.files ? [...e.target.files] : []; e.target.value = ''; void addFiles(l) }} />
+            <button className="btn btn-soft" onClick={() => upload.current?.click()}><Icon name="cloud-upload" />{t('task.shotUpload')}</button>
+          </div>
         </Group>
 
         <Group icon="filter" title={t('task.scope')} desc={t('task.scopeHint')}>

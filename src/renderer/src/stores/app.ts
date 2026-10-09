@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { Settings, SettingsPatch } from '@shared/types'
 import { call } from '../ipc'
 
-export type SidebarView = 'explorer' | 'scm' | 'tasks' | 'team' | 'notifications'
+export type SidebarView = 'explorer' | 'scm' | 'tasks' | 'team' | 'notifications' | 'search'
 export type PanelKey = 'side' | 'agent' | 'panel'
 
 interface AppState {
