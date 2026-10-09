@@ -45,6 +45,7 @@
   "task.shotFailed": "Could not add the screenshot",
   "tasks.selected": "{n} selected",
   "tasks.bulk.status": "Set status",
+  "tasks.bulk.done": "Mark done",
   "tasks.bulk.assignMe": "Assign to me",
   "tasks.bulk.delete": "Delete",
   "tasks.bulk.clear": "Clear selection",

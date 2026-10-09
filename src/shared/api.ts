@@ -76,6 +76,8 @@ export interface Api {
   'team.imagePath': (taskId: string, file: string) => Promise<string>
   'team.addImage': (taskId: string, base64: string, ext: string) => Promise<string>
   'team.removeImage': (taskId: string, file: string) => Promise<void>
+  'team.scanSkills': (url: string) => Promise<{ skills: { name: string; dir: string; description: string; files: number; scripts: number; tooBig: boolean; exists: boolean }[]; truncated: boolean }>
+  'team.importSkills': (url: string, dirs: string[]) => Promise<string[]>
   'team.skills': () => Promise<Skill[]>
   'team.saveSkill': (skill: Skill) => Promise<void>
   'team.deleteSkill': (name: string) => Promise<void>

@@ -28,3 +28,5 @@ Each member has one role, chosen by the lead in the member's row. A task can hav
 Taskmaster trusts your team: anyone with write access to the repository can edit team data. If two people change the same task at the same moment, the last one to sync wins for that task. See "Sync and offline".
 
 The **Skills** list in the Team view holds Claude Code skills your team shares. Anyone can add, edit or delete one. Each teammate chooses whether their agent loads them with **Use team skills in the agent** in Settings → Agents, because a skill is an instruction written by a teammate. A skill runs as `/team:name`.
+
+To reuse skills published on GitHub, press **Import from GitHub** in the Skills list, paste a repo or folder link, tick the skills and import. The whole skill folder is copied, scripts and reference files included, and it shows where it came from. Imported skills are read-only here; delete one and import it again to update it. Only import from sources you trust: an imported skill can contain scripts that an agent may run.

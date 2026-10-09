@@ -5,8 +5,9 @@ import { state } from '../state'
 import { log } from '../log'
 import { getSettings } from './settings'
 import { join } from 'path'
-import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote, listSkills, writeSkill, deleteSkill, pluginDir, listImages, addImage, readImage, removeImage, attachDir } from './teamfs'
+import { readAll, writeTeam, writeTask, deleteTask, writePresence, addNote, listSkills, writeSkill, writeSkillFiles, deleteSkill, pluginDir, listImages, addImage, readImage, removeImage, attachDir } from './teamfs'
 import type { Skill } from '@shared/skills'
+import { scanSkills, fetchSkills } from './skillimport'
 import { attach, enable, flush, pull, reset, worktreeDir, SyncConflict, type Ctx } from './teamsync'
 
 const BACKOFF = [15, 30, 60, 120, 300] // seconds, after failures
@@ -158,6 +159,20 @@ export function registerTeam(): void {
   handle('team.addImage', (id: string, b64: string, ext: string) => serial(async () => { const f = await addImage(need().wt, id, b64, ext); markDirty('screenshot'); return f }))
   handle('team.removeImage', (id: string, file: string) => serial(async () => { await removeImage(need().wt, id, file); markDirty('remove screenshot') }))
   handle('team.skills', async () => (ctx && enabled ? listSkills(ctx.wt) : []))
+  handle('team.scanSkills', async (url: string) => {
+    const have = new Set((ctx && enabled ? await listSkills(ctx.wt) : []).map((s) => s.name))
+    const r = await scanSkills(url)
+    return { truncated: r.truncated, skills: r.skills.map((s) => ({ ...s, exists: have.has(s.name) })) }
+  })
+  handle('team.importSkills', async (url: string, dirs: string[]) => {
+    const got = await fetchSkills(url, dirs) // network first, outside the write queue
+    return serial(async () => {
+      const c = need()
+      for (const s of got) await writeSkillFiles(c.wt, s.name, s.files, s.source)
+      markDirty('import skills')
+      return got.map((s) => s.name)
+    })
+  })
   handle('team.saveSkill', (s: Skill) => serial(async () => { await writeSkill(need().wt, s); markDirty(`skill ${s.name}`) }))
   handle('team.deleteSkill', (name: string) => serial(async () => { await deleteSkill(need().wt, name); markDirty('delete skill') }))
   handle('team.addNote', (taskId, text) => serial(async () => { const c = need(); await addNote(c.wt, taskId, c.login, text); markDirty('note') }))

@@ -45,6 +45,7 @@
   "task.shotFailed": "เพิ่มภาพหน้าจอไม่ได้",
   "tasks.selected": "เลือก {n} งาน",
   "tasks.bulk.status": "ตั้งสถานะ",
+  "tasks.bulk.done": "ทำเสร็จแล้ว",
   "tasks.bulk.assignMe": "มอบให้ฉัน",
   "tasks.bulk.delete": "ลบ",
   "tasks.bulk.clear": "ล้างการเลือก",

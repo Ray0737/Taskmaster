@@ -4,7 +4,7 @@ import {
   parseTask, parseTeam, parsePresence, parseNoteFile, isTaskId, isLogin, noteFileName,
   type Task, type Team, type Note, type Presence, type TeamData
 } from '@shared/team'
-import { isSkillName, parseSkill, renderSkill, type Skill } from '@shared/skills'
+import { isSkillName, isSafeRelPath, parseSkill, renderSkill, type Skill } from '@shared/skills'
 
 export const TM_DIR = '.taskmaster'
 const NOTE_MAX = 5000
@@ -125,7 +125,9 @@ export async function listSkills(dir: string): Promise<Skill[]> {
     let text = ''
     try { text = await fsp.readFile(join(base, name, 'SKILL.md'), 'utf8') } catch { continue }
     const s = parseSkill(name, text)
-    if (s) out.push(s)
+    if (!s) continue
+    try { s.source = (await fsp.readFile(join(base, name, '.source'), 'utf8')).trim().slice(0, 300) || undefined } catch { /* not imported */ }
+    out.push(s)
   }
   return out.sort((a, b) => a.name.localeCompare(b.name))
 }
@@ -135,6 +137,22 @@ export async function writeSkill(dir: string, skill: Skill): Promise<void> {
   if (!skill.body.trim()) throw new Error('Empty skill')
   await put(dir, ['plugin', '.claude-plugin', 'plugin.json'], json({ name: 'team', description: 'Skills shared by this team through Taskmaster', version: '1.0.0' }))
   await put(dir, ['plugin', 'skills', skill.name, 'SKILL.md'], renderSkill(skill))
+}
+
+// A skill imported from GitHub keeps its whole folder (scripts, references); .source remembers where it came from.
+export async function writeSkillFiles(dir: string, name: string, files: { rel: string; bytes: Buffer }[], source: string): Promise<void> {
+  if (!isSkillName(name)) throw new Error('Invalid skill name')
+  if (!files.some((x) => x.rel === 'SKILL.md')) throw new Error('No SKILL.md in the skill folder')
+  if (files.some((x) => !isSafeRelPath(x.rel))) throw new Error('Unsafe file path in the skill folder')
+  const root = join(pluginDir(dir), 'skills', name)
+  await fsp.rm(root, { recursive: true, force: true })
+  for (const x of files) {
+    const p = join(root, ...x.rel.split('/'))
+    await fsp.mkdir(join(p, '..'), { recursive: true })
+    await fsp.writeFile(p, x.bytes)
+  }
+  await fsp.writeFile(join(root, '.source'), `${source.slice(0, 300)}\n`)
+  await put(dir, ['plugin', '.claude-plugin', 'plugin.json'], json({ name: 'team', description: 'Skills shared by this team through Taskmaster', version: '1.0.0' }))
 }
 
 export async function deleteSkill(dir: string, name: string): Promise<void> {

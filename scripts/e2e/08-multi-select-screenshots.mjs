@@ -43,7 +43,7 @@ await click('.recent-row', 'demo app'); await waitFor(`!!document.querySelector(
 const now = new Date().toISOString(); const me = (await tasksNow())[0]?.createdBy ?? 'Ray0737'
 // Rows sort by createdAt, so give A, B, C rising times to keep them in that order on screen.
 const mk = (title, i) => ({ id: 't-' + Math.random().toString(36).slice(2, 10).padEnd(8, '0'), title, brief: '', role: 'custom', assignee: null, status: 'todo', files: [], branch: null, createdBy: me, createdAt: new Date(Date.now() + i * 1000).toISOString(), updatedAt: now })
-const made = ['E2E multi A', 'E2E multi B', 'E2E multi C'].map(mk)
+const made = ['E2E multi A', 'E2E multi B', 'E2E multi C', 'E2E multi D'].map(mk)
 for (const t of made) await ev(`window.tm.invoke('team.saveTask', ${JSON.stringify(t)})`)
 await send('Page.reload'); await sleep(2500)
 await click('.recent-row', 'demo app'); await waitFor(`!!document.querySelector('.activitybar')`); await sleep(1200)
@@ -78,6 +78,11 @@ await modClick('E2E multi C', 'ctrlKey'); await sleep(300)
 await click('.bulk-bar button', 'Delete'); await sleep(500)
 await ev(`[...document.querySelectorAll('button')].filter(b=>/^\\s*Delete\\s*$/.test(b.innerText)&&b.closest('.modal')).pop()?.click()`); await sleep(2000)
 step('last test task cleaned up', !(await tasksNow()).some((x) => x.id === made[2].id))
+// one click finishes every selected task
+await click('.bulk-bar .icon-btn', 'Clear'); await modClick('E2E multi D', 'ctrlKey'); await sleep(300)
+await click('.bulk-bar button', 'Mark done'); await sleep(1500)
+step('Mark done finishes the selected task', (await tasksNow()).find((x) => x.id === made[3].id)?.status === 'done')
+await ev(`window.tm.invoke('team.deleteTask', ${JSON.stringify(made[3].id)})`)
 
 // ---- screenshots on a task
 const login = (await tasksNow()).find((x) => x.title.startsWith('Login page'))

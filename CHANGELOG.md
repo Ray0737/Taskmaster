@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Team skills: Import from GitHub. Paste a repo, folder or SKILL.md link, tick the skills found, and the whole skill folder (scripts and reference files too) is copied to the team. Limits: 60 files, 500 KB per file, 1.5 MB per skill. Imported skills show their source and are read-only; a warning appears when scripts are included. Public repos only. When a repo ships the same skill in several folders (skills/x, .claude/skills/x), one is kept: a visible, shallow folder first.
+- Tasks: the bulk bar has a one-click Mark done for every selected task.
+
 ## 1.1.0
 
 Tasks get screenshots and multi-select, the agent gets a model picker and usage badges, and the window gets a new frame.

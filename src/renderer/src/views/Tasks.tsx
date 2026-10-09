@@ -93,6 +93,7 @@ export function Tasks() {
           <Dropdown variant="pill" ariaLabel={t('tasks.bulk.status')} value=""
             options={[{ value: '', label: t('tasks.bulk.status') }, ...STATUSES.map((st) => ({ value: st, label: t(`status.${st}`) }))]}
             onChange={(v) => { if (v) void bulk((x) => setTaskStatus(x.id, v as TaskStatus)) }} />
+          <button className="btn btn-small" onClick={() => void bulk((x) => setTaskStatus(x.id, 'done'))}><Icon name="pass" />{t('tasks.bulk.done')}</button>
           {me && <button className="btn btn-small" onClick={() => void bulk((x) => useTeam.getState().saveTask({ ...x, assignee: me })).catch((e) => toast(errMsg(e), 'error'))}><Icon name="account" />{t('tasks.bulk.assignMe')}</button>}
           <button className="btn btn-small btn-delete" onClick={() => void bulkDelete()}><Icon name="trash" />{t('tasks.bulk.delete')}</button>
           <button className="icon-btn" title={t('tasks.bulk.clear')} aria-label={t('tasks.bulk.clear')} onClick={() => setSel([])}><Icon name="close" /></button>
