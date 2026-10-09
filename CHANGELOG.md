@@ -3,7 +3,6 @@
 ## Unreleased
 
 - Docs: an architecture diagram in the README (docs/taskmaster-architecture-square.png) and black and white logo files (docs/logo.svg, docs/logo-mark.svg).
-
 - Find in Files: a Search view (Ctrl+Shift+F) with match case, whole word and regular expression; click a hit to open the file with the match selected. Skips dependency and build folders, binary and big files.
 - Format Document (Shift+Alt+F) and a Format on save setting, for JS, TS, JSON, CSS and HTML.
 - Task screenshots: an Upload image button, and drag and drop of image files onto the task page.
