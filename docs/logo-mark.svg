@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="96 120 320 272" width="320" height="272" role="img" aria-labelledby="tm-mark-title tm-mark-desc">
+  <title id="tm-mark-title">Taskmaster</title>
+  <desc id="tm-mark-desc">Three stacked layers drawn as an outlined diamond over two chevrons, in black on a transparent background.</desc>
+  <g fill="none" stroke="#000" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 6)">
+    <path d="M256 150 376 210 256 270 136 210Z"/>
+    <path d="M136 252 256 312 376 252"/>
+    <path d="M136 294 256 354 376 294"/>
+  </g>
+</svg>

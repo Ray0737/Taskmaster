@@ -13,6 +13,12 @@ It looks and behaves like VS Code: activity bar, explorer, Monaco editor, integr
 - Commit, branch, sync and open pull requests from the Source Control view.
 - Share Claude Code skills with your team (Team view, Skills). Delete tasks you no longer need.
 
+## How it works
+
+<p align="center"><img src="docs/taskmaster-architecture-square.png" width="720" alt="Taskmaster architecture: your app and teammates apps sync through a shared Git team branch, GitHub hosts it, and agents run locally"></p>
+
+Your app and your agents run on your machine. The team branch (`taskmaster/context`) holds tasks, notes, presence, screenshots and skills, GitHub hosts it, and teammates sync with it from their own copy of the app. Details are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Requirements
 
 - Windows 10 or later
